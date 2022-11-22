@@ -1,0 +1,14 @@
+{% extends "contracts/mustr_template.html" %}
+{% block content %}
+<a class="btn btn-warning" href="{% url "contracts" %}">Zpět</a>
+<h4>Příprava smlouvy</h4>
+            <form action="" method="POST">
+            {% include "betterforms/form_as_fieldsets.html"%}
+                {% for field in contract_form %}
+                    <p>{{ field.label }}
+                        {{field}}</p>
+                {% endfor %}
+                <input class="btn btn-primary" type="submit" value="Uložit">
+            </form>
+
+{% endblock %}

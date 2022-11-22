@@ -1,0 +1,31 @@
+Zhotovitel
+    {{ contract.contract_party_1.name }}
+    {{ contract.contract_party_1.id_number }}
+    {{ contract.contract_party_1.address }}
+    {{ contract.contract_party_1.email }}
+    {{ contract.contract_party_1.phone_number }}
+
+    Objednatel
+    {{ contract.contract_party_2.name }}
+    {{ contract.contract_party_2.id_number }}
+    {{ contract.contract_party_2.address }}
+    {{ contract.contract_party_2.email }}
+    {{ contract.contract_party_2.phone_number }}
+
+    Předmět díla
+    dodávka a montáž {{ contract.subject }}
+
+    Cena díla
+    {{ contract.price }}
+
+    Místo plnění
+    {{ contract.fullfilment_place }}
+
+    Termín plnění
+
+    {{ contract.fullfilment_at }}
+
+    Přílohy, které jsou součástí smlouvy
+    {{ contract.attachments }}
+
+    Smluvní strany se dále dohodly:

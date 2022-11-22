@@ -1,0 +1,14 @@
+{% extends "contracts/mustr_template.html" %}
+{% block content %}
+    {% load render_table from django_tables2 %}
+    <h2>Přehled smluv</h2>
+    <a class="btn btn-primary" href="{% url "create-contract" %}">Přidat smlouvu</a>
+    <form action="" method="get" class="form-control">
+        <div class="col-sm">
+              <input type="text" name="name_email_place_address" id="id_name_email_place_address" class="form-control" placeholder="Hledej dle jména, e-mailu, adresy nebo místa plnění...">
+        </div>
+        <button class="btn btn-outline-primary w-100" type="submit" name="button">Filtruj!</button>
+    </form>
+        {% render_table table %}
+
+{% endblock %}
