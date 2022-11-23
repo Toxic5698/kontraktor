@@ -1,14 +1,23 @@
-{% extends "contracts/mustr_template.html" %}
+{% extends "contracts/main.html" %}
 {% block content %}
     {% load render_table from django_tables2 %}
-    <h2>Přehled smluv</h2>
-    <a class="btn btn-primary" href="{% url "create-contract" %}">Přidat smlouvu</a>
-    <form action="" method="get" class="form-control">
-        <div class="col-sm">
-              <input type="text" name="name_email_place_address" id="id_name_email_place_address" class="form-control" placeholder="Hledej dle jména, e-mailu, adresy nebo místa plnění...">
-        </div>
-        <button class="btn btn-outline-primary w-100" type="submit" name="button">Filtruj!</button>
-    </form>
-        {% render_table table %}
+    <div class="d-flex justify-content-between">
+    <h2 class="">Přehled smluv</h2>
+    <a class="btn btn-success h-75 align-self-center" href="{% url "create-contract" %}">Přidat smlouvu</a>
+    </div>
 
+    <form action="" method="get" class="form-control">
+        <div class="row d-flex">
+            <div class="col">
+            <input type="text" name="name_email_place_address" id="id_name_email_place_address" class="form-control" placeholder="Hledej dle čísla smlouva, jména, e-mailu, adresy nebo místa plnění...">
+            </div>
+            <div class="col">
+            <button class="btn btn-outline-primary" type="submit" name="button">Filtrovat</button>
+            </div>
+        </div>
+    </form>
+
+    <div>
+        {% render_table table %}
+    </div>
 {% endblock %}

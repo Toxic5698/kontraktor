@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "weasyprint",
     "django_filters",
     "django_tables2",
+    "crispy_forms",
+    "crispy_bootstrap5",
 
     "contracts",
 ]
@@ -131,3 +133,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SHELL_PLUS = "ipython"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+

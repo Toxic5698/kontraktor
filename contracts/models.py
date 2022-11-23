@@ -1,43 +1,50 @@
 from django.contrib.auth.models import User
 from django.db.models import Model, DateTimeField, ForeignKey, CharField, TextField, BooleanField, SET_NULL, \
-    IntegerField, ManyToManyField
+    IntegerField, ManyToManyField, DateField
 from .constants import *
 
 
+class ContractType(Model):
+    type = CharField(max_length=255, blank=False, null=False)
+    name = CharField(max_length=255, blank=False, null=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Contract(Model):
-    contract_number = CharField(max_length=20, unique=True, blank=True, null=True)
-    created_at = DateTimeField(auto_now_add=True, blank=False, null=False)
-    created_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="contract_created_by")
-    edited_at = DateTimeField(blank=True, null=True)
-    edited_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="contract_edited_by")
-    signed_at = DateTimeField(blank=True, null=True)
+    contract_number = CharField(max_length=20, unique=True, blank=True, null=True, verbose_name="Číslo smlouvy")
+    created_at = DateTimeField(auto_now_add=True, blank=False, null=False, verbose_name="Vytvořena dne")
+    created_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="contract_created_by", verbose_name="Vytvořil")
+    edited_at = DateTimeField(blank=True, null=True, verbose_name="Upravena dne")
+    edited_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="contract_edited_by", verbose_name="Upravil")
+    signed_at = DateTimeField(blank=True, null=True, verbose_name="Podepsána dne")
 
-    type = CharField(blank=True, null=True, max_length=8, choices=CONTRACT_TYPES)
-    subject = CharField(blank=True, null=True, max_length=100, choices=CONTRACT_SUBJECTS)
-    price = CharField(max_length=20)
-    fulfillment_at = DateTimeField(null=True, blank=True)
-    fulfillment_place = CharField(max_length=1000)
+    contract_type = ForeignKey(ContractType, related_name="contracts", on_delete=SET_NULL, verbose_name="Typ smlouvy", null=True)
+    subject = CharField(blank=True, null=True, max_length=100, choices=CONTRACT_SUBJECTS, verbose_name="Předmět smlouvy")
+    price = CharField(max_length=20, verbose_name="Cena")
+    fulfillment_at = DateField(null=True, blank=True, verbose_name="Čas plnění")
+    fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění")
 
-    name = CharField(max_length=255, blank=True, null=True,)
-    id_number = CharField(max_length=8, blank=True, null=True,)
-    address = CharField(max_length=1000, blank=True, null=True,)
-    email = CharField(max_length=255, blank=True, null=True,)
-    phone_number = CharField(max_length=12, blank=True, null=True,)
-    note = TextField(max_length=1000, blank=True, null=True,)
-    corporation = BooleanField(default=False)
+    name = CharField(max_length=255, blank=True, null=True, verbose_name="Jméno")
+    id_number = CharField(max_length=12, blank=True, null=True, verbose_name="Datum narození nebo IČ")
+    address = CharField(max_length=1000, blank=True, null=True, verbose_name="Adresa bydliště nebo sídla")
+    email = CharField(max_length=255, blank=True, null=True, verbose_name="E-mailová adresa")
+    phone_number = CharField(max_length=12, blank=True, null=True, verbose_name="Telefonní číslo")
+    note = TextField(max_length=1000, blank=True, null=True, verbose_name="Poznámka")
+    consumer = BooleanField(default=True, verbose_name="Spotřebitel (fyzická osoba)")
 
-    @classmethod
-    def post_create(cls, sender, instance, created, *args, **kwargs):
-        if not created:
-            return print("not created")
-        cores = ContractCore.objects.filter(essential=True, default=True) # přidat type_usage negativní nebo pozitivní filtr?
-        instance.contract_cores = cores
-        return print("created")
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.contract_cores.count() == 0:
+            cores = ContractCore.objects.filter(essential=True, default=True, contract_type=self.contract_type)
+            self.contract_cores.set(cores)
+            return print(self.contract_cores.count())
 
 
 class ContractCore(Model):
     priority = IntegerField()
-    type_usage = CharField(max_length=8, blank=True, null=True, choices=CONTRACT_TYPES)
+    contract_type = ManyToManyField(ContractType, related_name="contract_cores")
     text = TextField(max_length=10000, blank=True, null=True)
     essential = BooleanField(default=False)
     editable = BooleanField(default=True)
@@ -48,7 +55,7 @@ class ContractCore(Model):
     created_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="contract_core_created_by")
     edited_at = DateTimeField(blank=True, null=True)
     edited_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="contract_core_edited_by")
-    parent_id = CharField(blank=True, null=True, max_length=4)
+    parent_id = IntegerField(blank=True, null=True)
     note = TextField(max_length=1000, blank=True, null=True,)
 
 

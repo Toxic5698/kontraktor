@@ -1,19 +1,33 @@
 {% extends "contracts/mustr_template.html" %}
 {% block content %}
-    <h1>Smlouva o dílo č. {{ contract.id }}</h1>
+    <h1>Smlouva o dílo č. {{ contract.contract_number }}</h1>
     uzavřená podle ustanovení § 2586 a násl. zákona č. 89/2012 Sb., občanského zákoníku, v platném znění, mezi
 
     {% include "contracts/contract_header.html" %}
-
-    <ol>
+    Smluvní strany se dále dohodly:
+    <ol type="I">
         <li>Základní ustanovení</li>
             <ol>
-                {% for par in contract.contract_cores %}
-                <li>{{ par }}</li>
+                {% for par in cores %}
+                <li>{{ par.text }}</li>
                 {% endfor %}
             </ol>
         <li>Závěrečná ustanovení</li>
     </ol>
+
+    <p>V Brně dne {{ contract.signet_at | date:"d. m. y" }}</p>
+    <div class="row">
+    <div class="col-6">
+        podpis dodavatele
+    </div>
+    <div class="col-6">
+        podpis objednatele
+    </div>
+    </div>
+
+
+
+
 
     
     

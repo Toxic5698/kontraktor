@@ -16,5 +16,6 @@ class ContractFilter(django_filters.FilterSet):
 
     def filter_contains(self, queryset, name, value):
         return queryset.filter(Q(name__icontains=value) | Q(email__icontains=value) |
-                               Q(fulfillment_place__icontains=value) | Q(address__icontains=value))
+                               Q(fulfillment_place__icontains=value) | Q(address__icontains=value) |
+                               Q(contract_number__icontains=value))
 

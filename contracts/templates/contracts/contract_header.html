@@ -1,31 +1,101 @@
-Zhotovitel
-    {{ contract.contract_party_1.name }}
-    {{ contract.contract_party_1.id_number }}
-    {{ contract.contract_party_1.address }}
-    {{ contract.contract_party_1.email }}
-    {{ contract.contract_party_1.phone_number }}
+{% if contract.contract_type.type == "KOUPE" %}
+    <h4>Prodávající</h4>
+{% elif contract.contract_type.type == "DILO" %}
+    <h4>Dodavatel</h4>
+{% endif %}
+<h5><b>D E T A, spol. s r.o.</b></h5>
+<p>IČ 46992966, se sídlem Heršpická 11c, 612 00 Brno, zastoupená Kamilem Sedlákem, ředitelem</p>
 
-    Objednatel
-    {{ contract.contract_party_2.name }}
-    {{ contract.contract_party_2.id_number }}
-    {{ contract.contract_party_2.address }}
-    {{ contract.contract_party_2.email }}
-    {{ contract.contract_party_2.phone_number }}
+{% if contract.contract_type.type == "KOUPE" %}
+    <h4>Kupující</h4>
+{% elif contract.contract_type.type == "DILO" %}
+    <h4>Objednatel</h4>
+{% endif %}
+<div class="row">
+    <h5 class=""><b>{{ contract.name }}</b></h5>
+</div>
+<div class="row">
+    <div class="col-3">
+        <div class="badge bg-secondary">
+            {% if contract.consumer %}
+                datum narození
+            {% else %}
+                IČ
+            {% endif %}
+        </div>
+        <p>{{ contract.id_number }}</p>
+    </div>
+    <div class="col-3">
+            <div class="badge bg-secondary">
+                {% if contract.consumer %}
+                bytem
+            {% else %}
+                se sídlem
+            {% endif %}
+            </div>
+        <p>{{ contract.address }}</p>
+    </div>
+    <div class="col-3">
+        <div class="badge bg-secondary">e-mailová adresa</div>
+        <p>{{ contract.email }}</p>
+    </div>
+    <div class="col-3">
+        <div class="badge bg-secondary">telefonní číslo</div>
+        <p>{{ contract.phone_number }}</p>
+    </div>
 
-    Předmět díla
-    dodávka a montáž {{ contract.subject }}
-
-    Cena díla
-    {{ contract.price }}
-
-    Místo plnění
-    {{ contract.fullfilment_place }}
-
-    Termín plnění
-
-    {{ contract.fullfilment_at }}
-
-    Přílohy, které jsou součástí smlouvy
-    {{ contract.attachments }}
-
-    Smluvní strany se dále dohodly:
+</div>
+<div class="row">
+    <div class="col-6">
+        <div class="badge bg-secondary">
+            {% if contract.contract_type.type == "KOUPE" %}
+                dodávka
+            {% elif contract.contract_type.type == "DILO" %}
+                dodávka a montáž
+            {% endif %}
+        </div>
+        <p>
+        {% if contract.subject == "DVERE" %}
+            dveří
+            {% elif contract.subject == "PODLAHA" %}
+            podlahy
+            {% elif contract.subject == "DVERE_PODLAHA" %}
+            dveří a podlahy
+            {% elif contract.subject == "ZBOZI" %}
+            zboží
+            {% endif %}
+         dle cenové nabídky v příloze
+        </p>
+    </div>
+    <div class="col-6">
+        <div class="badge bg-secondary">
+            {% if contract.contract_type.type == "KOUPE" %}
+                kupní cena
+            {% elif contract.contract_type.type == "DILO" %}
+                cena díla
+            {% endif %}
+        </div>
+        <p>{{ contract.price }},- Kč vč. DPH</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <div class="badge bg-secondary">
+            místo plnění
+        </div>
+        <p>{{ contract.fulfillment_place }}</p>
+    </div>
+    <div class="col-6">
+        <div class="badge bg-secondary">termín plnění</div>
+        <p>{{ contract.fulfillment_at | date:"d. m. Y" }}</p>
+    </div>
+</div>
+{% if contract.attachments.all %}
+<div class="row">
+<div class="badge bg-secondary">přílohy</div>
+{% for attachment in contract.attachments.all %}
+    <p>{{ attachment.name }}</p>
+{% endfor %}
+</div>
+{% endif %}
+<br>

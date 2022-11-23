@@ -1,0 +1,24 @@
+{% extends "contracts/main.html" %}
+{% block content %}
+
+    <form action="" method="POST">
+        {% csrf_token %}
+
+    <a class="btn btn-warning" href="{% url "edit-contract" contract.id %}">Zpět</a>
+    <button class="btn btn-warning" type="submit">Uložit změny v ustanoveních</button>
+    <h4>Změna ustanovení pro smlouvu č. {{ contract.contract_number }} s klientem {{ contract.name }}</h4>
+        {% for par in cores %}
+            <div class="row">
+                <div class="col-6">
+                    <p>{{ par.priority }} {{ par.text }}</p>
+                </div>
+                <div class="col-6">
+                    <textarea class="form-control" id="{{ par.id }}" name="{{ par.id }}">{{ par.text }}</textarea>
+                </div>
+            </div>
+            <br>
+        {% endfor %}
+        <button class="btn btn-warning" type="submit">Uložit změny v ustanoveních</button>
+    </form>
+
+{% endblock %}
