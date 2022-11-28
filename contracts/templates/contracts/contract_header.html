@@ -1,7 +1,7 @@
 {% if contract.contract_type.type == "KOUPE" %}
     <h4>Prodávající</h4>
 {% elif contract.contract_type.type == "DILO" %}
-    <h4>Dodavatel</h4>
+    <h4>Zhotovitel</h4>
 {% endif %}
 <h5><b>D E T A, spol. s r.o.</b></h5>
 <p>IČ 46992966, se sídlem Heršpická 11c, 612 00 Brno, zastoupená Kamilem Sedlákem, ředitelem</p>
@@ -48,13 +48,14 @@
 <div class="row">
     <div class="col-6">
         <div class="badge bg-secondary">
-            {% if contract.contract_type.type == "KOUPE" %}
-                dodávka
-            {% elif contract.contract_type.type == "DILO" %}
-                dodávka a montáž
-            {% endif %}
+            předmět smlouvy
         </div>
         <p>
+        {% if contract.contract_type.type == "KOUPE" %}
+            dodávka
+        {% elif contract.contract_type.type == "DILO" %}
+            dodávka a montáž
+        {% endif %}
         {% if contract.subject == "DVERE" %}
             dveří
             {% elif contract.subject == "PODLAHA" %}

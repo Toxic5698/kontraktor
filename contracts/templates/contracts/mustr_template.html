@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kontraktor</title>
+    <title>Smlouva o dílo č. {{ contract.contract_number }}</title>
       <link rel="icon" type="image/png" sizes="16x16" href="">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,15 +23,80 @@
   {% endif %}
 
     {% include "contracts/contract_header.html" %}
-    Smluvní strany se dále dohodly:
+  Smluvní strany se dále dohodly:
     <ol type="I">
-        <li>Základní ustanovení</li>
+    {% if cores_1 %}
+        <li>{{ sections.0.1 }}</li>
             <ol>
-                {% for par in cores %}
+                {% for par in cores_1 %}
+                    <li class="">{{ par.text }}</li>
+                {% endfor %}
+            </ol>
+    {% endif %}
+    {% if cores_2 %}
+        <li>{{ sections.1.1 }}</li>
+            <ol>
+                {% for par in cores_2 %}
                 <li>{{ par.text }}</li>
                 {% endfor %}
             </ol>
-        <li>Závěrečná ustanovení</li>
+    {% endif %}
+    {% if cores_3 %}
+        <li>{{ sections.2.1 }}</li>
+            <ol>
+                {% for par in cores_3 %}
+                <li>{{ par.text }}</li>
+                {% endfor %}
+            </ol>
+    {% endif %}
+    {% if cores_4 %}
+        <li>{{ sections.3.1 }}</li>
+            <ol>
+                {% for par in cores_4 %}
+                <li>{{ par.text }}</li>
+                {% endfor %}
+            </ol>
+    {% endif %}
+    {% if cores_5 %}
+        <li>{{ sections.4.1 }}</li>
+            <ol>
+                {% for par in cores_5 %}
+                <li>{{ par.text }}</li>
+                {% endfor %}
+            </ol>
+    {% endif %}
+    {% if cores_6 %}
+        <li>{{ sections.5.1 }}</li>
+            <ol>
+                {% for par in cores_6 %}
+                <li>{{ par.text }}</li>
+                {% endfor %}
+            </ol>
+    {% endif %}
+    {% if cores_7 %}
+        <li>{{ sections.6.1 }}</li>
+            <ol>
+                {% for par in cores_7 %}
+                <li>{{ par.text }}</li>
+                {% endfor %}
+            </ol>
+    {% endif %}
+    {% if cores_8 %}
+        <li>{{ sections.7.1 }}</li>
+            <ol>
+                {% for par in cores_8 %}
+                <li>{{ par.text }}</li>
+                {% endfor %}
+            </ol>
+    {% endif %}
+    {% if cores_9 %}
+        <li>{{ sections.8.1 }}</li>
+            <ol>
+                {% for par in cores_9 %}
+                <li>{{ par.text }}</li>
+                {% endfor %}
+            </ol>
+    {% endif %}
     </ol>
 
     <p>V Brně dne {{ contract.signet_at | date:"d. m. y" }}</p>

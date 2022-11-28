@@ -1,0 +1,11 @@
+{% extends "contracts/main.html" %}
+{% block content %}
+    {% load crispy_forms_tags %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+  </form>
+
+  <p><a href="{% url 'contracts' %}">Return to home</a></p>
+{% endblock %}

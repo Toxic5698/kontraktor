@@ -8,4 +8,5 @@ urlpatterns = [
     path("delete/<int:pk>", ContractDeleteView.as_view(), name="delete-contract"),
     path("<int:pk>", ContractParseView.as_view(), name="parse-contract"),
     path("edit-cores/<int:pk>", ContractCoresEditView.as_view(), name="edit-cores"),
+    path("upload_attachments/<int:pk>", AttachmentUploadView.as_view(), name="upload-attachments")
 ]

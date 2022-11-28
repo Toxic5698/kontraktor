@@ -14,10 +14,12 @@ class ContractTable(Table):
     price = Column(verbose_name="Cena")
     fulfillment_at = DateColumn(verbose_name="Čas plnění", format="d. m. y")
     created_at = DateTimeColumn(verbose_name="Vytvořena dne", format="d. m. y h:m")
-
+    attachments_count = Column(verbose_name="Počet příloh")
 
     class Meta:
         model = Contract
         template_name = 'django_tables2/bootstrap-responsive.html'
-        fields = ("contract_number", "name", "price", "fulfillment_place", "fulfillment_at", "created_at")
+        fields = ("contract_number", "name", "price", "fulfillment_place", "fulfillment_at", "created_at",
+                  "attachments_count"
+                  )
         attrs = {"class": "table table-hover table-striped"}

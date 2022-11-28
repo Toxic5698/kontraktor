@@ -3,11 +3,12 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView, DeleteView, FormView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from .forms import ContractForm
+from .constants import CONTRACT_SECTIONS
+from .forms import ContractForm, AttachmentUploadForm
 from .models import Contract, ContractCore
 from .tables import ContractTable
 from .filters import ContractFilter
@@ -41,14 +42,17 @@ class ContractDeleteView(DeleteView):
 class ContractParseView(View):
 
     def get(self, request, pk):
-        contract = Contract.objects.get(id=pk)
-        cores = ContractCore.objects.filter(contract=contract)
-        # TODO: lepší rozlišování smluv
+        contract = Contract.objects.prefetch_related('contract_cores').get(id=pk)
         template = "contracts/mustr_template.html"
         context = {
             "contract": contract,
-            "cores": cores,
+            "sections": CONTRACT_SECTIONS
         }
+        for index, section in enumerate(CONTRACT_SECTIONS, 1):
+            cores = contract.contract_cores.filter(section=section[0])
+            if cores.count() > 0:
+                context["cores_" + str(index)] = cores
+
         return TemplateResponse(request, template, context)
 
 
@@ -100,4 +104,19 @@ class ContractCoresEditView(View):
                         contract.contract_cores.remove(old_core)
 
         return redirect('edit-contract', contract.id)
+
+
+class AttachmentUploadView(View):
+
+    def get(self, request, pk, *args, **kwargs):
+        # form = AttachmentUploadForm()
+        # context = {"form": form}
+        return TemplateResponse(request=request, template="contracts/upload_attachments.html", context=context)
+
+    def post(self, request, pk, *args, **kwargs):
+        contract = Contract.objects.get(pk=pk)
+        form = AttachmentUploadForm()
+        if form.is_valid():
+            form.save()
+            return redirect('edit-contract', contract.id)
 
