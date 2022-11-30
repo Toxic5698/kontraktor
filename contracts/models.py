@@ -34,12 +34,21 @@ class Contract(Model):
     note = TextField(max_length=1000, blank=True, null=True, verbose_name="Poznámka")
     consumer = BooleanField(default=True, verbose_name="Spotřebitel (fyzická osoba)")
 
+    class Meta:
+        verbose_name = "Contract"
+        verbose_name_plural = "Contracts"
+
+    def __str__(self):
+        return f"{self.contract_number} - {self.name}"
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         if self.contract_cores.count() == 0:
             cores = ContractCore.objects.filter(default=True, contract_type=self.contract_type)
             self.contract_cores.set(cores)
             return print(self.contract_cores.count())
+
+
 
 
 class ContractCore(Model):
@@ -71,7 +80,7 @@ class ContractCore(Model):
 
 class Attachment(Model):
     name = CharField(max_length=255, blank=True)
-    file = FileField(upload_to="attachments/") # rozlišit podle smluv
+    file = FileField(upload_to="attachments/", blank=True, null=True) # rozlišit podle smluv
     added_at = DateTimeField(auto_now_add=True)
     added_by = ForeignKey(User, related_name="attachments", on_delete=SET_NULL, blank=True, null=True)
     contract = ForeignKey(Contract, blank=True, null=True, on_delete=SET_NULL, related_name="attachments")
@@ -81,4 +90,7 @@ class Attachment(Model):
         verbose_name_plural = "Attachments"
 
     def __str__(self):
-        return self.name
+        return self.name or str(self.file)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)

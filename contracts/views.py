@@ -9,21 +9,21 @@ from django_tables2 import SingleTableMixin
 
 from .constants import CONTRACT_SECTIONS
 from .forms import ContractForm, AttachmentUploadForm
-from .models import Contract, ContractCore
+from .models import Contract, ContractCore, Attachment
 from .tables import ContractTable
 from .filters import ContractFilter
 
 
 class ContractCreateView(CreateView):
     form_class = ContractForm
-    template_name = "contracts/create_contract.html"
+    template_name = "contracts/edit_contract.html"
     success_url = reverse_lazy("contracts")
     model = Contract
 
 
 class ContractUpdateView(UpdateView):
     form_class = ContractForm
-    template_name = "contracts/create_contract.html"
+    template_name = "contracts/edit_contract.html"
     success_url = reverse_lazy("contracts")
     model = Contract
 
@@ -106,17 +106,39 @@ class ContractCoresEditView(View):
         return redirect('edit-contract', contract.id)
 
 
-class AttachmentUploadView(View):
+class AttachmentUploadView(FormView):
+    form_class = AttachmentUploadForm
 
     def get(self, request, pk, *args, **kwargs):
-        # form = AttachmentUploadForm()
-        # context = {"form": form}
-        return TemplateResponse(request=request, template="contracts/upload_attachments.html", context=context)
+        form = self.get_form_class()
+        contract = Contract.objects.get(pk=pk)
+        context = {"form": form, "contract": contract}
+        return TemplateResponse(request=request, template="contracts/manage_attachments.html", context=context)
 
     def post(self, request, pk, *args, **kwargs):
         contract = Contract.objects.get(pk=pk)
-        form = AttachmentUploadForm()
-        if form.is_valid():
-            form.save()
-            return redirect('edit-contract', contract.id)
+        if len(request.FILES) > 0:
+            form = AttachmentUploadForm(request.POST)
+            if form.is_valid():
+                files = request.FILES.getlist('file')
+                for file in files:
+                    Attachment.objects.create(
+                        contract=contract,
+                        file=file,
+                    )
+        else:
+            data = request.POST
+            for id, text in data.items():
+                if id.isnumeric():
+                    attachment = Attachment.objects.get(id=id)
+                    attachment.name = text
+                    attachment.save()
+        return redirect('manage-attachments', contract.id)
 
+
+class AttachmentDeleteView(DeleteView):
+    model = Attachment
+    template_name = "contracts/confirm_delete_attachment.html"
+
+    def get_success_url(self):
+        return reverse_lazy("manage-attachments", args=(self.get_object().contract_id,))

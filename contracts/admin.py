@@ -17,7 +17,8 @@ class ContractCoreAdmin(admin.ModelAdmin):
 
 class AttachmentAdmin(admin.ModelAdmin):
     model = Attachment
-    fields = ("name", "file", "added_by")
+    fields = ("name", "file", "added_by", "contract")
+    list_display = ["name", "file", "added_by", "contract", ]
 
 
 site.register(ContractCore, ContractCoreAdmin)

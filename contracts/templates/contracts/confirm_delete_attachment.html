@@ -1,0 +1,23 @@
+{% extends "contracts/main.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-body">
+            <p>Opravdu smazat přílohu {{ attachment.name }} - {{ attachment.file }} ze smlouvy {{attachment.contract.contract_number}}?</p>
+
+
+            <form action="{% url 'delete-attachment' attachment.id %}" method="POST">
+            {% csrf_token%}
+
+            <a class ="btn btn-warning" href="{% url 'manage-attachments' attachment.contract.id %}">Zpět</a>
+
+            <input class="btn btn-danger" type="submit" name="Submit" value="Smazat">
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -95,7 +95,7 @@
 <div class="row">
 <div class="badge bg-secondary">přílohy</div>
 {% for attachment in contract.attachments.all %}
-    <p>{{ attachment.name }}</p>
+    <p>{% if attachment.name %}{{ attachment.name }}{% else %}{{ attachment.file }}{% endif %}</p>
 {% endfor %}
 </div>
 {% endif %}

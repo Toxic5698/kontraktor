@@ -13,6 +13,7 @@
                      <a class="btn btn-warning" href="{% url "contracts" %}">Zpět bez uložení</a>
                 {% if contract %}
                     <a class="btn btn-primary" href="{% url "edit-cores" contract.id %}">Změnit ustanovení smlouvy</a>
+                    <a class="btn btn-secondary" href="{% url "manage-attachments" contract.id %}">Spravovat přílohy</a>
                 {% endif %}
                 <input class="btn btn-success" type="submit" value="Uložit">
 
