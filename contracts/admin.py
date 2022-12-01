@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin import site
 
-from contracts.models import Contract, ContractCore, Attachment
+from contracts.models import Contract, ContractCore
+from attachments.models import Attachment
 
 
 class ContractCoreAdmin(admin.ModelAdmin):

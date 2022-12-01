@@ -1,6 +1,6 @@
 from betterforms.forms import BetterModelForm
-from .models import Contract, Attachment
-from django import forms
+from .models import Contract
+
 
 
 class ContractForm(BetterModelForm):
@@ -10,11 +10,3 @@ class ContractForm(BetterModelForm):
                   "consumer", "name", "id_number", "email", "phone_number", "address",
                   "fulfillment_place", "fulfillment_at", "price",
                   "note", "signed_at")
-
-
-class AttachmentUploadForm(forms.ModelForm):
-    file = forms.FileField(widget=forms.ClearableFileInput(attrs={"multiple": True}), required=False)
-
-    class Meta:
-        model = Attachment
-        fields = ("name", "file")

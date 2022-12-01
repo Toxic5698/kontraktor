@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.db.models import Model, DateTimeField, ForeignKey, CharField, TextField, BooleanField, SET_NULL, \
-    IntegerField, ManyToManyField, DateField, FileField
+    IntegerField, ManyToManyField, DateField, FileField, CASCADE
+
+from clients.models import Client
 from .constants import *
 
 
@@ -23,16 +25,18 @@ class Contract(Model):
     contract_type = ForeignKey(ContractType, related_name="contracts", on_delete=SET_NULL, verbose_name="Typ smlouvy", null=True)
     subject = CharField(blank=True, null=True, max_length=100, choices=CONTRACT_SUBJECTS, verbose_name="Předmět smlouvy")
     price = CharField(max_length=20, verbose_name="Cena")
+    # TODO: zálohy
     fulfillment_at = DateField(null=True, blank=True, verbose_name="Čas plnění")
     fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění")
 
-    name = CharField(max_length=255, blank=True, null=True, verbose_name="Jméno")
-    id_number = CharField(max_length=12, blank=True, null=True, verbose_name="Datum narození nebo IČ")
-    address = CharField(max_length=1000, blank=True, null=True, verbose_name="Adresa bydliště nebo sídla")
-    email = CharField(max_length=255, blank=True, null=True, verbose_name="E-mailová adresa")
-    phone_number = CharField(max_length=12, blank=True, null=True, verbose_name="Telefonní číslo")
-    note = TextField(max_length=1000, blank=True, null=True, verbose_name="Poznámka")
-    consumer = BooleanField(default=True, verbose_name="Spotřebitel (fyzická osoba)")
+    # name = CharField(max_length=255, blank=True, null=True, verbose_name="Jméno")
+    # id_number = CharField(max_length=12, blank=True, null=True, verbose_name="Datum narození nebo IČ")
+    # address = CharField(max_length=1000, blank=True, null=True, verbose_name="Adresa bydliště nebo sídla")
+    # email = CharField(max_length=255, blank=True, null=True, verbose_name="E-mailová adresa")
+    # phone_number = CharField(max_length=12, blank=True, null=True, verbose_name="Telefonní číslo")
+    # note = TextField(max_length=1000, blank=True, null=True, verbose_name="Poznámka")
+    # consumer = BooleanField(default=True, verbose_name="Spotřebitel (fyzická osoba)")
+    client = ForeignKey(Client, on_delete=CASCADE, related_name="contracts")
 
     class Meta:
         verbose_name = "Contract"
@@ -42,13 +46,12 @@ class Contract(Model):
         return f"{self.contract_number} - {self.name}"
 
     def save(self, *args, **kwargs):
+        # TODO: created a edited_by doplnit
         super().save(*args, **kwargs)
         if self.contract_cores.count() == 0:
             cores = ContractCore.objects.filter(default=True, contract_type=self.contract_type)
             self.contract_cores.set(cores)
             return print(self.contract_cores.count())
-
-
 
 
 class ContractCore(Model):
@@ -76,21 +79,3 @@ class ContractCore(Model):
 
     def __str__(self):
         return f"{self.priority} - {self.default}"
-
-
-class Attachment(Model):
-    name = CharField(max_length=255, blank=True)
-    file = FileField(upload_to="attachments/", blank=True, null=True) # rozlišit podle smluv
-    added_at = DateTimeField(auto_now_add=True)
-    added_by = ForeignKey(User, related_name="attachments", on_delete=SET_NULL, blank=True, null=True)
-    contract = ForeignKey(Contract, blank=True, null=True, on_delete=SET_NULL, related_name="attachments")
-
-    class Meta:
-        verbose_name = "Attachment"
-        verbose_name_plural = "Attachments"
-
-    def __str__(self):
-        return self.name or str(self.file)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
