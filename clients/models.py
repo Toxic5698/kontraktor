@@ -9,3 +9,10 @@ class Client(Model):
     phone_number = CharField(max_length=12, blank=True, null=True, verbose_name="Telefonní číslo")
     note = TextField(max_length=1000, blank=True, null=True, verbose_name="Poznámka")
     consumer = BooleanField(default=True, verbose_name="Spotřebitel (fyzická osoba)")
+
+    class Meta:
+        verbose_name = "Client"
+        verbose_name_plural = "Clients"
+
+    def __str__(self):
+        return self.name

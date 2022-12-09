@@ -15,6 +15,14 @@
   </head>
   <body>
   <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <a class="navbar-brand" href="#">Kontraktor</a>
+          <a class="btn btn-secondary" href="{% url 'clients' %}">Klienti</a>
+          <a class="btn btn-secondary" href="{% url 'proposals' %}">Nabídky</a>
+          <a class="btn btn-secondary" href="{% url 'contracts' %}">Smlouvy</a>
+          <a class="btn btn-success" href="{% url 'upload-proposal' %}">Načíst nabídku</a>
+
+      </nav>
 
   </header>
   {% block content %}

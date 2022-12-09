@@ -1,9 +1,9 @@
-{% extends "contracts/main.html" %}
+{% extends "main.html" %}
 {% block content %}
 
     {% load crispy_forms_tags %}
-    <a class="btn btn-warning" href="{% url 'edit-contract' contract.id %}">Zpět</a>
-    <h4>Již nahrané přílohy ke smlouvě č. {{ contract.contract_number }}</h4>
+    <a class="btn btn-warning" href="{% url 'edit-client' client.id %}">Zpět</a>
+    <h4>Již nahrané přílohy ke klientovi {{ client.name }}</h4>
     <table class="table table-striped">
     <thead>
         <th scope="col">Název souboru</th>
@@ -11,7 +11,7 @@
         <th scope="col">Odebrat</th>
     </thead>
     <tbody>
-        {% for attachment in contract.attachments.all %}
+        {% for attachment in client.attachments.all %}
             <tr>
                 <td>{{ attachment.file }}</td>
             <td>
@@ -27,7 +27,7 @@
     </tbody>
     </table>
     <br>
-    <h4>Vyberte soubory k nahrání a přiřazení ke smlouvě č. {{ contract.contract_number }}</h4>
+    <h4>Vyberte soubory k nahrání a přiřazení ke klientovi {{ client.name }}</h4>
   <form method="post" enctype="multipart/form-data" name="add_file">
     {% csrf_token %}
       {{ form.file|as_crispy_field }}

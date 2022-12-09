@@ -1,9 +1,7 @@
-from functools import reduce
-
 import django_filters
 from django.db.models import Q
 from django_filters import CharFilter, RangeFilter
-from .models import Contract #, Party
+from .models import Contract
 
 
 class ContractFilter(django_filters.FilterSet):

@@ -1,0 +1,14 @@
+from django.contrib import admin
+from django.contrib.admin import site
+
+from clients.models import Client
+
+
+class ClientAdmin(admin.ModelAdmin):
+    list_display = ('name', 'id_number', "email", 'address', "phone_number", "note", "consumer")
+
+    class Meta:
+        fields = ('name', 'id_number', 'email', 'address', 'phone_number', 'note', 'consumer')
+
+
+admin.site.register(Client, ClientAdmin)

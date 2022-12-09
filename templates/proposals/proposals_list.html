@@ -1,0 +1,9 @@
+{% extends "main.html" %}
+{% block content %}
+<h3>Přehled nabídek</h3>
+    {% for proposal in proposal_list %}
+        <p>{{ proposal }}</p>
+    {% endfor %}
+
+
+{% endblock %}

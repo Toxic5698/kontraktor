@@ -20,8 +20,12 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("attachments/", include('attachments.urls'), name='attachments'),
+    path("clients/", include('clients.urls'), name='clients'),
     path('contracts/', include('contracts.urls'), name='contracts'),
-    path("attachments/", include('attachments.urls'), name='attachments')
+    path('proposals/', include('proposals.urls'), name='proposals'),
+
+
 ]
 
 admin.site.site_header = "Kontraktor admin"

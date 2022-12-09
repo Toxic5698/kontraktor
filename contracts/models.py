@@ -25,7 +25,7 @@ class Contract(Model):
     contract_type = ForeignKey(ContractType, related_name="contracts", on_delete=SET_NULL, verbose_name="Typ smlouvy", null=True)
     subject = CharField(blank=True, null=True, max_length=100, choices=CONTRACT_SUBJECTS, verbose_name="Předmět smlouvy")
     price = CharField(max_length=20, verbose_name="Cena")
-    # TODO: zálohy
+    # TODO: zálohové platby
     fulfillment_at = DateField(null=True, blank=True, verbose_name="Čas plnění")
     fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění")
 
@@ -36,7 +36,7 @@ class Contract(Model):
     # phone_number = CharField(max_length=12, blank=True, null=True, verbose_name="Telefonní číslo")
     # note = TextField(max_length=1000, blank=True, null=True, verbose_name="Poznámka")
     # consumer = BooleanField(default=True, verbose_name="Spotřebitel (fyzická osoba)")
-    client = ForeignKey(Client, on_delete=CASCADE, related_name="contracts")
+    client = ForeignKey(Client, on_delete=CASCADE, related_name="contracts", null=True)
 
     class Meta:
         verbose_name = "Contract"

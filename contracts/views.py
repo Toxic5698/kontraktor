@@ -58,7 +58,7 @@ class ContractParseView(View):
 class ContractsTableView(SingleTableMixin, FilterView):
     table_class = ContractTable
     model = Contract
-    template_name = "contracts/dashboard.html"
+    template_name = "contracts/contract_list.html"
     filterset_class = ContractFilter
 
 

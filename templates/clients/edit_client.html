@@ -1,0 +1,80 @@
+{% extends "main.html" %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div>
+        <div class="d-flex">
+
+        </div>
+        <div class="d-flex row">
+            <div class="col-md">
+            <h4>Údaje o klientovi</h4>
+                <form action="" method="POST">
+                {% csrf_token %}
+                    <a class="btn btn-warning" href="{% url "clients" %}">Zpět bez uložení</a>
+                    {% if client.id %}
+                    <a class="btn btn-secondary" href="{% url "manage-attachments" client.id %}">Spravovat přílohy</a>
+                    {% endif %}
+                    <input class="btn btn-success" type="submit" value="Uložit">
+                    <p>{{ form.consumer|as_crispy_field }}</p>
+                    <div class="row">
+                      <div class="col-6">
+                        {{ form.name|as_crispy_field }}
+                      </div>
+
+                      <div class="col-6">
+                        {{ form.email|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6">
+                        {{ form.id_number|as_crispy_field }}
+                      </div>
+                      <div class="col-6">
+                        {{ form.phone_number|as_crispy_field }}
+                      </div>
+                    </div>
+                    {{ form.address|as_crispy_field }}
+                    {{ form.note|as_crispy_field }}
+
+                    <input class="btn btn-success" type="submit" value="Uložit">
+                    </form>
+            </div>
+        <div class="col-md">
+            <h4>Již nahrané přílohy ke klientovi {{ client.name }}</h4>
+                <table class="table table-striped">
+                <thead>
+                    <th scope="col">Název souboru</th>
+                    <th scope="col">Název přílohy</th>
+                </thead>
+                <tbody>
+                    {% for attachment in client.attachments.all %}
+                        <tr>
+                            <td>{{ attachment.file }}</td>
+                            <td>{{ attachment.name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+{#        {% if contract %}#}
+{#            <h4>Náhled hlavičky smlouvy</h4>#}
+{#            <br>#}
+{#            {% include "contracts/contract_header.html" %}#}
+{#            ...#}
+{#            <br>#}
+{#            {% if edited_cores %}#}
+{#                <h4>Ustanovení, která byla pro tuto smlouvu změněna</h4>#}
+{#                {% for core in edited_cores %}#}
+{#                    {{ core.priority }},#}
+{#                {% endfor %}#}
+{#            {% endif %}#}
+{##}
+{#        {% endif %}#}
+        </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
