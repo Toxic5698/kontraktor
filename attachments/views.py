@@ -30,11 +30,21 @@ class AttachmentManageView(FormView):
                         file=file,
                     )
         else:
-            data = request.POST
-            for id, text in data.items():
+            data = request.POST.dict()
+            data.pop('csrfmiddlewaretoken')
+            if "edit_name" in data.keys():
+                attr = "name"
+            elif "add_to_contract" in data.keys():
+                attr = "add_to_contract"
+            elif "add_to_proposal" in data.keys():
+                attr = "add_to_proposal"
+            else:
+                # message error
+                return redirect("manage-attachments", client.id)
+            for id, value in data.items():
                 if id.isnumeric():
                     attachment = Attachment.objects.get(id=id)
-                    attachment.name = text
+                    setattr(attachment, attr, value)
                     attachment.save()
         return redirect('manage-attachments', client.id)
 

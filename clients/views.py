@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView, DeleteView, CreateView
 from django_filters.views import FilterView
@@ -19,6 +20,7 @@ class ClientsTableView(SingleTableMixin, FilterView):
 class ClientCreateView(CreateView):
     form_class = ClientForm
     template_name = "clients/edit_client.html"
+    # TODO: only refresh form
     success_url = reverse_lazy("clients")
     model = Client
 
@@ -27,6 +29,7 @@ class ClientEditView(UpdateView):
     model = Client
     template_name = "clients/edit_client.html"
     form_class = ClientForm
+    # TODO: only refresh form
     success_url = reverse_lazy("clients")
 
 

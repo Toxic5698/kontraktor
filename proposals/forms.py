@@ -15,4 +15,6 @@ class ProposalUploadForm(forms.ModelForm):
 class ProposalEditForm(BetterModelForm):
     class Meta:
         model = Proposal
-        fields = '__all__'
+        fields = ["proposal_number", "signed_at", "contract_type",
+                  "contract_type", "subject", "client",
+                  "fulfillment_at", "fulfillment_place"]

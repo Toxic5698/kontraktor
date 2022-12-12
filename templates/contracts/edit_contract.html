@@ -10,10 +10,10 @@
             <div class="col-md">
             <h4>Údaje k doplnění do smlouvy</h4>
                 <form action="" method="POST">
-                     <a class="btn btn-warning" href="{% url "contracts" %}">Zpět bez uložení</a>
+                     <a class="btn btn-warning" href="{{ request.META.HTTP_REFERER }}">Zpět bez uložení</a>
                 {% if contract %}
                     <a class="btn btn-primary" href="{% url "edit-cores" contract.id %}">Změnit ustanovení smlouvy</a>
-                    <a class="btn btn-secondary" href="{% url "manage-attachments" contract.id %}">Spravovat přílohy</a>
+{#                    <a class="btn btn-secondary" href="{% url "manage-attachments" contract.client.id %}">Spravovat přílohy</a>#}
                 {% endif %}
                 <input class="btn btn-success" type="submit" value="Uložit">
 
@@ -36,26 +36,7 @@
                             <div class="col-4">{{ form.fulfillment_at|as_crispy_field }}</div>
                         </div>
                         {{ form.fulfillment_place|as_crispy_field }}
-                        {{ form.consumer|as_crispy_field }}
-                        <div class="row">
-                          <div class="col-6">
-                            {{ form.name|as_crispy_field }}
-                          </div>
 
-                          <div class="col-6">
-                            {{ form.email|as_crispy_field }}
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-6">
-                            {{ form.id_number|as_crispy_field }}
-                          </div>
-                          <div class="col-6">
-                            {{ form.phone_number|as_crispy_field }}
-                          </div>
-                        </div>
-                        {{ form.address|as_crispy_field }}
-                        {{ form.note|as_crispy_field }}
 
                         <input class="btn btn-success" type="submit" value="Uložit">
                     </form>

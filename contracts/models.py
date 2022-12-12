@@ -43,7 +43,7 @@ class Contract(Model):
         verbose_name_plural = "Contracts"
 
     def __str__(self):
-        return f"{self.contract_number} - {self.name}"
+        return f"{self.contract_number}"
 
     def save(self, *args, **kwargs):
         # TODO: created a edited_by doplnit

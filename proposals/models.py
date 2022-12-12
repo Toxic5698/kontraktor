@@ -19,7 +19,7 @@ class Proposal(Model):
     subject = CharField(blank=True, null=True, max_length=100, choices=CONTRACT_SUBJECTS, verbose_name="Předmět nabídky")
     price = CharField(max_length=20, verbose_name="Cena")
     fulfillment_at = DateField(null=True, blank=True, verbose_name="Čas plnění")
-    fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění")
+    fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění", null=True, blank=True)
     client = ForeignKey(Client, related_name="proposals", on_delete=SET_NULL, verbose_name="klient", null=True, blank=True)
 
     class Meta:

@@ -8,6 +8,8 @@
     <thead>
         <th scope="col">Název souboru</th>
         <th scope="col">Název přílohy</th>
+        <th scope="col">Součást nabídky</th>
+        <th scope="col">Součást smlouvy</th>
         <th scope="col">Odebrat</th>
     </thead>
     <tbody>
@@ -17,8 +19,21 @@
             <td>
                 <form method="post" name="edit_name">
                     {% csrf_token %}
-                    <input type="text" value="{{ attachment.name }}" name="{{ attachment.id }}" id="{{ attachment.id }}">
-                    <button class="btn btn-success" type="submit">Uložit</button>
+                    <input type="text" value="{{ attachment.name }}" id="{{ attachment.id }}" name="{{ attachment.id }}">
+                    <button class="btn btn-success" type="submit" name="edit_name">Uložit</button>
+                </form>
+            </td><td>
+{#                TODO: implementovat htmx, nyní nefunkční #}
+                <form method="post" name="add_to_proposal">
+                    {% csrf_token %}
+                    <input type="checkbox" value="True" name="{{ attachment.id }}" id="{{ attachment.id }}">
+                    <button class="btn btn-success" type="submit" name="add_to_proposal">Uložit</button>
+                </form>
+            </td><td>
+                <form method="post" name="add_to_contract">
+                    {% csrf_token %}
+                    <input type="checkbox" name="{{ attachment.id }}" id="{{ attachment.id }}">
+                    <button class="btn btn-success" type="submit" name="add_to_contract">Uložit</button>
                 </form>
             </td>
             <td><a class="btn btn-danger" href="{% url "delete-attachment" attachment.id %}">Odebrat</a></td>
