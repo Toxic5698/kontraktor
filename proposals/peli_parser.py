@@ -30,8 +30,9 @@ def parse_items(file, proposal):
             priority=priority,
             title=code,
             price=price,
-            # quantity=int(quantity.strip("ks")),
-            proposal=proposal
+            quantity=quantity,
+            proposal=proposal,
+            from_upload=True,
         )
 
     return "zpracováno"

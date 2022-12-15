@@ -13,6 +13,6 @@ class ClientTable(Table):
 
     class Meta:
         model = Client
-        template_name = 'django_tables2/bootstrap-responsive.html'
+        template_name = 'django_tables2/bootstrap4.html'
         fields = ("consumer", "name", "id_number", "address", "email", "phone_number")
         attrs = {"class": "table table-hover table-striped"}

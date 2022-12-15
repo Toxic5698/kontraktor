@@ -8,35 +8,101 @@
         </div>
         <div class="d-flex row">
             <div class="col-md">
-            <h4>Údaje k doplnění do smlouvy</h4>
-                <form action="" method="POST">
+
+                <form action="" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <a class="btn btn-warning" href="{{ request.META.HTTP_REFERER }}">Zpět bez uložení</a>
-                    <input class="btn btn-success" type="submit" value="Uložit">
+                    <div class="d-grid gap-2 d-md-block pt-1">
+                        <a class="btn btn-warning col-3" href="{{ request.META.HTTP_REFERER }}">Zpět</a>
+                        <input class="btn btn-success col-3" type="submit" value="Uložit">
+                        {% if proposal %}
+                        <a class="btn btn-secondary col-3" href="{% url "edit-items" proposal.id %}">Upravit položky</a>
+                        {% endif %}
+                    </div>
+                {% if proposal %}
+                <div class="d-grid gap-2 d-md-block pt-1">
+                    <a class="btn btn-info col-3" href="{% url "generate-proposal" proposal.id %}">Náhled nabídky</a>
+                    <a class="btn btn-dark col-3" href="{% url "send-proposal" proposal.id %}">Odeslat klientovi</a>
+                    <a class="btn btn-primary col-3" href="{% url "create-contract" proposal.id %}">Vytvořit smlouvu</a>
+                </div>
+                {% endif %}
+                    <h4 class="mt-2">Údaje k doplnění do nabídky</h4>
                         <div class="row">
-                            {{ form.client|as_crispy_field }}
+                            {% if client_form %}
+                                <p>{{client_form.consumer|as_crispy_field }}</p>
+                                <div class="row">
+                                  <div class="col-6">
+                                    {{client_form.name|as_crispy_field }}
+                                  </div>
+                                  <div class="col-6">
+                                    {{client_form.email|as_crispy_field }}
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-6">
+                                    {{client_form.id_number|as_crispy_field }}
+                                  </div>
+                                  <div class="col-6">
+                                    {{client_form.phone_number|as_crispy_field }}
+                                  </div>
+                                </div>
+                                {{client_form.address|as_crispy_field }}
+                                {{client_form.note|as_crispy_field }}
+                            {% else %}
+                                {{ edit_form.client|as_crispy_field }}
+                            {% endif %}
                         </div>
                         <div class="row">
                           <div class="col-4">
-                            {{ form.proposal_number|as_crispy_field }}
+                            {{ edit_form.proposal_number|as_crispy_field }}
+                            {{ edit_form.subject|as_crispy_field }}
+                            {{ edit_form.contract_type|as_crispy_field }}
                           </div>
-                          <div class="col-4">
-                            {{ form.subject|as_crispy_field }}
-                            {{ form.contract_type|as_crispy_field }}
+                          <div class="col-8">
+                            {{ edit_form.fulfillment_at|as_crispy_field }}
+                            {{ edit_form.fulfillment_place|as_crispy_field }}
+                            {{ upload_form.file|as_crispy_field }}
                           </div>
+                            {% if "edit" in request.path %}
                             <div class="col-4">
-                            {{ form.signed_at|as_crispy_field }}
+                            {{ edit_form.signed_at|as_crispy_field }}
                           </div>
+                            {% endif %}
                         </div>
-                        <div class="row">
-                            <div class="col-6">{{ form.fulfillment_at|as_crispy_field }}</div>
-                            <div class="col-6">{{ form.fulfillment_place|as_crispy_field }}</div>
-                        </div>
+
 
                         <input class="btn btn-success" type="submit" value="Uložit">
                     </form>
             </div>
         <div class="col-md">
+            {% if proposal %}
+                {% if proposal.uploaded.all %}
+                    <h4>Podkladová nabídka</h4>
+                        <p>Soubor {{ proposal.uploaded.last.file }} nahraný dne {{ proposal.uploaded.last.uploaded_at|date}}.
+                {% endif %}
+
+                {% if proposal.items.all %}
+                    <h4 class="pt-2">Položky nabídky</h4>
+                    <table class="table table-striped">
+                <thead>
+                    <th scope="col">Pořadí</th>
+                    <th scope="col">Název položky</th>
+                    <th scope="col">Cena po slevě s DPH</th>
+                    <th scope="col">Množství</th>
+                </thead>
+                <tbody>
+                    {% for item in proposal.items.all %}
+                        <tr>
+                            <td>{{ item.priority }}</td>
+                            <td>{{ item.title }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+                {% endif %}
+
+            {% endif %}
 
 
         </div>

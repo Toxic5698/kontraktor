@@ -42,7 +42,7 @@ class ContractParseView(View):
 
     def get(self, request, pk):
         contract = Contract.objects.prefetch_related('contract_cores').get(id=pk)
-        template = "contracts/mustr_template.html"
+        template = "contracts/contract_mustr.html"
         context = {
             "contract": contract,
             "sections": CONTRACT_SECTIONS

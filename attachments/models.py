@@ -5,7 +5,7 @@ from clients.models import Client
 
 
 def attachment_directory_path(instance, file):
-    return f"attachments/{instance.client_id}/{file}"
+    return f"{instance.client_id}/attachments/{file}"
 
 
 class Attachment(Model):

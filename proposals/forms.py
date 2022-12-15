@@ -4,8 +4,8 @@ from django import forms
 from proposals.models import Proposal, UploadedProposal
 
 
-class ProposalUploadForm(forms.ModelForm):
-    file = forms.FileField(widget=forms.ClearableFileInput(attrs={"multiple": True}), required=False)
+class ProposalUploadForm(BetterModelForm):
+    file = forms.FileField(required=False, label="Podkladová nabídka")
 
     class Meta:
         model = UploadedProposal
