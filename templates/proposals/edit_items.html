@@ -2,7 +2,7 @@
 {% block content %}
     <a class="btn btn-warning" href="{% url "edit-proposal" proposal.id %}">Zpět na nabídku</a>
     <h4>Položky u nabídky č. {{ proposal.proposal_number }} pro klienta {{ proposal.client.name }}</h4>
-    {% if proposal.items.all %}
+
         <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -18,6 +18,7 @@
                 <th scope="col">Uložit/Smazat</th>
 
             </thead>
+        {% if proposal.items.all %}
             <tbody>
                 {% for item in proposal.items.all %}
                     <form method="post" action="{{ item.id }}" >
@@ -62,6 +63,7 @@
                     </form>
                 {% endfor %}
             </tbody>
+               {% endif %}
         <tfoot>
         <form method="post" action="{{ proposal.id }}" >
                     {% csrf_token %}
@@ -87,7 +89,7 @@
         </tfoot>
         </table>
         </div>
-        {% endif %}
+
 
 
 {% endblock %}

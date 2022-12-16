@@ -4,8 +4,15 @@ from django.db.models import Model, DateTimeField, ForeignKey, CharField, SET_NU
 
 from clients.models import Client
 from contracts.constants import CONTRACT_SUBJECTS
-from contracts.models import ContractType
 from decimal import Decimal
+
+
+class ContractType(Model):
+    type = CharField(max_length=255, blank=False, null=False)
+    name = CharField(max_length=255, blank=False, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Proposal(Model):
@@ -23,7 +30,7 @@ class Proposal(Model):
     subject = CharField(blank=True, null=True, max_length=100, choices=CONTRACT_SUBJECTS,
                         verbose_name="Předmět nabídky")
     price = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena", blank=True, null=True)
-    fulfillment_at = DateField(null=True, blank=True, verbose_name="Čas plnění")
+    fulfillment_at = DateField(null=True, blank=True, verbose_name="Termín plnění")
     fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění", null=True, blank=True)
     client = ForeignKey(Client, related_name="proposals", on_delete=SET_NULL, verbose_name="klient", null=True,
                         blank=True)
@@ -36,9 +43,10 @@ class Proposal(Model):
         return self.proposal_number
 
     def save(self, *args, **kwargs):
-        if self.items.all():
-            self.price = self.items.all().aggregate(Sum("sale_price"))["sale_price__sum"]
-            check_payments(self)
+        if self.id:
+            if self.items.all():
+                self.price = self.items.all().aggregate(Sum("sale_price"))["sale_price__sum"]
+                check_payments(self)
         super(Proposal, self).save(*args, **kwargs)
 
 
@@ -116,8 +124,10 @@ class Item(Model):
         self.proposal.save()
 
     def get_priority(self):
-        last = self.proposal.items.all().order_by('priority').last().priority
-        return last + 1
+        if self.proposal.items.all():
+            last = self.proposal.items.all().order_by('priority').last().priority
+            return last + 1
+        return 1
 
     def price_format(self, data=None):
         if data is None:

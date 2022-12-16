@@ -57,9 +57,10 @@ class ProposalEditView(View):
             if form.is_valid():
                 form.save()
         else:
-            data = request.POST
-            client = Client.objects.filter(Q(name=data['name']) | Q(email=data['email']))
-            if client.count() == 0:
+            data = request.POST.dict()
+            if "client" in data.keys():
+                client = Client.objects.get(pk=data["client"])
+            else:
                 client = Client.objects.create(
                     name=data["name"],
                     email=data["email"],
@@ -69,12 +70,8 @@ class ProposalEditView(View):
                     note=data["note"],
                     consumer=True if data["consumer"] == "on" else False,
                 )
-            elif client.count() == 1:
-                client = client.get()
-            else:
-                raise ValueError("Klient se zadaným jménem nebo e-mailovou adresou už existuje!")
 
-            if Proposal.objects.get(proposal_number=data["proposal_number"]):
+            if Proposal.objects.filter(proposal_number=data["proposal_number"]).count() > 0:
                 raise ValueError("Nabídka s tímto číslem již existuje!")
             proposal = Proposal.objects.create(
                 client=client,

@@ -6,30 +6,38 @@ from django.views.generic import CreateView, UpdateView, DeleteView, FormView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from .constants import CONTRACT_SECTIONS
-from .forms import ContractForm
-from .models import Contract, ContractCore
-from .tables import ContractTable
-from .filters import ContractFilter
+from proposals.models import Proposal
+from contracts.constants import CONTRACT_SECTIONS
+from contracts.forms import ContractForm
+from contracts.models import Contract, ContractCore
+from contracts.tables import ContractTable
+from contracts.filters import ContractFilter
 
 
-class ContractCreateView(CreateView):
-    form_class = ContractForm
-    template_name = "contracts/edit_contract.html"
-    success_url = reverse_lazy("contracts")
-    model = Contract
+class ContractCreateView(View):
+    def post(self, request, proposal_id, *args, **kwargs):
+        # TODO: zkontrolovat všechny údaje než se smlova vytvoří a poslat zprávu o chybějících
+        proposal = Proposal.objects.get(id=proposal_id)
+        contract = Contract.objects.create(
+            proposal=proposal,
+            contract_number=proposal.proposal_number,
+            client=proposal.client
+        )
+        return redirect("edit-contract", contract.id)
 
 
 class ContractUpdateView(UpdateView):
     form_class = ContractForm
     template_name = "contracts/edit_contract.html"
-    success_url = reverse_lazy("contracts")
     model = Contract
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['edited_cores'] = ContractCore.objects.filter(default=False, contract=self.object)
         return context
+
+    def get_success_url(self):
+        return reverse_lazy("manage-attachments", args=(self.get_object().id,))
 
 
 class ContractDeleteView(DeleteView):
@@ -103,3 +111,8 @@ class ContractCoresEditView(View):
                         contract.contract_cores.remove(old_core)
 
         return redirect('edit-contract', contract.id)
+
+
+class ContractSendView(UpdateView):
+    model = Contract
+

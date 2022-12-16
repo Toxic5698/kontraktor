@@ -1,17 +1,10 @@
 from django.contrib.auth.models import User
 from django.db.models import Model, DateTimeField, ForeignKey, CharField, TextField, BooleanField, SET_NULL, \
-    IntegerField, ManyToManyField, DateField, FileField, CASCADE
+    IntegerField, ManyToManyField, DateField, FileField, CASCADE, OneToOneField
 
 from clients.models import Client
-from .constants import *
-
-
-class ContractType(Model):
-    type = CharField(max_length=255, blank=False, null=False)
-    name = CharField(max_length=255, blank=False, null=True)
-
-    def __str__(self):
-        return self.name
+from proposals.models import Payment, Proposal, ContractType
+from contracts.constants import *
 
 
 class Contract(Model):
@@ -21,21 +14,7 @@ class Contract(Model):
     edited_at = DateTimeField(blank=True, null=True, verbose_name="Upravena dne")
     edited_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="contract_edited_by", verbose_name="Upravil")
     signed_at = DateTimeField(blank=True, null=True, verbose_name="Podepsána dne")
-
-    contract_type = ForeignKey(ContractType, related_name="contracts", on_delete=SET_NULL, verbose_name="Typ smlouvy", null=True)
-    subject = CharField(blank=True, null=True, max_length=100, choices=CONTRACT_SUBJECTS, verbose_name="Předmět smlouvy")
-    price = CharField(max_length=20, verbose_name="Cena")
-    # TODO: zálohové platby
-    fulfillment_at = DateField(null=True, blank=True, verbose_name="Čas plnění")
-    fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění")
-
-    # name = CharField(max_length=255, blank=True, null=True, verbose_name="Jméno")
-    # id_number = CharField(max_length=12, blank=True, null=True, verbose_name="Datum narození nebo IČ")
-    # address = CharField(max_length=1000, blank=True, null=True, verbose_name="Adresa bydliště nebo sídla")
-    # email = CharField(max_length=255, blank=True, null=True, verbose_name="E-mailová adresa")
-    # phone_number = CharField(max_length=12, blank=True, null=True, verbose_name="Telefonní číslo")
-    # note = TextField(max_length=1000, blank=True, null=True, verbose_name="Poznámka")
-    # consumer = BooleanField(default=True, verbose_name="Spotřebitel (fyzická osoba)")
+    proposal = OneToOneField(Proposal, verbose_name="Nabídka", on_delete=CASCADE, null=True)
     client = ForeignKey(Client, on_delete=CASCADE, related_name="contracts", null=True)
 
     class Meta:
@@ -49,7 +28,7 @@ class Contract(Model):
         # TODO: created a edited_by doplnit
         super().save(*args, **kwargs)
         if self.contract_cores.count() == 0:
-            cores = ContractCore.objects.filter(default=True, contract_type=self.contract_type)
+            cores = ContractCore.objects.filter(default=True, contract_type=self.proposal.contract_type)
             self.contract_cores.set(cores)
             return print(self.contract_cores.count())
 
