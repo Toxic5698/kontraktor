@@ -12,7 +12,7 @@
                 <form action="" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="d-grid gap-2 d-md-block pt-1">
-                        <a class="btn btn-warning col-3" href="{{ request.META.HTTP_REFERER }}">Zpět</a>
+                        <a class="btn btn-warning col-3" href="{% url "edit-client" proposal.client.id %}">Klient</a>
                         <input class="btn btn-success col-3" type="submit" value="Uložit">
                         {% if proposal %}
                         <a class="btn btn-secondary col-3" href="{% url "edit-items" proposal.id %}">Upravit položky</a>
@@ -74,19 +74,51 @@
                     </form>
             </div>
         <div class="col-md">
-            {% if proposal %}
-                {% if proposal.uploaded.all %}
-                    <h4>Podkladová nabídka</h4>
-                        <p>Soubor {{ proposal.uploaded.last.file }} nahraný dne {{ proposal.uploaded.last.uploaded_at|date}}.
-                {% endif %}
+
 
                 {% if proposal.items.all %}
+                    <h4>Platební podmínky</h4>
+                    <div class="row">
+                        <p>Celková cena nabídky je {{ proposal.price }} Kč a je rozložena do plateb:</p>
+                    </div>
+                    <ol>
+                        <form method="post" action="{% url "edit-payments" proposal.id %}">
+                            {% csrf_token %}
+                            {% for payment in proposal.payments.all %}
+                                <li>
+                                    <div class="input-group">
+                                        <span class="input-group-text" style="width: 35%">část ve výši {{ payment.amount }} Kč</span>
+                                        <div class="form-floating">
+                                        <input class="form-control" value="{{ payment.part }}" id="payment_part" name="payment_part">
+                                            <label for="payment_part">% z celku</label>
+                                        </div>
+                                        <div class="form-floating">
+                                        <select class="form-select" id="payment_due" name="payment_due">
+                                            <option value="99" {% if payment.due == "99" %}selected{% endif %}>-</option>
+                                            <option value="10" {% if payment.due == "10" %}selected{% endif %}>po podpisu smlouvy</option>
+                                            {% if proposal.contract_type.type == "KOUPE" %}
+                                            <option value="21" {% if payment.due == "21" %}selected{% endif %}>před dodání</option>
+                                            <option value="31" {% if payment.due == "31" %}selected{% endif %}>po dodáním</option>
+                                            {% elif proposal.contract_type.type == "DILO" %}
+                                            <option value="22" {% if payment.due == "22" %}selected{% endif %}>před dokončením</option>
+                                            <option value="32" {% if payment.due == "32" %}selected{% endif %}>po dokončení</option>
+                                            {% endif %}
+                                        </select>
+                                            <label for="payment_due">splatná</label>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                            <button class="btn btn-success mt-1" type="submit">Aktualizovat platební podmínky</button>
+                        </form>
+                    </ol>
+
                     <h4 class="pt-2">Položky nabídky</h4>
                     <table class="table table-striped">
                 <thead>
                     <th scope="col">Pořadí</th>
                     <th scope="col">Název položky</th>
-                    <th scope="col">Cena po slevě s DPH</th>
+                    <th scope="col">Cena</th>
                     <th scope="col">Množství</th>
                 </thead>
                 <tbody>
@@ -94,7 +126,7 @@
                         <tr>
                             <td>{{ item.priority }}</td>
                             <td>{{ item.title }}</td>
-                            <td>{{ item.price }}</td>
+                            <td>{{ item.sale_price }}</td>
                             <td>{{ item.quantity }}</td>
                         </tr>
                     {% endfor %}
@@ -102,7 +134,12 @@
                 </table>
                 {% endif %}
 
-            {% endif %}
+                {% if proposal.uploaded.all %}
+                    <h4>Podkladová nabídka</h4>
+                        <p>Soubor {{ uploaded.file_name }} nahraný dne {{ uploaded.uploaded_at|date}}.
+                {% endif %}
+
+
 
 
         </div>

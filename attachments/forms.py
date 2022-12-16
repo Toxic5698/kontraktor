@@ -8,4 +8,4 @@ class AttachmentUploadForm(forms.ModelForm):
 
     class Meta:
         model = Attachment
-        fields = ("name", "file")
+        fields = ("tag", "file")

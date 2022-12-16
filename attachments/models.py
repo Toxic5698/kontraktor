@@ -9,20 +9,26 @@ def attachment_directory_path(instance, file):
 
 
 class Attachment(Model):
-    name = CharField(max_length=255, blank=True)
+    PURPOSES = [
+        ("intern", "intern"),
+        ("proposal", "proposal"),
+        ("contract", "contract"),
+        ("both", "audbothio"),
+    ]
+    tag = CharField(max_length=255, blank=True)
+    file_name = CharField(max_length=255, blank=True, null=True)
     file = FileField(upload_to=attachment_directory_path, blank=True, null=True) # rozlišit podle smluv
     added_at = DateTimeField(auto_now_add=True)
     added_by = ForeignKey(User, related_name="attachments", on_delete=SET_NULL, blank=True, null=True)
     client = ForeignKey(Client, blank=True, null=True, on_delete=SET_NULL, related_name="attachments")
-    add_to_proposal = BooleanField(default=False)
-    add_to_contract = BooleanField(default=False)
+    purpose = CharField(max_length=10, null=True, blank=True, choices=PURPOSES)
 
     class Meta:
         verbose_name = "Attachment"
         verbose_name_plural = "Attachments"
 
     def __str__(self):
-        return self.name or str(self.file)
+        return self.tag or self.file_file
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

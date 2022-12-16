@@ -26,13 +26,15 @@ def parse_items(file, proposal):
         # TODO: split with regex
         priority, code, quantity, price, data = part.split(" ", maxsplit=4)
 
-        Item.objects.create(
+        item, created = Item.objects.update_or_create(
             priority=priority,
-            title=code,
-            price=price,
-            quantity=quantity,
             proposal=proposal,
-            from_upload=True,
+            defaults={
+                "title": code,
+                "production_price": price,
+                "quantity": int(quantity.split(".")[0]),
+                "from_upload": True,
+            }
         )
 
     return "zpracováno"

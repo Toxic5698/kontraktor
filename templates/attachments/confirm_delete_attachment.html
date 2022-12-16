@@ -10,7 +10,7 @@
             <form action="{% url 'delete-attachment' attachment.id %}" method="POST">
             {% csrf_token%}
 
-            <a class ="btn btn-warning" href="{% url 'manage-attachments' attachment.contract.id %}">Zpět</a>
+            <a class ="btn btn-warning" href="{% url 'manage-attachments' attachment.client.id %}">Zpět</a>
 
             <input class="btn btn-danger" type="submit" name="Submit" value="Smazat">
 

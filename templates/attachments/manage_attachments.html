@@ -7,33 +7,26 @@
     <table class="table table-striped">
     <thead>
         <th scope="col">Název souboru</th>
-        <th scope="col">Název přílohy</th>
-        <th scope="col">Součást nabídky</th>
-        <th scope="col">Součást smlouvy</th>
+        <th scope="col">Označení přílohy a nakládání s přílohou</th>
         <th scope="col">Odebrat</th>
     </thead>
     <tbody>
         {% for attachment in client.attachments.all %}
             <tr>
-                <td>{{ attachment.file }}</td>
+                <td>{{ attachment.file_name }}</td>
             <td>
-                <form method="post" name="edit_name">
+                <form method="post" name="add_attachment_to" action="{{ attachment.id }}">
                     {% csrf_token %}
-                    <input type="text" value="{{ attachment.name }}" id="{{ attachment.id }}" name="{{ attachment.id }}">
-                    <button class="btn btn-success" type="submit" name="edit_name">Uložit</button>
-                </form>
-            </td><td>
-{#                TODO: implementovat htmx, nyní nefunkční #}
-                <form method="post" name="add_to_proposal">
-                    {% csrf_token %}
-                    <input type="checkbox" value="True" name="{{ attachment.id }}" id="{{ attachment.id }}">
-                    <button class="btn btn-success" type="submit" name="add_to_proposal">Uložit</button>
-                </form>
-            </td><td>
-                <form method="post" name="add_to_contract">
-                    {% csrf_token %}
-                    <input type="checkbox" name="{{ attachment.id }}" id="{{ attachment.id }}">
-                    <button class="btn btn-success" type="submit" name="add_to_contract">Uložit</button>
+                    <div class="input-group">
+                      <input type="text"  class="form-control" placeholder="např. Zaměření ze dne ..." value="{{ attachment.tag }}" id="attachment_tag" name="attachment_tag">
+                      <select class="form-select" id="add_attachment_to" name="add_attachment_to">
+                        <option value="intern" {% if attachment.purpose == "intern" or "" %}selected{% endif %}>Příloha je pouze interní.</option>
+                        <option value="proposal" {% if attachment.purpose == "proposal" %}selected{% endif %}>Příloha je pouze přílohou nabídky.</option>
+                        <option value="contract" {% if attachment.purpose == "contract" %}selected{% endif %}>Příloha je pouze přílohou smlouvy.</option>
+                        <option value="both" {% if attachment.purpose == "both" %}selected{% endif %}>Příloha je přílohou nabídky i smlouvy.</option>
+                      </select>
+                    <button class="btn btn-success" type="submit">Uložit</button>
+                    </div>
                 </form>
             </td>
             <td><a class="btn btn-danger" href="{% url "delete-attachment" attachment.id %}">Odebrat</a></td>

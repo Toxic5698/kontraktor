@@ -45,17 +45,25 @@
                 <table class="table table-striped">
                 <thead>
                     <th scope="col">Název souboru</th>
-                    <th scope="col">Název přílohy</th>
-                    <th scope="col">Součást nabídky</th>
-                    <th scope="col">Součást smlouvy</th>
+                    <th scope="col">Označení přílohy</th>
+                    <th scope="col">Nakládání s přílohou</th>
                 </thead>
                 <tbody>
                     {% for attachment in client.attachments.all %}
                         <tr>
-                            <td>{{ attachment.file }}</td>
-                            <td>{{ attachment.name }}</td>
-                            <td>{{ attachment.add_to_proposal }}</td>
-                            <td>{{ attachment.add_to_contract }}</td>
+                            <td>{{ attachment.file_name }}</td>
+                            <td>{{ attachment.tag }}</td>
+                            <td>
+                                {% if attachment.purpose == "intern" or "" %}
+                                    interní
+                                {% elif attachment.purpose == "proposal" %}
+                                    přiloží se pouze k nabídkce
+                                {% elif attachment.purpose == "contract" %}
+                                    přiloží se pouze ke smlouvě
+                                {% elif attachment.purpose == "both" %}
+                                    přiloží se k nabídkce i ke smlouvě
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -76,7 +84,7 @@
                         <tr>
                             <td><a href="{% url "edit-proposal" proposal.id %}">{{ proposal.proposal_number }}</a></td>
                             <td>{{ proposal.created_at }}</td>
-                            <td>{{ proposal.uploaded.last }}</td>
+                            <td>{{ proposal.uploaded.last.file_name }}</td>
                             <td>{{ proposal.signed_at }}</td>
                         </tr>
                     {% endfor %}

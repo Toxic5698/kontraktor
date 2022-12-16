@@ -13,7 +13,7 @@ from clients.forms import ClientForm
 from clients.models import Client
 from contracts.models import ContractType
 from proposals.forms import ProposalUploadForm, ProposalEditForm
-from proposals.models import Proposal, UploadedProposal, Item
+from proposals.models import Proposal, UploadedProposal, Item, check_payments
 from proposals.peli_parser import parse_items
 from proposals.filters import ProposalFilter
 from proposals.tables import ProposalTable
@@ -24,31 +24,6 @@ class ProposalsTableView(SingleTableMixin, FilterView):
     model = Proposal
     template_name = "proposals/proposals_list.html"
     filterset_class = ProposalFilter
-
-
-# class ProposalUploadView(FormView):
-#     form_class = ProposalUploadForm
-#
-#     def get(self, request, *args, **kwargs):
-#         form = self.get_form_class()
-#         context = {
-#             "form": form,
-#         }
-#         return TemplateResponse(template="proposals/upload_proposal.html", request=request, context=context)
-#
-#     def post(self, request, *args, **kwargs):
-#         if len(request.FILES) > 0:
-#             form = ProposalUploadForm(request.POST)
-#             if form.is_valid():
-#                 file = request.FILES["file"]
-#                 proposal = Proposal.objects.create()
-#                 UploadedProposal.objects.create(
-#                     file=file,
-#                     proposal=proposal,
-#                 )
-#                 parse_result = parse_items(file, proposal)
-#             return redirect('edit-proposal', proposal.id)
-#         return redirect('upload-proposal')
 
 
 class ProposalEditView(View):
@@ -71,6 +46,7 @@ class ProposalEditView(View):
         upload_form = ProposalUploadForm()
         context["upload_form"] = upload_form
         context["edit_form"] = edit_form
+        context["uploaded"] = UploadedProposal.objects.last()
 
         return TemplateResponse(template="proposals/edit_proposal.html", request=request, context=context)
 
@@ -114,6 +90,7 @@ class ProposalEditView(View):
             file = request.FILES["file"]
             UploadedProposal.objects.create(
                 file=file,
+                file_name=file.name,
                 proposal=proposal,
             )
             parse_result = parse_items(file, proposal)
@@ -161,7 +138,10 @@ class ProposalItemsView(View):
 
 class ProposalGenerateView(View):
     def get(self, request, pk=None, *args, **kwargs):
-        context = {}
+        proposal = Proposal.objects.get(pk=pk)
+        context = {
+            "proposal": proposal,
+        }
         return TemplateResponse(template="proposals/proposal_mustr.html", context=context, request=request)
 
 
@@ -169,3 +149,15 @@ class ProposalSendView(View):
     def get(self, request, pk=None, *args, **kwargs):
         context = {}
         return TemplateResponse(template="proposals/send_proposal.html", context=context, request=request)
+
+
+class PaymentsEditView(View):
+
+    def post(self, request, proposal_id, *args, **kwargs):
+        proposal = Proposal.objects.get(pk=proposal_id)
+        for index, payment in enumerate(proposal.payments.all()):
+            payment.part = request.POST.getlist("payment_part")[index]
+            payment.due = request.POST.getlist("payment_due")[index]
+            payment.save()
+        check_payments(proposal)
+        return redirect("edit-proposal", proposal.id)

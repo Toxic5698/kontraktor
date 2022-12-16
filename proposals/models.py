@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Model, DateTimeField, ForeignKey, CharField, SET_NULL, \
-    IntegerField, DateField, FileField, DecimalField, CASCADE, BooleanField
+    IntegerField, DateField, FileField, DecimalField, CASCADE, BooleanField, Sum, TextChoices
 
 from clients.models import Client
 from contracts.constants import CONTRACT_SUBJECTS
@@ -22,7 +22,7 @@ class Proposal(Model):
                                null=True)
     subject = CharField(blank=True, null=True, max_length=100, choices=CONTRACT_SUBJECTS,
                         verbose_name="Předmět nabídky")
-    price = CharField(max_length=20, verbose_name="Cena")
+    price = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena", blank=True, null=True)
     fulfillment_at = DateField(null=True, blank=True, verbose_name="Čas plnění")
     fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění", null=True, blank=True)
     client = ForeignKey(Client, related_name="proposals", on_delete=SET_NULL, verbose_name="klient", null=True,
@@ -32,8 +32,14 @@ class Proposal(Model):
         verbose_name = "Proposal"
         verbose_name_plural = "Proposals"
 
-    # def __str__(self):
-    #     return self.proposal_number
+    def __str__(self):
+        return self.proposal_number
+
+    def save(self, *args, **kwargs):
+        if self.items.all():
+            self.price = self.items.all().aggregate(Sum("sale_price"))["sale_price__sum"]
+            check_payments(self)
+        super(Proposal, self).save(*args, **kwargs)
 
 
 def uploaded_proposal_directory_path(instance, file):
@@ -51,10 +57,10 @@ class UploadedProposal(Model):
     class Meta:
         verbose_name = "UploadedProposal"
         verbose_name_plural = "UploadedProposals"
-        ordering = ['priority']
+        ordering = ['uploaded_at']
 
-    # def __str__(self):
-    #     return self.file
+    def __str__(self):
+        return self.file_name
 
     def save(self, *args, **kwargs):
         from proposals.peli_parser import parse_items
@@ -107,6 +113,7 @@ class Item(Model):
         if self.production_price and self.sale_price:
             self.revenue = self.sale_price - self.production_price
         super(Item, self).save()
+        self.proposal.save()
 
     def get_priority(self):
         last = self.proposal.items.all().order_by('priority').last().priority
@@ -125,3 +132,57 @@ class Item(Model):
         if data is None:
             return None
         return int(data)
+
+
+class Payment(Model):
+    class DueOptions(TextChoices):
+        AFTER_SIGN = "10", "po podpisu smlouvy"
+        BEFORE_DELIVERY = "21", "před dodáním"
+        AFTER_DELIVERY = "31", "po dodání"
+        AFTER_COMPLETION = "32", "po dokončení"
+        BEFORE_COMPLETION = "22", "před dokončením"
+        EMPTY = "99", "-"
+
+    amount = DecimalField(max_digits=10, decimal_places=2, verbose_name="výše")
+    part = IntegerField(verbose_name="část z celku")
+    due = CharField(max_length=100, default=DueOptions.EMPTY, choices=DueOptions.choices, verbose_name="splatnost")
+    proposal = ForeignKey(Proposal, on_delete=CASCADE, related_name="payments", verbose_name="nabídka")
+
+    class Meta:
+        verbose_name = "Payment"
+        verbose_name_plural = "Payments"
+        ordering = ["due", ]
+
+    def __str__(self):
+        return f"{self.get_due_display()} - {self.amount}"
+
+    def save(self, *args, **kwargs):
+        if self.part == 0 or self.part == "":
+            self.due = "99"
+            self.part = 0
+        if int(self.part) > 0 and self.due == "99":
+            raise ValueError(f"U platby {self} musí být nastavená splatnost.")
+
+        super(Payment, self).save(*args, **kwargs)
+
+
+def check_payments(proposal):
+    if not proposal.payments.all():
+        Payment.objects.create(
+            proposal=proposal,
+            amount=proposal.price,
+            part=100,
+            due="10"
+        )
+        Payment.objects.create(
+            proposal=proposal, part=0, amount=Decimal(0))
+        Payment.objects.create(
+            proposal=proposal, part=0, amount=Decimal(0))
+    else:
+        if proposal.payments.all().aggregate(Sum("part"))["part__sum"] != 100:
+            raise ValueError("Souhrn částí plateb se nerovná celku.")
+        else:
+            for payment in proposal.payments.all():
+                payment.amount = proposal.price * (payment.part / Decimal(100))
+                payment.save()
+    return True
