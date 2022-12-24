@@ -6,6 +6,8 @@ from django.views.generic import CreateView, UpdateView, DeleteView, FormView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
+from operators.models import Operator
+from proposals.forms import ProposalEditForm
 from proposals.models import Proposal
 from contracts.constants import CONTRACT_SECTIONS
 from contracts.forms import ContractForm
@@ -26,18 +28,30 @@ class ContractCreateView(View):
         return redirect("edit-contract", contract.id)
 
 
-class ContractUpdateView(UpdateView):
-    form_class = ContractForm
-    template_name = "contracts/edit_contract.html"
-    model = Contract
+class ContractUpdateView(View):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['edited_cores'] = ContractCore.objects.filter(default=False, contract=self.object)
-        return context
+    def get(self, request, pk, *args, **kwargs):
+        contract = Contract.objects.get(pk=pk)
+        proposal = contract.proposal
+        contract_form = ContractForm(instance=contract)
+        proposal_form = ProposalEditForm(instance=contract.proposal)
+        context = {
+            "contract": contract,
+            "proposal": proposal,
+            "contract_form": contract_form,
+            "proposal_form": proposal_form,
+        }
+        return TemplateResponse(request=request, template="contracts/edit_contract.html", context=context)
 
-    def get_success_url(self):
-        return reverse_lazy("manage-attachments", args=(self.get_object().id,))
+    def post(self, request, pk, *args, **kwargs):
+        contract = Contract.objects.get(pk=pk)
+        contract_form = ContractForm(request.POST, instance=contract)
+        proposal_form = ProposalEditForm(request.POST, instance=contract.proposal)
+        if proposal_form.is_valid():
+            proposal_form.save()
+        if contract_form.is_valid():
+            contract_form.save()
+        return redirect("edit-contract", contract.id)
 
 
 class ContractDeleteView(DeleteView):
@@ -46,21 +60,23 @@ class ContractDeleteView(DeleteView):
     template_name = "contracts/confirm_delete_contract.html"
 
 
-class ContractParseView(View):
-
-    def get(self, request, pk):
-        contract = Contract.objects.prefetch_related('contract_cores').get(id=pk)
-        template = "contracts/contract_mustr.html"
-        context = {
-            "contract": contract,
-            "sections": CONTRACT_SECTIONS
-        }
-        for index, section in enumerate(CONTRACT_SECTIONS, 1):
-            cores = contract.contract_cores.filter(section=section[0])
-            if cores.count() > 0:
-                context["cores_" + str(index)] = cores
-
-        return TemplateResponse(request, template, context)
+# class ContractParseView(View):
+#
+#     def get(self, request, pk):
+#         contract = Contract.objects.prefetch_related('contract_cores').get(id=pk)
+#         operator = Operator.objects.get()
+#         template = "contracts/contract_mustr.html"
+#         context = {
+#             "contract": contract,
+#             "operator": operator,
+#             "sections": CONTRACT_SECTIONS
+#         }
+#         for index, section in enumerate(CONTRACT_SECTIONS, 1):
+#             cores = contract.contract_cores.filter(section=section[0])
+#             if cores.count() > 0:
+#                 context["cores_" + str(index)] = cores
+#
+#         return TemplateResponse(request, template, context)
 
 
 class ContractsTableView(SingleTableMixin, FilterView):
@@ -89,7 +105,7 @@ class ContractCoresEditView(View):
                 old_core = ContractCore.objects.get(id=id)
                 if old_core.text != text:
                     # same in database
-                    match = ContractCore.objects.filter(text=text) # redis?
+                    match = ContractCore.objects.filter(text=text)  # redis?
                     if match.count() == 1:
                         contract.contract_cores.set(match)
                         contract.contract_cores.remove(old_core)
@@ -106,7 +122,7 @@ class ContractCoresEditView(View):
                             parent_id=old_core.id,
                             default=False,
                         )
-                        new_core.contract_type.add(old_core.contract_type.get()) # how to add in create method?
+                        new_core.contract_type.add(old_core.contract_type.get())  # how to add in create method?
                         contract.contract_cores.add(new_core)
                         contract.contract_cores.remove(old_core)
 
@@ -115,4 +131,3 @@ class ContractCoresEditView(View):
 
 class ContractSendView(UpdateView):
     model = Contract
-

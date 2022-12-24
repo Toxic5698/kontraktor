@@ -14,7 +14,7 @@
       </style>
   </head>
   <body>
-  {% if contract.contract_type.type == "DILO" %}
+  {% if contract.proposal.contract_type.type == "DILO" %}
       <h1>Smlouva o dílo č. {{ contract.contract_number }}</h1>
       <p>uzavřená podle ustanovení § 2586 a násl. zákona č. 89/2012 Sb., občanského zákoníku, v platném znění, mezi</p>
       {% elif contract.contract_type.type == "KOUPE" %}

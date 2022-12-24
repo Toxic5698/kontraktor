@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "attachments",
     "clients",
     "contracts",
+    "operators",
     "proposals",
 
 

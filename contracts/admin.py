@@ -2,7 +2,11 @@ from django.contrib import admin
 from django.contrib.admin import site
 
 from contracts.models import Contract, ContractCore
-from attachments.models import Attachment
+
+
+class ContractAdmin(admin.ModelAdmin):
+    model = Contract
+    fields = ["contract_number", "signed_at"]
 
 
 class ContractCoreAdmin(admin.ModelAdmin):
@@ -16,4 +20,5 @@ class ContractCoreAdmin(admin.ModelAdmin):
     list_filter = ["section", "essential", "editable", "default", "created_at", "created_by", "edited_at", "edited_by",]
 
 
+site.register(Contract, ContractAdmin)
 site.register(ContractCore, ContractCoreAdmin)

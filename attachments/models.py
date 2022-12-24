@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models import Model, CharField, FileField, DateTimeField, ForeignKey, SET_NULL, BooleanField
 
 from clients.models import Client
+from attachments.managers import AttachmentManager
 
 
 def attachment_directory_path(instance, file):
@@ -13,7 +14,7 @@ class Attachment(Model):
         ("intern", "intern"),
         ("proposal", "proposal"),
         ("contract", "contract"),
-        ("both", "audbothio"),
+        ("both", "both"),
     ]
     tag = CharField(max_length=255, blank=True)
     file_name = CharField(max_length=255, blank=True, null=True)
@@ -22,6 +23,8 @@ class Attachment(Model):
     added_by = ForeignKey(User, related_name="attachments", on_delete=SET_NULL, blank=True, null=True)
     client = ForeignKey(Client, blank=True, null=True, on_delete=SET_NULL, related_name="attachments")
     purpose = CharField(max_length=10, null=True, blank=True, choices=PURPOSES)
+
+    objects = AttachmentManager()
 
     class Meta:
         verbose_name = "Attachment"

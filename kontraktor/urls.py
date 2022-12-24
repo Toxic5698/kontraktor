@@ -18,12 +18,20 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from clients.views import DocumentsToSignView, DynamicDocumentView, PrintView
+from operators.views import WelcomePageView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("attachments/", include('attachments.urls'), name='attachments'),
     path("clients/", include('clients.urls'), name='clients'),
     path('contracts/', include('contracts.urls'), name='contracts'),
     path('proposals/', include('proposals.urls'), name='proposals'),
+
+    path("", WelcomePageView.as_view(), name="wp"),
+    path("<str:sign_code>", DocumentsToSignView.as_view(), name="document-to-sign"),
+    # path("<str:sign_code>/<int:pk>", DynamicDocumentView.as_view(), name="dynamic-document")
+    path("<str:sign_code>/<str:type>/<int:pk>", PrintView.as_view(), name="print-document")
 
 
 ]

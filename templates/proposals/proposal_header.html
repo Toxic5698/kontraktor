@@ -51,9 +51,9 @@
             předmět smlouvy
         </div>
         <p>
-        {% if proposal.proposal_type.type == "KOUPE" %}
+        {% if proposal.contract_type.type == "KOUPE" %}
             dodávka
-        {% elif proposal.proposal_type.type == "DILO" %}
+        {% elif proposal.contract_type.type == "DILO" %}
             dodávka a montáž
         {% endif %}
         {% if proposal.subject == "DVERE" %}
@@ -70,9 +70,9 @@
     </div>
     <div class="col-6">
         <div class="badge bg-secondary">
-            {% if proposal.proposal_type.type == "KOUPE" %}
+            {% if proposal.contract_type.type == "KOUPE" %}
                 kupní cena
-            {% elif proposal.proposal_type.type == "DILO" %}
+            {% elif proposal.contract_type.type == "DILO" %}
                 cena díla
             {% endif %}
         </div>
@@ -94,7 +94,7 @@
 {% if proposal.client.attachments.all %}
 <div class="row">
 <div class="badge bg-secondary">přílohy</div>
-{% for attachment in proposal.client.attachments.all %}
+{% for attachment in proposal.client.attachments.filter_proposals %}
     <p>{% if attachment.tag %}{{ attachment.tag }}{% else %}{{ attachment.file_name }}{% endif %}</p>
 {% endfor %}
 </div>

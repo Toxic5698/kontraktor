@@ -1,0 +1,13 @@
+{% extends "main.html" %}
+{% block content %}
+    <div class="d-flex">
+
+        <form method="post">
+            {% csrf_token %}
+            <input class="form-control-lg" type="text" placeholder="Vložte kód nebo e-mail" name="sign_code">
+            <button class="btn btn-success" type="submit">Přejít k dokumentům</button>
+        </form>
+
+    </div>
+
+{% endblock %}

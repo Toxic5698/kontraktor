@@ -157,4 +157,4 @@ class PaymentsEditView(View):
             payment.due = request.POST.getlist("payment_due")[index]
             payment.save()
         check_payments(proposal)
-        return redirect("edit-proposal", proposal.id)
+        return redirect(request.META.get('HTTP_REFERER'))
