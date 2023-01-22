@@ -3,13 +3,14 @@ from django.template.response import TemplateResponse
 from django.views import View
 
 from clients.models import Client
+from operators.models import Operator
 
 
 class WelcomePageView(View):
 
     def get(self, request, *args, **kwargs):
         context = {
-
+            "operator": Operator.objects.get()
         }
         return TemplateResponse(template="operators/wp.html", request=request, context=context)
 

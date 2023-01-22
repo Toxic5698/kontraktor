@@ -59,8 +59,6 @@ class DocumentsToSignView(View):
         }
         return TemplateResponse(template="clients/list_to_sign.html", request=request, context=context)
 
-    # def post(self, request, *args, **kwargs):
-
     def get_documents(self, client):
         documents = []
         proposals = client.proposals.all()
@@ -68,11 +66,16 @@ class DocumentsToSignView(View):
             document = {
                 "id": proposal.id,
                 "type": "proposal",
-                "title": f"Nabídka č. {proposal.proposal_number} ze dne {proposal.edited_at}",
-                "price": f"Celková hodnota nabídky {proposal.price} Kč",
+                "title": f"Nabídka č. {proposal.proposal_number}",
+                "price": proposal.price,
                 "attachments": client.attachments.filter_proposals(),
-                "signed": True if proposal.signed_at else False
+                "attachments_count": client.attachments.filter_proposals().count(),
+                "signed": True if proposal.signed_at else False,
+                "last_update": proposal.edited_at.strftime('%d. %m. %Y'),
+                "items_count": proposal.items.all().count(),
             }
+            if document["signed"]:
+                document["signed_at"] = proposal.signed_at.strftime('%d. %m. %Y')
             documents.append(document)
 
         contracts = client.contracts.all()
@@ -80,13 +83,27 @@ class DocumentsToSignView(View):
             document = {
                 "id": contract.id,
                 "type": "contract",
-                "title": f"Smlouva č. {contract.contract_number} ze dne {contract.edited_at}",
-                "price": f"Celková hodnota smlouvy {contract.proposal.price} Kč",
+                "title": f"Smlouva č. {contract.contract_number}",
+                "price": contract.proposal.price,
                 "attachments": client.attachments.filter_contracts(),
-                "signed": True if proposal.signed_at else False
+                "attachments_count": client.attachments.filter_contracts().count(),
+                "signed": True if contract.signed_at else False,
+                "last_update": contract.edited_at.strftime('%d. %m. %Y'),
+                "items_count": contract.proposal.items.all().count(),
             }
+            if document["signed"]:
+                document["signed_at"] = contract.signed_at.strftime('%d. %m. %Y')
             documents.append(document)
         return documents
+
+
+class SigningDocument(View):
+
+    def get(self, request, *args, **kwargs):
+        model = apps.get_model(model_name=self.kwargs["type"], app_label=(self.kwargs["type"] + "s"))
+        document = model.objects.get(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
+        context = {"document": document}
+        return TemplateResponse(template="clients/signing_document.html", context=context, request=request)
 
 
 import functools

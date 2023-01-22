@@ -23,7 +23,8 @@ class ContractCreateView(View):
         contract = Contract.objects.create(
             proposal=proposal,
             contract_number=proposal.proposal_number,
-            client=proposal.client
+            client=proposal.client,
+            created_by=request.user,
         )
         return redirect("edit-contract", contract.id)
 
@@ -40,17 +41,27 @@ class ContractUpdateView(View):
             "proposal": proposal,
             "contract_form": contract_form,
             "proposal_form": proposal_form,
+            "operator": Operator.objects.get()
         }
         return TemplateResponse(request=request, template="contracts/edit_contract.html", context=context)
 
     def post(self, request, pk, *args, **kwargs):
         contract = Contract.objects.get(pk=pk)
-        contract_form = ContractForm(request.POST, instance=contract)
-        proposal_form = ProposalEditForm(request.POST, instance=contract.proposal)
-        if proposal_form.is_valid():
-            proposal_form.save()
-        if contract_form.is_valid():
-            contract_form.save()
+        proposal = contract.proposal
+
+        if "contract" in request.POST:
+            contract_form = ContractForm(request.POST, instance=contract)
+            if contract_form.is_valid():
+                contract_form.save()
+                contract.edited_by = request.user
+                contract.save()
+        if "proposal" in request.POST:
+            proposal_form = ProposalEditForm(request.POST, instance=proposal)
+            if proposal_form.is_valid():
+                proposal_form.save()
+                proposal.edited_by = request.user
+                proposal.save()
+
         return redirect("edit-contract", contract.id)
 
 

@@ -76,7 +76,7 @@
                 cena díla
             {% endif %}
         </div>
-        <p>{{ proposal.price }},- Kč vč. DPH</p>
+        <p>{{ proposal.price }} Kč vč. DPH</p>
     </div>
 </div>
 <div class="row">
@@ -94,7 +94,7 @@
 <div class="row">
     <div class="badge bg-secondary">platby</div>
     <ol class="ms-2">
-        {% for payment in proposal.payments.all %}
+        {% for payment in proposal.payments.filter_contracts %}
             <li>část ve výši {{ payment.amount }} Kč se splatností {{ payment.get_due_display }}</li>
         {% endfor %}
     </ol>

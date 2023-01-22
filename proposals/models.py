@@ -1,10 +1,15 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db.models import Model, DateTimeField, ForeignKey, CharField, SET_NULL, \
     IntegerField, DateField, FileField, DecimalField, CASCADE, BooleanField, Sum, TextChoices
+from django.utils import timezone
 
 from clients.models import Client
 from contracts.constants import CONTRACT_SUBJECTS
 from decimal import Decimal
+
+from proposals.managers import PaymentManager
 
 
 class ContractType(Model):
@@ -23,7 +28,7 @@ class Proposal(Model):
     edited_at = DateTimeField(blank=True, null=True, verbose_name="Upravena dne")
     edited_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="proposal_edited_by",
                            verbose_name="Upravil")
-    signed_at = DateTimeField(blank=True, null=True, verbose_name="Potvrzena dne")
+    signed_at = DateField(blank=True, null=True, verbose_name="Potvrzena dne")
 
     contract_type = ForeignKey(ContractType, related_name="proposals", on_delete=SET_NULL, verbose_name="Typ smlouvy",
                                null=True)
@@ -40,13 +45,17 @@ class Proposal(Model):
         verbose_name_plural = "Proposals"
 
     def __str__(self):
-        return self.proposal_number
+        if self.proposal_number:
+            return self.proposal_number
+        else:
+            return f"Objednávka ID {self.id} bez čísla"
 
     def save(self, *args, **kwargs):
         if self.id:
             if self.items.all():
                 self.price = self.items.all().aggregate(Sum("sale_price"))["sale_price__sum"]
                 check_payments(self)
+        self.edited_at = timezone.now()
         super(Proposal, self).save(*args, **kwargs)
 
 
@@ -105,21 +114,29 @@ class Item(Model):
 
     def clean(self, **kwargs):
         self.priority = self.get_priority() if not self.priority else self.priority
-        self.title = kwargs.get('title') or self.title if self.title else ""
-        self.description = kwargs.get('description') or self.description if self.description else ""
-        self.production_price = self.price_format(data=kwargs.get('production_price')) or \
-                                Decimal(self.production_price) if self.production_price else 0
-        self.sale_price = self.price_format(data=kwargs.get('sale_price')) or \
-                          Decimal(self.sale_price) if self.sale_price else 0
-        self.sale_discount = self.number_format(data=kwargs.get('sale_discount')) or self.sale_discount if self.sale_discount else 0
-        self.quantity = self.number_format(data=kwargs.get('quantity')) or self.quantity if self.quantity else 0
-        self.production_date = kwargs.get('production_date') or self.production_date if self.production_date else ""
-        self.production_data = kwargs.get('production_data') or self.production_data if self.production_data else ""
+        if len(kwargs) > 0 and "force_insert" not in kwargs.keys(): # data from form
+            for key in kwargs.keys():
+                if key in ["production_price", "sale_price"]:
+                    setattr(self, key, self.price_format(kwargs[key]))
+                elif key in ["sale_discount", "quantity"]:
+                    setattr(self, key, self.number_format(kwargs[key]))
+                else:
+                    setattr(self, key, kwargs[key])
+
+        else: # data from uploaded proposal
+            self.title = self.title if self.title else ""
+            self.description = self.description if self.description else ""
+            self.production_price = Decimal(self.production_price) if self.production_price else 0
+            self.sale_price = Decimal(self.sale_price) if self.sale_price else 0
+            self.sale_discount = self.sale_discount if self.sale_discount else 0
+            self.quantity = self.quantity if self.quantity else 0
+            self.production_date = self.production_date if self.production_date else ""
+            self.production_data = self.production_data if self.production_data else ""
 
     def save(self, *args, **kwargs):
         self.clean(**kwargs)
         if self.production_price and self.sale_price:
-            self.revenue = self.sale_price - self.production_price
+            self.revenue = self.price_format(self.sale_price) - self.price_format(self.production_price)
         super(Item, self).save()
         self.proposal.save()
 
@@ -130,17 +147,21 @@ class Item(Model):
         return 1
 
     def price_format(self, data=None):
-        if data is None:
-            return None
+        if data is None or type(data) == Decimal:
+            return data
+        if data == "":
+            data = 0
         if "," in data:
             data = data.replace(",", ".").replace("\xa0", "")
+        try:
             price = Decimal(data)
             return price
-        return ValueError("Price in wrong format.")
+        except ValueError:
+            return ValueError("Price in wrong format.")
 
     def number_format(self, data=None):
-        if data is None:
-            return None
+        if data is None or data == "":
+            return 0
         return int(data)
 
 
@@ -157,6 +178,8 @@ class Payment(Model):
     part = IntegerField(verbose_name="část z celku")
     due = CharField(max_length=100, default=DueOptions.EMPTY, choices=DueOptions.choices, verbose_name="splatnost")
     proposal = ForeignKey(Proposal, on_delete=CASCADE, related_name="payments", verbose_name="nabídka")
+
+    objects = PaymentManager()
 
     class Meta:
         verbose_name = "Payment"

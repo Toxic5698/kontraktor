@@ -56,6 +56,9 @@ class ProposalEditView(View):
             form = ProposalEditForm(request.POST, instance=proposal)
             if form.is_valid():
                 form.save()
+                # TODO: nějak to nacpat do formuláře
+                proposal.edited_by = request.user
+                proposal.save()
         else:
             data = request.POST.dict()
             if "client" in data.keys():
@@ -78,9 +81,9 @@ class ProposalEditView(View):
                 proposal_number=data["proposal_number"],
                 subject=data["subject"],
                 contract_type=ContractType.objects.get(id=data["contract_type"]),
-                # TODO: ošetřit datumy
-                # fulfillment_at=data["fulfillment_at"],
+                fulfillment_at=data["fulfillment_at"],
                 fulfillment_place=data["fulfillment_place"],
+                created_by=data["user"]
             )
 
         if len(request.FILES) > 0:

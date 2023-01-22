@@ -24,6 +24,7 @@ from operators.views import WelcomePageView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("attachments/", include('attachments.urls'), name='attachments'),
+    path("authentication/", include('authentication.urls'), name='authentication'),
     path("clients/", include('clients.urls'), name='clients'),
     path('contracts/', include('contracts.urls'), name='contracts'),
     path('proposals/', include('proposals.urls'), name='proposals'),

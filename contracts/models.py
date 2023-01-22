@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import Model, DateTimeField, ForeignKey, CharField, TextField, BooleanField, SET_NULL, \
     IntegerField, ManyToManyField, DateField, FileField, CASCADE, OneToOneField
+from django.utils import timezone
 
 from clients.models import Client
 from proposals.models import Payment, Proposal, ContractType
@@ -13,7 +14,7 @@ class Contract(Model):
     created_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="contract_created_by", verbose_name="Vytvořil")
     edited_at = DateTimeField(blank=True, null=True, verbose_name="Upravena dne")
     edited_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="contract_edited_by", verbose_name="Upravil")
-    signed_at = DateTimeField(blank=True, null=True, verbose_name="Podepsána dne")
+    signed_at = DateField(blank=True, null=True, verbose_name="Podepsána dne")
     proposal = OneToOneField(Proposal, verbose_name="Nabídka", on_delete=CASCADE, null=True)
     client = ForeignKey(Client, on_delete=CASCADE, related_name="contracts", null=True)
 
@@ -25,7 +26,7 @@ class Contract(Model):
         return f"{self.contract_number}"
 
     def save(self, *args, **kwargs):
-        # TODO: created a edited_by doplnit
+        self.edited_at = timezone.now()
         super().save(*args, **kwargs)
         if self.contract_cores.count() == 0:
             cores = ContractCore.objects.filter(default=True, contract_type=self.proposal.contract_type)
@@ -58,3 +59,8 @@ class ContractCore(Model):
 
     def __str__(self):
         return f"{self.priority} - {self.default}"
+
+    def save(self, *args, **kwargs):
+        self.edited_at = timezone.now()
+        super().save(*args, **kwargs)
+

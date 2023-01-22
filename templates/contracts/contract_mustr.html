@@ -1,121 +1,128 @@
 <!doctype html>
 <html lang="cs">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Smlouva o dílo č. {{ contract.contract_number }}</title>
-      <link rel="icon" type="image/png" sizes="16x16" href="">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-      <style>
-          body {font-family: 'Montserrat', sans-serif;}
-      </style>
-  </head>
-  <body>
-  {% if contract.proposal.contract_type.type == "DILO" %}
-      <h1>Smlouva o dílo č. {{ contract.contract_number }}</h1>
-      <p>uzavřená podle ustanovení § 2586 a násl. zákona č. 89/2012 Sb., občanského zákoníku, v platném znění, mezi</p>
-      {% elif contract.contract_type.type == "KOUPE" %}
-      <h1>Kupní smlouva č. {{ contract.contract_number }}</h1>
-      <p>uzavřená podle ustanovení § 2079 a násl. zákona č. 89/2012 Sb., občanského zákoníku, v platném znění, mezi</p>
-  {% endif %}
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+</head>
+<body>
+{% if contract.proposal.contract_type.type == "DILO" %}
+    <h1>Smlouva o dílo č. {{ contract.contract_number }}</h1>
+    <p>uzavřená podle ustanovení § 2586 a násl. zákona č. 89/2012 Sb., občanského zákoníku, v platném znění, mezi</p>
+{% elif contract.contract_type.type == "KOUPE" %}
+    <h1>Kupní smlouva č. {{ contract.contract_number }}</h1>
+    <p>uzavřená podle ustanovení § 2079 a násl. zákona č. 89/2012 Sb., občanského zákoníku, v platném znění, mezi</p>
+{% endif %}
 
-    {% include "contracts/contract_header.html" %}
-  Smluvní strany se dále dohodly:
-    <ol type="I">
+{% include "contracts/contract_header.html" %}
+Smluvní strany se dále dohodly:
+<ol type="I">
     {% if cores_1 %}
         <li>{{ sections.0.1 }}</li>
-            <ol>
-                {% for par in cores_1 %}
-                    <li class="">{{ par.text }}</li>
-                {% endfor %}
-            </ol>
+        <ol>
+            {% for par in cores_1 %}
+                <li class="">{{ par.text }}</li>
+            {% endfor %}
+        </ol>
     {% endif %}
     {% if cores_2 %}
         <li>{{ sections.1.1 }}</li>
-            <ol>
-                {% for par in cores_2 %}
+        <ol>
+            {% for par in cores_2 %}
                 <li>{{ par.text }}</li>
-                {% endfor %}
-            </ol>
+            {% endfor %}
+        </ol>
     {% endif %}
     {% if cores_3 %}
         <li>{{ sections.2.1 }}</li>
-            <ol>
-                {% for par in cores_3 %}
+        <ol>
+            {% for par in cores_3 %}
                 <li>{{ par.text }}</li>
-                {% endfor %}
-            </ol>
+            {% endfor %}
+        </ol>
     {% endif %}
     {% if cores_4 %}
         <li>{{ sections.3.1 }}</li>
-            <ol>
-                {% for par in cores_4 %}
+        <ol>
+            {% for par in cores_4 %}
                 <li>{{ par.text }}</li>
-                {% endfor %}
-            </ol>
+            {% endfor %}
+        </ol>
     {% endif %}
     {% if cores_5 %}
         <li>{{ sections.4.1 }}</li>
-            <ol>
-                {% for par in cores_5 %}
+        <ol>
+            {% for par in cores_5 %}
                 <li>{{ par.text }}</li>
-                {% endfor %}
-            </ol>
+            {% endfor %}
+        </ol>
     {% endif %}
     {% if cores_6 %}
         <li>{{ sections.5.1 }}</li>
-            <ol>
-                {% for par in cores_6 %}
+        <ol>
+            {% for par in cores_6 %}
                 <li>{{ par.text }}</li>
-                {% endfor %}
-            </ol>
+            {% endfor %}
+        </ol>
     {% endif %}
     {% if cores_7 %}
         <li>{{ sections.6.1 }}</li>
-            <ol>
-                {% for par in cores_7 %}
+        <ol>
+            {% for par in cores_7 %}
                 <li>{{ par.text }}</li>
-                {% endfor %}
-            </ol>
+            {% endfor %}
+        </ol>
     {% endif %}
     {% if cores_8 %}
         <li>{{ sections.7.1 }}</li>
-            <ol>
-                {% for par in cores_8 %}
+        <ol>
+            {% for par in cores_8 %}
                 <li>{{ par.text }}</li>
-                {% endfor %}
-            </ol>
+            {% endfor %}
+        </ol>
     {% endif %}
     {% if cores_9 %}
         <li>{{ sections.8.1 }}</li>
-            <ol>
-                {% for par in cores_9 %}
+        <ol>
+            {% for par in cores_9 %}
                 <li>{{ par.text }}</li>
-                {% endfor %}
-            </ol>
+            {% endfor %}
+        </ol>
     {% endif %}
-    </ol>
+</ol>
 
-    <p>V Brně dne {{ contract.signet_at | date:"d. m. y" }}</p>
-    <div class="row">
+<p>V Brně dne {{ contract.signet_at | date:"d. m. y" }}</p>
+<div class="row">
     <div class="col-6">
         {% if contract.contract_type.type == "DILO" %}
-      <p>podpis dodavatele</p>
-      {% elif contract.contract_type.type == "KOUPE" %}
-      <p>podpis prodávajícího</p>
-  {% endif %}
+            <p>podpis dodavatele</p>
+        {% elif contract.contract_type.type == "KOUPE" %}
+            <p>podpis prodávajícího</p>
+        {% endif %}
     </div>
     <div class="col-6">
+        <a href="{% url "signing-document" contract.client.sign_code contract.id "contract" %}">Uzavřít smlouvu</a>
+
+
+
         {% if contract.contract_type.type == "DILO" %}
-      <p>podpis objednatele</p>
-      {% elif contract.contract_type.type == "KOUPE" %}
-      <p>podpis kupujícího</p>
-  {% endif %}
+            <p>podpis objednatele</p>
+        {% elif contract.contract_type.type == "KOUPE" %}
+            <p>podpis kupujícího</p>
+        {% endif %}
     </div>
-    </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
-  </body>
+</div>
+
+
+</body>
 </html>
