@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
@@ -9,7 +10,7 @@ from clients.models import Client
 from contracts.models import Contract
 
 
-class AttachmentManageView(View):
+class AttachmentManageView(LoginRequiredMixin, View):
     form_class = AttachmentUploadForm
 
     def get(self, request, pk, *args, **kwargs):
@@ -39,7 +40,7 @@ class AttachmentManageView(View):
         return redirect('manage-attachments', client.id)
 
 
-class AttachmentDeleteView(DeleteView):
+class AttachmentDeleteView(LoginRequiredMixin, DeleteView):
     model = Attachment
     template_name = "attachments/confirm_delete_attachment.html"
 

@@ -6,7 +6,6 @@ urlpatterns = [
     path("create/<int:proposal_id>", ContractCreateView.as_view(), name="create-contract"),
     path("edit/<int:pk>", ContractUpdateView.as_view(), name="edit-contract"),
     path("delete_contract/<int:pk>", ContractDeleteView.as_view(), name="delete-contract"),
-    # path("<int:pk>", ContractParseView.as_view(), name="generate-contract"),
     path("edit-cores/<int:pk>", ContractCoresEditView.as_view(), name="edit-cores"),
     path("send/<int:pk>", ContractSendView.as_view(), name="send-contract"),
 

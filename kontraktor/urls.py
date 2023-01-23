@@ -18,7 +18,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from clients.views import DocumentsToSignView, DynamicDocumentView, PrintView
+from clients.views import DocumentsToSignView, PrintView
 from operators.views import WelcomePageView
 
 urlpatterns = [

@@ -1,30 +1,37 @@
+import functools
 import ssl
 
-from django.shortcuts import redirect
+from django.apps import apps
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
+from django.views.generic import DetailView
 from django.views.generic import UpdateView, DeleteView, CreateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
+from django_weasyprint import WeasyTemplateResponseMixin
+from django_weasyprint.utils import django_url_fetcher
+from django_weasyprint.views import WeasyTemplateResponse
 
-from clients.models import Client
-from clients.tables import ClientTable
 from clients.filters import ClientFilter
 from clients.forms import ClientForm
+from clients.models import Client
+from clients.tables import ClientTable
 from contracts.constants import CONTRACT_SECTIONS
 from operators.models import Operator
 
 
-class ClientsTableView(SingleTableMixin, FilterView):
+class ClientsTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     table_class = ClientTable
     model = Client
     template_name = "clients/clients_list.html"
     filterset_class = ClientFilter
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(LoginRequiredMixin, CreateView):
     form_class = ClientForm
     template_name = "clients/edit_client.html"
     model = Client
@@ -33,7 +40,7 @@ class ClientCreateView(CreateView):
         return reverse_lazy("edit-client", args=(self.object.id,))
 
 
-class ClientEditView(UpdateView):
+class ClientEditView(LoginRequiredMixin, UpdateView):
     model = Client
     template_name = "clients/edit_client.html"
     form_class = ClientForm
@@ -42,7 +49,7 @@ class ClientEditView(UpdateView):
         return reverse_lazy("edit-client", args=(self.get_object().id,))
 
 
-class ClientDeleteView(DeleteView):
+class ClientDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("clients")
     model = Client
     template_name = "clients/confirm_delete_client.html"
@@ -105,16 +112,9 @@ class SigningDocument(View):
         context = {"document": document}
         return TemplateResponse(template="clients/signing_document.html", context=context, request=request)
 
-
-import functools
-
-from django.conf import settings
-from django.views.generic import DetailView
-
-from django_weasyprint import WeasyTemplateResponseMixin
-from django_weasyprint.views import WeasyTemplateResponse
-from django_weasyprint.utils import django_url_fetcher
-from django.apps import apps
+    def post(self, request, *args, **kwargs):
+        document = self.get(request, *args, **kwargs)
+        return reverse_lazy("document-to-sign", document.client.sing_code)
 
 
 class MyDetailView(DetailView):

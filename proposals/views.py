@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
@@ -19,14 +20,14 @@ from proposals.filters import ProposalFilter
 from proposals.tables import ProposalTable
 
 
-class ProposalsTableView(SingleTableMixin, FilterView):
+class ProposalsTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     table_class = ProposalTable
     model = Proposal
     template_name = "proposals/proposals_list.html"
     filterset_class = ProposalFilter
 
 
-class ProposalEditView(View):
+class ProposalEditView(LoginRequiredMixin, View):
 
     def get(self, request, pk=None, client_id=None, *args, **kwargs):
         context = {}
@@ -98,13 +99,13 @@ class ProposalEditView(View):
         return redirect('edit-proposal', proposal.id)
 
 
-class ProposalDeleteView(DeleteView):
+class ProposalDeleteView(LoginRequiredMixin, DeleteView):
     model = Proposal
     template_name = 'proposals/confirm_delete_proposal.html'
     success_url = reverse_lazy("proposals")
 
 
-class ProposalItemsView(View):
+class ProposalItemsView(LoginRequiredMixin, View):
 
     def get(self, request, pk=None, *args, **kwargs):
         proposal = Proposal.objects.get(pk=pk)
@@ -136,7 +137,7 @@ class ProposalItemsView(View):
         return redirect('edit-items', proposal.id)
 
 
-class ProposalGenerateView(View):
+class ProposalGenerateView(LoginRequiredMixin, View):
     def get(self, request, pk=None, *args, **kwargs):
         proposal = Proposal.objects.get(pk=pk)
         context = {
@@ -145,13 +146,13 @@ class ProposalGenerateView(View):
         return TemplateResponse(template="proposals/proposal_mustr.html", context=context, request=request)
 
 
-class ProposalSendView(View):
+class ProposalSendView(LoginRequiredMixin, View):
     def get(self, request, pk=None, *args, **kwargs):
         context = {}
         return TemplateResponse(template="proposals/send_proposal.html", context=context, request=request)
 
 
-class PaymentsEditView(View):
+class PaymentsEditView(LoginRequiredMixin, View):
 
     def post(self, request, proposal_id, *args, **kwargs):
         proposal = Proposal.objects.get(pk=proposal_id)

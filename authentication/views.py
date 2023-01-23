@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.urls import reverse_lazy
 
@@ -16,9 +17,9 @@ class Login(LoginView):
         return context
 
 
-class Logout(LogoutView):
+class Logout(LoginRequiredMixin, LogoutView):
     next_page = reverse_lazy("login")
 
 
-class PasswordChange(PasswordChangeView):
+class PasswordChange(LoginRequiredMixin, PasswordChangeView):
     template_name = "auth/password_change.html"
