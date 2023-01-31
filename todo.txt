@@ -1,0 +1,8 @@
+1. kombinace s crispy?
+https://github.com/jazzband/django-widget-tweaks
+
+2. zálohování db, odesílání záloh do e-mailu?
+
+3. sledovaní stavu smluvy (zobrazení, podepsaní, dis) pro obsluhu
+
+4. šifrování osobních dat

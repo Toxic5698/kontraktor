@@ -31,7 +31,6 @@ urlpatterns = [
 
     path("", WelcomePageView.as_view(), name="wp"),
     path("<str:sign_code>", DocumentsToSignView.as_view(), name="document-to-sign"),
-    # path("<str:sign_code>/<int:pk>", DynamicDocumentView.as_view(), name="dynamic-document")
     path("<str:sign_code>/<str:type>/<int:pk>", PrintView.as_view(), name="print-document")
 
 

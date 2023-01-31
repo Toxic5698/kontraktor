@@ -1,8 +1,5 @@
 from betterforms.forms import BetterModelForm, BetterForm
 from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field
-
 from clients.models import Client
 from proposals.models import Proposal, UploadedProposal
 
