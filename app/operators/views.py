@@ -2,8 +2,8 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.views import View
 
-from app.clients.models import Client
-from app.operators.models import Operator
+from clients.models import Client
+from operators.models import Operator
 
 
 class WelcomePageView(View):

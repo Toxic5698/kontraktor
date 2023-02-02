@@ -1,6 +1,6 @@
 from django.contrib.admin import ModelAdmin, site
 
-from app.operators.models import Operator
+from operators.models import Operator
 
 
 class OperatorAdmin(ModelAdmin):

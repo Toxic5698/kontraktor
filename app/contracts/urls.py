@@ -1,5 +1,5 @@
 from django.urls import path
-from app.contracts.views import *
+from contracts.views import *
 
 urlpatterns = [
     path("", ContractsTableView.as_view(), name='contracts'),

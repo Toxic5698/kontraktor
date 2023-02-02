@@ -16,12 +16,12 @@ from django_weasyprint import WeasyTemplateResponseMixin
 from django_weasyprint.utils import django_url_fetcher
 from django_weasyprint.views import WeasyTemplateResponse
 
-from app.clients.filters import ClientFilter
-from app.clients.forms import ClientForm
-from app.clients.models import Client
-from app.clients.tables import ClientTable
-from app.contracts.constants import CONTRACT_SECTIONS
-from app.operators.models import Operator
+from clients.filters import ClientFilter
+from clients.forms import ClientForm
+from clients.models import Client
+from clients.tables import ClientTable
+from contracts.constants import CONTRACT_SECTIONS
+from operators.models import Operator
 
 
 class ClientsTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
@@ -170,7 +170,7 @@ class CustomWeasyTemplateResponse(WeasyTemplateResponse):
 class PrintView(WeasyTemplateResponseMixin, MyDetailView):
     # output of MyDetailView rendered as PDF with hardcoded CSS
     # pdf_stylesheets = [
-    #     settings.STATIC_ROOT + 'css/app.css',
+    #     settings.STATIC_ROOT + 'css/css',
     # ]
     # show pdf in-line (default: True, show download dialog)
     pdf_attachment = True

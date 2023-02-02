@@ -1,5 +1,5 @@
 from betterforms.forms import BetterModelForm
-from app.clients.models import Client
+from clients.models import Client
 
 
 class ClientForm(BetterModelForm):

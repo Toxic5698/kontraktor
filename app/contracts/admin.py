@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import site
 
-from app.contracts.models import Contract, ContractCore
+from contracts.models import Contract, ContractCore
 
 
 class ContractAdmin(admin.ModelAdmin):

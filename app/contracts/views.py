@@ -7,13 +7,13 @@ from django.views.generic import UpdateView, DeleteView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from app.operators.models import Operator
-from app.proposals.forms import ProposalEditForm
-from app.proposals.models import Proposal
-from app.contracts.forms import ContractForm
-from app.contracts.models import Contract, ContractCore
-from app.contracts.tables import ContractTable
-from app.contracts.filters import ContractFilter
+from operators.models import Operator
+from proposals.forms import ProposalEditForm
+from proposals.models import Proposal
+from contracts.forms import ContractForm
+from contracts.models import Contract, ContractCore
+from contracts.tables import ContractTable
+from contracts.filters import ContractFilter
 
 
 class ContractCreateView(LoginRequiredMixin, View):

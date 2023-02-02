@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from django.db.models import Model, CharField, FileField, DateTimeField, ForeignKey, SET_NULL
 
-from app.clients.models import Client
-from app.attachments.managers import AttachmentManager
+from clients.models import Client
+from attachments.managers import AttachmentManager
 
 
 def attachment_directory_path(instance, file):

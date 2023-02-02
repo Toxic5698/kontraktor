@@ -1,7 +1,7 @@
 import django_filters
 from django.db.models import Q
 from django_filters import CharFilter, RangeFilter
-from app.proposals.models import Proposal
+from proposals.models import Proposal
 
 
 class ProposalFilter(django_filters.FilterSet):

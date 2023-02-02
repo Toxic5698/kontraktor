@@ -7,14 +7,14 @@ from django.views.generic import DeleteView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from app.clients.forms import ClientForm
-from app.clients.models import Client
-from app.contracts.models import ContractType
-from app.proposals.forms import ProposalUploadForm, ProposalEditForm
-from app.proposals.models import Proposal, UploadedProposal, Item, check_payments
-from app.proposals.peli_parser import parse_items
-from app.proposals.filters import ProposalFilter
-from app.proposals.tables import ProposalTable
+from clients.forms import ClientForm
+from clients.models import Client
+from contracts.models import ContractType
+from proposals.forms import ProposalUploadForm, ProposalEditForm
+from proposals.models import Proposal, UploadedProposal, Item, check_payments
+from proposals.peli_parser import parse_items
+from proposals.filters import ProposalFilter
+from proposals.tables import ProposalTable
 
 
 class ProposalsTableView(LoginRequiredMixin, SingleTableMixin, FilterView):

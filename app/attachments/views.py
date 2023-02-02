@@ -4,9 +4,9 @@ from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.views.generic import View, DeleteView
 
-from app.attachments.forms import AttachmentUploadForm
-from app.attachments.models import Attachment
-from app.clients.models import Client
+from attachments.forms import AttachmentUploadForm
+from attachments.models import Attachment
+from clients.models import Client
 
 
 class AttachmentManageView(LoginRequiredMixin, View):

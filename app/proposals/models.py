@@ -3,11 +3,11 @@ from django.db.models import Model, DateTimeField, ForeignKey, CharField, SET_NU
     IntegerField, DateField, FileField, DecimalField, CASCADE, BooleanField, Sum, TextChoices
 from django.utils import timezone
 
-from app.clients.models import Client
-from app.contracts.constants import CONTRACT_SUBJECTS
+from clients.models import Client
+from contracts.constants import CONTRACT_SUBJECTS
 from decimal import Decimal
 
-from app.proposals.managers import PaymentManager
+from proposals.managers import PaymentManager
 
 
 class ContractType(Model):
@@ -78,7 +78,7 @@ class UploadedProposal(Model):
         return self.file_name
 
     def save(self, *args, **kwargs):
-        from app.proposals.peli_parser import parse_items
+        from proposals.peli_parser import parse_items
         # self.priority = 1
         # self.file_name = "soubor 1"
         super().save(*args, **kwargs)

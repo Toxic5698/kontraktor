@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('tag', models.CharField(blank=True, max_length=255)),
                 ('file_name', models.CharField(blank=True, max_length=255, null=True)),
-                ('file', models.FileField(blank=True, null=True, upload_to=app.attachments.models.attachment_directory_path)),
+                ('file', models.FileField(blank=True, null=True)),
                 ('added_at', models.DateTimeField(auto_now_add=True)),
                 ('purpose', models.CharField(blank=True, choices=[('intern', 'intern'), ('proposal', 'proposal'), ('contract', 'contract'), ('both', 'audbothio')], max_length=10, null=True)),
                 ('added_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='attachments', to=settings.AUTH_USER_MODEL)),

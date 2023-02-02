@@ -1,6 +1,6 @@
 from django.urls import path
 
-from app.proposals.views import *
+from proposals.views import *
 
 urlpatterns = [
     path("", ProposalsTableView.as_view(), name="proposals"),

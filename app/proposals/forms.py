@@ -1,7 +1,7 @@
 from betterforms.forms import BetterModelForm
 from django import forms
-from app.clients.models import Client
-from app.proposals.models import Proposal, UploadedProposal
+from clients.models import Client
+from proposals.models import Proposal, UploadedProposal
 
 
 class ProposalUploadForm(BetterModelForm):

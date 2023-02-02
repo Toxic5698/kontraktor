@@ -1,7 +1,7 @@
 from django.contrib.admin import site
 from django.contrib import admin
 
-from app.proposals.models import Proposal, UploadedProposal, Item
+from proposals.models import Proposal, UploadedProposal, Item
 
 
 class ItemInline(admin.TabularInline):

@@ -1,6 +1,6 @@
 from django import forms
 
-from app.attachments.models import Attachment
+from attachments.models import Attachment
 
 
 class AttachmentUploadForm(forms.ModelForm):

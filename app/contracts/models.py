@@ -3,9 +3,9 @@ from django.db.models import Model, DateTimeField, ForeignKey, CharField, TextFi
     IntegerField, ManyToManyField, DateField, CASCADE, OneToOneField
 from django.utils import timezone
 
-from app.clients.models import Client
-from app.proposals.models import Proposal, ContractType
-from app.contracts.constants import *
+from clients.models import Client
+from proposals.models import Proposal, ContractType
+from contracts.constants import *
 
 
 class Contract(Model):

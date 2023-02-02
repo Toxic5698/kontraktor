@@ -1,4 +1,5 @@
 from django.urls import path
+from clients.views import *
 
 urlpatterns = [
     path("", ClientsTableView.as_view(), name="clients"),

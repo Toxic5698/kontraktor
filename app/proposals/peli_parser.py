@@ -1,4 +1,4 @@
-from app.proposals.models import Item
+from proposals.models import Item
 import pypdfium2 as pdfium
 
 

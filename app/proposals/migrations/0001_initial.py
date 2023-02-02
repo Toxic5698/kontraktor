@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import app.proposals.models
+import proposals.models
 
 
 class Migration(migrations.Migration):
@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('priority', models.CharField(blank=True, max_length=3, null=True, verbose_name='pořadí')),
-                ('file', models.FileField(blank=True, null=True, upload_to=app.proposals.models.uploaded_proposal_directory_path, verbose_name='Podkladová nabídka')),
+                ('file', models.FileField(blank=True, null=True, upload_to=proposals.models.uploaded_proposal_directory_path, verbose_name='Podkladová nabídka')),
                 ('file_name', models.CharField(blank=True, max_length=200, null=True, verbose_name='název souboru')),
                 ('uploaded_at', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Nahráno dne')),
                 ('proposal', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='uploaded', to='proposals.proposal', verbose_name='nabídka')),

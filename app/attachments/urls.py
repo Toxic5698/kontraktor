@@ -1,5 +1,5 @@
 from django.urls import path
-from app.attachments.views import *
+from attachments.views import *
 
 urlpatterns = [
     path("delete/<int:pk>", AttachmentDeleteView.as_view(), name="delete-attachment"),

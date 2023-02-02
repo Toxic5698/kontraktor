@@ -2,7 +2,7 @@ from django_tables2.utils import A
 from django_tables2.tables import Table
 from django_tables2 import LinkColumn, Column
 
-from app.proposals.models import Proposal, Item
+from proposals.models import Proposal, Item
 
 
 class ProposalTable(Table):

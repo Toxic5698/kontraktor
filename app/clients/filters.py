@@ -1,7 +1,7 @@
 import django_filters
 from django.db.models import Q
 from django_filters import CharFilter
-from app.clients.models import Client
+from clients.models import Client
 
 
 class ClientFilter(django_filters.FilterSet):

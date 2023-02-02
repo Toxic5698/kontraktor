@@ -1,7 +1,7 @@
 from django.contrib.admin import site
 from django.contrib import admin
 
-from app.attachments.models import Attachment
+from attachments.models import Attachment
 
 
 class AttachmentAdmin(admin.ModelAdmin):
