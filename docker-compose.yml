@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 services:
   django_gunicorn:
     volumes:
@@ -7,14 +7,14 @@ services:
       - .env
     build:
       context: .
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
   nginx:
     build: ./nginx
     volumes:
       - static:/static
     ports:
-      - "80:80"
+      - "80:8000"
     depends_on:
       - django_gunicorn
 
