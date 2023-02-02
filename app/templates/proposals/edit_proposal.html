@@ -1,0 +1,106 @@
+{% extends "../main.html" %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="d-flex row">
+        <div class="col-md-6">
+            <div class="d-grid gap-2 d-md-block pt-1">
+                {% if proposal %}
+                    <a class="btn btn-warning " href="{% url "edit-client" proposal.client.id %}">Klient</a>
+                    <a class="btn btn-secondary " href="{% url "edit-items" proposal.id %}">Upravit položky</a>
+                    <a class="btn btn-info " href="{% url "print-document" proposal.client.sign_code 'proposal' proposal.id %}">Náhled nabídky</a>
+                    <a class="btn btn-dark " href="{% url "send-proposal" proposal.id %}">Odeslat klientovi</a>
+                    {% if proposal.contract %}
+                        <a class="btn btn-primary mt-2" href="{% url "edit-contract" proposal.contract.id %}">Upravit
+                            smlouvu</a>
+                    {% else %}
+                        <form method="post" action="{% url "create-contract" proposal.id %}" class="mt-2">
+                            {% csrf_token %}
+                            <button class="btn btn-primary col-3" type="submit">Vytvořit smlouvu</button>
+                        </form>
+                    {% endif %}
+                    </div>
+                {% endif %}
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h4 class="mt-2">Údaje k doplnění do nabídky</h4>
+                <div class="row">
+                    {% if client_form %}
+                        <p>{{ client_form.consumer|as_crispy_field }}</p>
+                        <div class="row">
+                            <div class="col-6">
+                                {{ client_form.name|as_crispy_field }}
+                            </div>
+                            <div class="col-6">
+                                {{ client_form.email|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                {{ client_form.id_number|as_crispy_field }}
+                            </div>
+                            <div class="col-6">
+                                {{ client_form.phone_number|as_crispy_field }}
+                            </div>
+                        </div>
+                        {{ client_form.address|as_crispy_field }}
+                        {{ client_form.note|as_crispy_field }}
+                    {% else %}
+                        {{ edit_form.client|as_crispy_field }}
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        {{ edit_form.proposal_number|as_crispy_field }}
+                        {{ edit_form.subject|as_crispy_field }}
+                        {{ edit_form.contract_type|as_crispy_field }}
+                    </div>
+                    <div class="col-8">
+                        {{ edit_form.fulfillment_at|as_crispy_field }}
+                        {{ edit_form.fulfillment_place|as_crispy_field }}
+                        {{ upload_form.file|as_crispy_field }}
+                    </div>
+                    {% if "edit" in request.path %}
+                        <div class="col-4">
+                            {{ edit_form.signed_at|as_crispy_field }}
+                        </div>
+                    {% endif %}
+                </div>
+                <input class="btn btn-success" type="submit" value="Uložit">
+            </form>
+        </div>
+        <div class="col-md-6">
+            {% if proposal.items.all %}
+                {% include "proposals/payments.html" %}
+
+
+                <a class="pt-2 h4" style="text-decoration: none !important; color: black;"
+                   href="{% url "edit-items" proposal.id %}">Položky nabídky</a>
+                <table class="table table-striped">
+                    <thead>
+                    <th scope="col">Pořadí</th>
+                    <th scope="col">Název položky</th>
+                    <th scope="col">Cena</th>
+                    <th scope="col">Množství</th>
+                    </thead>
+                    <tbody>
+                    {% for item in proposal.items.all %}
+                        <tr>
+                            <td>{{ item.priority }}</td>
+                            <td>{{ item.title }}</td>
+                            <td>{{ item.sale_price }}</td>
+                            <td>{{ item.quantity }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            {% if proposal.uploaded.all %}
+                <h4>Podkladová nabídka</h4>
+                <p>Soubor {{ uploaded.file_name }} nahraný dne {{ uploaded.uploaded_at|date }}.
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

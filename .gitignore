@@ -4,7 +4,7 @@
 *.pyc
 __pycache__
 db.sqlite3
-media
+app/media
 
 # Backup files #
 *.bak
@@ -78,7 +78,7 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
-.pytest_cache/
+app/.pytest_cache/
 nosetests.xml
 coverage.xml
 *.cover

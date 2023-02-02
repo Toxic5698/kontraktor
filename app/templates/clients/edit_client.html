@@ -1,0 +1,134 @@
+{% extends "../main.html" %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% block content %}
+        <div class="d-flex row">
+            <div class="col-md">
+
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <a class="btn btn-warning mt-2" href="{% url "clients" %}">Zpět bez uložení</a>
+                    {% if client.id %}
+                        <a class="btn btn-secondary mt-2" href="{% url "manage-attachments" client.id %}">Spravovat
+                            přílohy</a>
+                    {% endif %}
+                    <h4 class="mt-2">Údaje o klientovi</h4>
+                    <p>{{ form.consumer|as_crispy_field }}</p>
+                    <div class="row">
+                        <div class="col-6">
+                            {{ form.name|as_crispy_field }}
+                        </div>
+                        <div class="col-6">
+                            {{ form.email|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            {{ form.id_number|as_crispy_field }}
+                        </div>
+                        <div class="col-6">
+                            {{ form.phone_number|as_crispy_field }}
+                        </div>
+                    </div>
+                    {{ form.address|as_crispy_field }}
+                    {{ form.note|as_crispy_field }}
+
+                    <input class="btn btn-success" type="submit" value="Uložit">
+                </form>
+            </div>
+            <div class="col-md">
+                {% if client %}
+                    <h4>Nahrané přílohy ke klientovi {{ client.name }}</h4>
+                    <table class="table table-striped">
+                        <thead>
+                        <th scope="col">Název souboru</th>
+                        <th scope="col">Označení přílohy</th>
+                        <th scope="col">Nakládání s přílohou</th>
+                        </thead>
+                        <tbody>
+                        {% for attachment in client.attachments.all %}
+                            <tr>
+                                <td>{{ attachment.file_name }}</td>
+                                <td>{{ attachment.tag }}</td>
+                                <td>
+                                    {% if attachment.purpose == "intern" or "" %}
+                                        interní
+                                    {% elif attachment.purpose == "proposal" %}
+                                        přiloží se pouze k nabídkce
+                                    {% elif attachment.purpose == "contract" %}
+                                        přiloží se pouze ke smlouvě
+                                    {% elif attachment.purpose == "both" %}
+                                        přiloží se k nabídkce i ke smlouvě
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <br>
+                {% endif %}
+                {% if client.proposals.all %}
+                    <div class="row">
+                        <div class="col-8"><h4>Nabídky</h4></div>
+                        <div class="col-4"><a class="btn btn-success" href="{% url "create-proposal" client.id %}">Vytvořit
+                            nabídku</a></div>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                        <th scope="col">Číslo nabídky</th>
+                        <th scope="col">Vytvořena dne</th>
+                        <th scope="col">Podkladová nabídka</th>
+                        <th scope="col">Odeslána klientovi</th>
+                        </thead>
+                        <tbody>
+                        {% for proposal in client.proposals.all %}
+                            <tr>
+                                <td><a href="{% url "edit-proposal" proposal.id %}">{{ proposal.proposal_number }}</a>
+                                </td>
+                                <td>{{ proposal.created_at }}</td>
+                                <td>{{ proposal.uploaded.last.file_name }}</td>
+                                <td>{{ proposal.signed_at }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if client.contracts.all %}
+                        <br>
+                        <h4>Smlouvy</h4>
+                        <table class="table table-striped">
+                            <thead>
+                            <th scope="col">Číslo smlouvy</th>
+                            <th scope="col">Vytvořena dne</th>
+                            <th scope="col">Vychází z nabídky</th>
+                            <th scope="col">Odeslaná klientovi</th>
+                            <th scope="col">Podepsaná klientem</th>
+                            </thead>
+                            <tbody>
+                            {% for contract in client.contracts.all %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url "edit-contract" contract.id %}">{{ contract.contract_number }}</a>
+                                    </td>
+                                    <td>{{ contract.created_at }}</td>
+                                    <td>{{ contract.proposal.proposal_number }}</td>
+                                    <td>{{ contract.send }}</td>
+                                    <td>{{ contract.signed_at }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <h4>Klient {{ client.name }} nemá vytvořenou smlouvu.</h4>
+                    {% endif %}
+
+                {% elif client %}
+                    <h4>Klient {{ client.name }} nemá vytvořenou nabídku.</h4>
+                    <a class="btn btn-success" href="{% url "create-proposal" client.id %}">Vytvořit nabídku</a>
+                {% endif %}
+            </div>
+        </div>
+
+
+
+
+{% endblock %}

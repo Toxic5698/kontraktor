@@ -1,0 +1,23 @@
+{% extends "../main.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-body">
+            <p>Opravdu smazat klienta {{client.name}}?</p>
+
+
+            <form action="{% url 'delete-client' client.id %}" method="POST">
+            {% csrf_token%}
+
+            <a class ="btn btn-warning" href="{% url 'clients' %}">Zpět</a>
+
+            <input class="btn btn-danger" type="submit" name="Submit" value="Smazat">
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
