@@ -6,3 +6,8 @@ https://github.com/jazzband/django-widget-tweaks
 3. sledovaní stavu smluvy (zobrazení, podepsaní, dis) pro obsluhu
 
 4. šifrování osobních dat
+
+
+Docker issues
+ 146 static files copied to '/app/app/static'.
+

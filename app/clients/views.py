@@ -27,13 +27,13 @@ from operators.models import Operator
 class ClientsTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     table_class = ClientTable
     model = Client
-    template_name = "clients/../templates/clients/clients_list.html"
+    template_name = "clients/clients_list.html"
     filterset_class = ClientFilter
 
 
 class ClientCreateView(LoginRequiredMixin, CreateView):
     form_class = ClientForm
-    template_name = "clients/../templates/clients/edit_client.html"
+    template_name = "clients/edit_client.html"
     model = Client
 
     def get_success_url(self):
@@ -42,7 +42,7 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
 
 class ClientEditView(LoginRequiredMixin, UpdateView):
     model = Client
-    template_name = "clients/../templates/clients/edit_client.html"
+    template_name = "clients/edit_client.html"
     form_class = ClientForm
 
     def get_success_url(self):
@@ -52,7 +52,7 @@ class ClientEditView(LoginRequiredMixin, UpdateView):
 class ClientDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("clients")
     model = Client
-    template_name = "clients/../templates/clients/confirm_delete_client.html"
+    template_name = "clients/confirm_delete_client.html"
 
 
 class DocumentsToSignView(View):

@@ -20,7 +20,7 @@ from proposals.tables import ProposalTable
 class ProposalsTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     table_class = ProposalTable
     model = Proposal
-    template_name = "proposals/../templates/proposals/proposals_list.html"
+    template_name = "proposals/proposals_list.html"
     filterset_class = ProposalFilter
 
 
@@ -98,7 +98,7 @@ class ProposalEditView(LoginRequiredMixin, View):
 
 class ProposalDeleteView(LoginRequiredMixin, DeleteView):
     model = Proposal
-    template_name = 'proposals/../templates/proposals/confirm_delete_proposal.html'
+    template_name = 'proposals/confirm_delete_proposal.html'
     success_url = reverse_lazy("proposals")
 
 

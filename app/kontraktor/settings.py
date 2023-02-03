@@ -16,7 +16,7 @@ env = environ.Env(
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '../../.env'))
+environ.Env.read_env(os.path.join(BASE_DIR, '../.env'))
 
 # Configurable by env
 SECRET_KEY = env('SECRET_KEY')
@@ -77,7 +77,7 @@ ROOT_URLCONF = 'kontraktor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ["app/templates"],
+        'DIRS': ["templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,11 +132,11 @@ USE_THOUSAND_SEPARATOR = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = 'app/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'staticfiles/'),
-
-]
+STATIC_ROOT = 'static/'
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'staticfiles/'),
+#
+# ]
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',

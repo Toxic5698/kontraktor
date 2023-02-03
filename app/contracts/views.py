@@ -68,13 +68,13 @@ class ContractUpdateView(LoginRequiredMixin, View):
 class ContractDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("contracts")
     model = Contract
-    template_name = "contracts/../templates/contracts/confirm_delete_contract.html"
+    template_name = "contracts/confirm_delete_contract.html"
 
 
 class ContractsTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     table_class = ContractTable
     model = Contract
-    template_name = "contracts/../templates/contracts/contract_list.html"
+    template_name = "contracts/contract_list.html"
     filterset_class = ContractFilter
 
 

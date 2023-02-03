@@ -41,7 +41,7 @@ class AttachmentManageView(LoginRequiredMixin, View):
 
 class AttachmentDeleteView(LoginRequiredMixin, DeleteView):
     model = Attachment
-    template_name = "attachments/../templates/attachments/confirm_delete_attachment.html"
+    template_name = "attachments/confirm_delete_attachment.html"
 
     def get_success_url(self):
         return reverse_lazy("manage-attachments", args=(self.get_object().client_id,))

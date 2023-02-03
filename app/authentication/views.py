@@ -6,7 +6,7 @@ from operators.models import Operator
 
 
 class Login(LoginView):
-    template_name = "auth/../templates/auth/login.html"
+    template_name = "auth/login.html"
     next_page = reverse_lazy("clients")
     redirect_authenticated_user = reverse_lazy("clients")
 
@@ -22,4 +22,4 @@ class Logout(LoginRequiredMixin, LogoutView):
 
 
 class PasswordChange(LoginRequiredMixin, PasswordChangeView):
-    template_name = "auth/../templates/auth/password_change.html"
+    template_name = "auth/password_change.html"
