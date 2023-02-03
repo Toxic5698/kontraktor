@@ -17,6 +17,8 @@ services:
       - "80:8000"
     depends_on:
       - django_gunicorn
+    expose:
+      - "80"
 
   db:
     image: postgres:14.6
