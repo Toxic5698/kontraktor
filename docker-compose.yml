@@ -14,11 +14,9 @@ services:
     volumes:
       - static:/static
     ports:
-      - "80:8000"
+      - "80:80"
     depends_on:
       - django_gunicorn
-    expose:
-      - "80"
 
   db:
     image: postgres:14.6
