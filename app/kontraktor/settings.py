@@ -9,7 +9,8 @@ env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, ["127.0.0.1"]),
     DBBACKUP_STORAGE_OPTIONS=(dict, {'location': 'backup/'}),
-    SECRET_KEY=(str, "kjfdlskfjadsklůfhoajfkl55Z656W554534534dkfjdsklf")
+    SECRET_KEY=(str, "kjfdlskfjadsklůfhoajfkl55Z656W554534534dkfjdsklf"),
+    CSRF_TRUSTED_ORIGINS=(list, ['https://*.cechpetr.cz', 'http://*.cechpetr.cz',])
 
 )
 
@@ -22,6 +23,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '../.env'))
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 DBBACKUP_STORAGE_OPTIONS = env.dict("DBBACKUP_STORAGE_OPTIONS")
 DATABASES = {
         'default': env.db_url(
