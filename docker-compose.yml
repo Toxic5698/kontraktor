@@ -1,34 +1,36 @@
-version: '3.8'
+version: '3'
+
 services:
-  django_gunicorn:
-    volumes:
-      - static:/static
-    env_file:
-      - .env
+  web:
+    restart: always
     build:
       context: .
     expose:
       - "8000"
-  nginx:
-    build: ./nginx
+    links:
+      - postgres:postgres
     volumes:
-      - static:/static
+      - web-static:/static
+    env_file: .env
+
+  nginx:
+    restart: always
+    build: ./nginx/
     ports:
       - "80:80"
-    depends_on:
-      - django_gunicorn
-
-  db:
-    image: postgres:14.6
     volumes:
-      - pg_data:/var/lib/postgresql/data/
-    expose:
-      - 5432
-    environment:
-      - POSTGRES_USER=kontraktor
-      - POSTGRES_PASSWORD=gtdkjap58439kjfaLKJL
-      - POSTGRES_DB=kontraktor
+      - web-static:/static
+    links:
+      - web:web
+
+  postgres:
+    restart: always
+    image: postgres:latest
+    ports:
+      - "5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
 
 volumes:
-  static:
-  pg_data:
+  web-static:
+  pgdata:
