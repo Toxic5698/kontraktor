@@ -1,7 +1,6 @@
 server {
 
     listen 80;
-    server_name kontraktor.cechpetr.cz;
     charset utf-8;
 
     location /static {
