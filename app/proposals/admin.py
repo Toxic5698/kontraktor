@@ -1,7 +1,7 @@
 from django.contrib.admin import site
 from django.contrib import admin
 
-from proposals.models import Proposal, UploadedProposal, Item
+from proposals.models import Proposal, UploadedProposal, Item, ContractType
 
 
 class ItemInline(admin.TabularInline):
@@ -25,5 +25,11 @@ class UploadedProposalAdmin(admin.ModelAdmin):
     fields = ("file", "file_name", "priority", "proposal")
 
 
+class ContractTypeAdmin(admin.ModelAdmin):
+    model = ContractType
+    fields = ("type", "name")
+
+
 site.register(Proposal, ProposalAdmin)
 site.register(UploadedProposal, UploadedProposalAdmin)
+site.register(ContractType, ContractTypeAdmin)
