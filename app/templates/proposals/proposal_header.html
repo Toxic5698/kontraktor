@@ -3,8 +3,8 @@
 {% elif proposal.contract_type.type == "DILO" %}
     <h4>Zhotovitel</h4>
 {% endif %}
-<h5><b>D E T A, spol. s r.o.</b></h5>
-<p>IČ 46992966, se sídlem Heršpická 11c, 612 00 Brno, zastoupená Kamilem Sedlákem, ředitelem</p>
+<h5><b>{{ operator.name }}</b></h5>
+<p>IČ {{ operator.id_number }}, se sídlem {{ operator.address }}, zastoupená {{ operator.acting_person }}</p>
 
 {% if proposal.contract_type.type == "KOUPE" %}
     <h4>Kupující</h4>
