@@ -16,7 +16,7 @@ class AttachmentManageView(LoginRequiredMixin, View):
         form = AttachmentUploadForm()
         client = Client.objects.get(pk=pk)
         context = {"form": form, "client": client}
-        return TemplateResponse(request=request, template="attachments/../templates/attachments/manage_attachments.html", context=context)
+        return TemplateResponse(request=request, template="attachments/manage_attachments.html", context=context)
 
     def post(self, request, pk, *args, **kwargs):
         if len(request.FILES) > 0:

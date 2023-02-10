@@ -43,7 +43,7 @@ class ContractUpdateView(LoginRequiredMixin, View):
             "proposal_form": proposal_form,
             "operator": Operator.objects.get()
         }
-        return TemplateResponse(request=request, template="contracts/../templates/contracts/edit_contract.html", context=context)
+        return TemplateResponse(request=request, template="contracts/edit_contract.html", context=context)
 
     def post(self, request, pk, *args, **kwargs):
         contract = Contract.objects.get(pk=pk)
