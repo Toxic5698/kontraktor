@@ -81,7 +81,7 @@ class ProposalEditView(LoginRequiredMixin, View):
                 contract_type=ContractType.objects.get(id=data["contract_type"]),
                 fulfillment_at=data["fulfillment_at"],
                 fulfillment_place=data["fulfillment_place"],
-                created_by=data["user"]
+                created_by=request.user,
             )
 
         if len(request.FILES) > 0:
