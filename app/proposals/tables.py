@@ -8,12 +8,20 @@ from proposals.models import Proposal, Item
 class ProposalTable(Table):
     delete = LinkColumn('delete-proposal', text="Smazat", args=[A("pk")], verbose_name="Smazat", orderable=False)
     proposal_number = Column(linkify=("edit-proposal", [A("pk")]))
+    items_quantity = Column(verbose_name="Počet položek", empty_values=())
+    edited = Column(verbose_name="Vytvořená/Upravená", empty_values=())
 
     class Meta:
         model = Proposal
         template_name = 'django_tables2/bootstrap4.html'
-        fields = ("proposal_number", "client", "items_quantity", "price", "created_at", "edited_at", )
+        fields = ("proposal_number", "client", "items_quantity", "fulfillment_place", "fulfillment_at", "price", "edited", "signed_at",)
         attrs = {"class": "table table-hover table-striped"}
+
+    def render_items_quantity(self, record, value):
+        return record.items.count()
+
+    def render_edited(self, record, value):
+        return f"{record.created_at.strftime('%d. %m. %Y')}/{record.edited_at.strftime('%d. %m. %Y')}"
 
 
 class ItemTable(Table):

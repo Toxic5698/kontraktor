@@ -78,7 +78,8 @@
                         <th scope="col">Číslo nabídky</th>
                         <th scope="col">Vytvořena dne</th>
                         <th scope="col">Podkladová nabídka</th>
-                        <th scope="col">Odeslána klientovi</th>
+                        <th scope="col">Cena</th>
+                        <th scope="col">Stav</th>
                         </thead>
                         <tbody>
                         {% for proposal in client.proposals.all %}
@@ -87,7 +88,8 @@
                                 </td>
                                 <td>{{ proposal.created_at }}</td>
                                 <td>{{ proposal.uploaded.last.file_name }}</td>
-                                <td>{{ proposal.signed_at }}</td>
+                                <td>{{ proposal.price }}</td>
+                                <td>{% if proposal.signed_at %}potvrzena {{ proposal.signed_at }}{% else %}-{% endif %}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -100,8 +102,8 @@
                             <th scope="col">Číslo smlouvy</th>
                             <th scope="col">Vytvořena dne</th>
                             <th scope="col">Vychází z nabídky</th>
-                            <th scope="col">Odeslaná klientovi</th>
-                            <th scope="col">Podepsaná klientem</th>
+                            <th scope="col">Cena</th>
+                            <th scope="col">Stav</th>
                             </thead>
                             <tbody>
                             {% for contract in client.contracts.all %}
@@ -111,8 +113,8 @@
                                     </td>
                                     <td>{{ contract.created_at }}</td>
                                     <td>{{ contract.proposal.proposal_number }}</td>
-                                    <td>{{ contract.send }}</td>
-                                    <td>{{ contract.signed_at }}</td>
+                                    <td>{{ contract.proposal.price }}</td>
+                                    <td>{% if contract.signed_at %}potvrzena {{ contract.signed_at }}{% else %}-{% endif %}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
