@@ -13,7 +13,7 @@ class ProposalFilter(django_filters.FilterSet):
         fields = ["name_email_place_address", "price"]
 
     def filter_contains(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(email__icontains=value) |
-                               Q(fulfillment_place__icontains=value) | Q(address__icontains=value) |
-                               Q(contract_number__icontains=value))
+        return queryset.filter(Q(client__name__icontains=value) | Q(client__email__icontains=value) |
+                               Q(fulfillment_place__icontains=value) | Q(client__address__icontains=value) |
+                               Q(proposal_number__icontains=value))
 

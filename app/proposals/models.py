@@ -51,7 +51,7 @@ class Proposal(Model):
     def save(self, *args, **kwargs):
         if self.id:
             if self.items.all():
-                self.price = self.items.all().aggregate(Sum("sale_price"))["sale_price__sum"]
+                self.price = self.items.all().aggregate(Sum("total_sale_price"))["total_sale_price__sum"]
                 check_payments(self)
         self.edited_at = timezone.now()
         super(Proposal, self).save(*args, **kwargs)
@@ -90,8 +90,10 @@ class Item(Model):
     priority = IntegerField(null=True, verbose_name="pořadí", blank=True)
     title = CharField(max_length=200, blank=True, null=True, verbose_name="název")
     description = CharField(max_length=1000, blank=True, null=True, verbose_name="popis")
-    production_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="cena", null=True, blank=True)
-    sale_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="cena", null=True, blank=True)
+    production_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="nákladová cena za jednotku",
+                                    null=True, blank=True)
+    sale_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="cena ze jednotku", null=True, blank=True)
+    total_sale_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="celková cena", null=True, blank=True)
     sale_discount = IntegerField(null=True, blank=True, verbose_name="sleva")
     revenue = DecimalField(null=True, blank=True, verbose_name="zisk", decimal_places=2, max_digits=10)
     quantity = IntegerField(null=True, blank=True, verbose_name="množství")
@@ -112,7 +114,7 @@ class Item(Model):
 
     def clean(self, **kwargs):
         self.priority = self.get_priority() if not self.priority else self.priority
-        if len(kwargs) > 0 and "force_insert" not in kwargs.keys(): # data from form
+        if len(kwargs) > 0 and "force_insert" not in kwargs.keys():  # data from form
             for key in kwargs.keys():
                 if key in ["production_price", "sale_price"]:
                     setattr(self, key, self.price_format(kwargs[key]))
@@ -121,7 +123,7 @@ class Item(Model):
                 else:
                     setattr(self, key, kwargs[key])
 
-        else: # data from uploaded proposal
+        else:  # data from uploaded proposal
             self.title = self.title if self.title else ""
             self.description = self.description if self.description else ""
             self.production_price = Decimal(self.production_price) if self.production_price else 0
@@ -134,7 +136,10 @@ class Item(Model):
     def save(self, *args, **kwargs):
         self.clean(**kwargs)
         if self.production_price and self.sale_price:
-            self.revenue = self.price_format(self.sale_price) - self.price_format(self.production_price)
+            self.revenue = self.get_revenue()
+        if self.sale_price and self.quantity:
+            self.total_sale_price = (int(self.sale_price) * int(self.quantity)) * (
+                        (100 - int(self.sale_discount)) / 100)
         super(Item, self).save()
         self.proposal.save()
 
@@ -161,6 +166,15 @@ class Item(Model):
         if data is None or data == "":
             return 0
         return int(data)
+
+    def get_revenue(self):
+        production_price = int(self.production_price)
+        sale_price = int(self.sale_price)
+        quantity = int(self.quantity)
+        discount = int(self.sale_discount)
+        revenue = ((sale_price * quantity) * ((100 - discount) / 100)) - (
+                production_price * quantity)
+        return Decimal(revenue)
 
 
 class Payment(Model):

@@ -11,6 +11,6 @@ class ClientFilter(django_filters.FilterSet):
         model = Client
         fields = ["name_email_address", ]
 
-    def filter_contains(self, queryset, value):
+    def filter_contains(self, queryset, name, value):
         return queryset.filter(Q(name__icontains=value) | Q(email__icontains=value) | Q(address__icontains=value))
 
