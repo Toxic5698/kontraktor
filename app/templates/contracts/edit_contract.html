@@ -55,15 +55,13 @@
                 </div>
                 <input class="btn btn-success" type="submit" value="Uložit" name="proposal">
             </form>
+        <br>
         </div>
+
 
 
         <div class="col-md-6">
             {% include "proposals/../proposals/payments.html" %}
-
-            <h4>Náhled hlavičky smlouvy</h4>
-            <br>
-            {% include "contracts/contract_header.html" %}
             <br>
             {% if edited_cores %}
                 <h4>Ustanovení, která byla pro tuto smlouvu změněna</h4>

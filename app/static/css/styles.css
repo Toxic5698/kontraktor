@@ -1,0 +1,222 @@
+/* lines */
+.blue-dotted-line {
+    color: rgb(52, 180, 180);
+    letter-spacing: 0.3pt;
+    font-size: 1pt;
+    height: 1pt;
+}
+
+.small-margin-line {
+    margin-top: 7.5mm;
+    margin-bottom: 7.5mm;
+}
+
+.big-margin-line {
+    margin-top: 3mm;
+    margin-bottom: 3mm;
+}
+
+/* contact */
+.contact-section {
+    font-size: 7pt;
+  }
+
+.contact-header {
+color: rgb(52, 180, 180);
+font-weight: 700;
+padding-bottom: 0.2em;
+}
+
+.web-link {
+text-align: right;
+padding-bottom: 1pt;
+}
+
+.web-link a {
+font-weight: 700;
+font-size: 11pt;
+color: rgb(52, 180, 180);
+text-decoration: none;
+}
+
+/* page headers */
+.title-page-header {
+    width: 100mm;
+    height: 20mm;
+    color: #34b4b4;
+    padding: 3mm 3mm 3mm 3mm;
+    text-align: center;
+}
+
+.standard-page-header {
+    height: 20mm;
+    background-color: rgb(255, 255, 255);
+    color: #34b4b4;
+}
+
+.header-text {
+    font-weight: 700;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.header-title {
+    font-size: 10pt;
+    margin-left: 7mm;
+    /* hack fix for phantom bottom margin so we can properly vertically align the title.
+       For some reason this is not needed for the first page header title.
+    */
+    padding-top: 1mm;
+}
+
+.first-page-header-title {
+    font-size: 15pt;
+    margin-left: -7mm;
+}
+
+.header-logo {
+    text-align: right;
+    margin-right: 7mm;
+}
+
+
+/* footer */
+.page-counter {
+    font-size: 7px;
+    color: black;
+    text-align: center;
+}
+
+/* +-------------------+ */
+/* |  DOCUMENT STYLES  | */
+/* +-------------------+ */
+body {
+    font-size: 10pt;
+    color: black;
+    font-family: 'TiltNeon';
+}
+
+h1 {
+    font-size: 22pt;
+    color: rgb(52, 180, 180);
+    font-family: 'TiltNeon';
+    margin-bottom: 0;
+    line-height: 10mm;
+    text-align: center;
+}
+
+h2 {
+    font-size: 11pt;
+    font-weight: bold;
+    line-height: 5mm;
+}
+
+.extra-bold {
+    font-family: 'TiltNeon';
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.primary-color-text {
+    color: rgb(52, 180, 180);
+}
+
+.data-table {
+    margin-top: 7.5mm;
+    margin-bottom: 1.5mm;
+    font-size: 11pt;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;;
+}
+
+.list-with-headers {
+    /*
+    ---- Expected HTML structure is:
+    1) non numbered list
+        <div class="list-with-headers">
+            <headline tag>Title</headline tag>
+            <element containing text/ordered list/unordered list>
+        </div>
+
+    2) list with numbered headlines
+        - blocks under headlines have margin-left so it simulates OL or UL look.
+        - must manually number headlines
+
+        <div class="list-with-headers">
+            <headline tag>1. Numbered title</headline tag>
+            <div>
+                <element containing text/ordered list/unordered list>
+            </div>
+        </div>
+
+
+
+    ---- Reasoning: this is to avoid having 2 differents list structures and classes to use, as xhtml2pdf won't number
+    an element in a list if <li> tag is immediately followed by another tag. So something like:
+
+    <ol>
+        <li>
+            <h3>Numbered title</h3>
+            <p>Paragraph...</p>
+        </li>
+    </ol>
+
+    will NOT render "1. Numbered title".
+    */
+
+    font-size: 9pt;
+    text-align: justify;
+}
+
+.list-with-headers>h2,
+.list-with-headers>h3,
+.list-with-headers>h4 {
+    color: rgb(52, 180, 180);
+    font-weight: bold;
+    margin-bottom: 0mm;
+}
+
+.list-with-headers > div {
+    margin-left: 4mm;
+}
+
+.list-numbers {
+    list-style: decimal;
+}
+
+.list-letters {
+    list-style: lower-alpha;
+}
+
+.list-circles {
+    list-style: circle;
+}
+
+.summary-table th {
+    color: white;
+    background-color: rgb(52, 180, 180);
+    text-align: left;
+}
+
+.summary-table tr {
+    padding-top: 1.2mm;
+    padding-bottom: 0.2mm;
+    margin-left: 2mm;
+}
+
+.summary-table td {
+    border-bottom: 0.3mm rgb(188, 225, 237) solid;
+}
+
+.justify-list-item {
+    text-align: justify;
+    text-justify: inter-word;
+}

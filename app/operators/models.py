@@ -8,6 +8,8 @@ class Operator(Model):
     bank_number = CharField(max_length=30, verbose_name="Číslo účtu")
     acting_person = CharField(max_length=200, verbose_name="Zastoupená...")
     web = CharField(max_length=100, verbose_name="Link operátora", null=True, blank=True)
+    email = CharField(max_length=100, verbose_name="Email", null=True, blank=True)
+    phone_number = CharField(max_length=100, verbose_name="Telefon", null=True, blank=True)
 
     class Meta:
         verbose_name = "Operator"

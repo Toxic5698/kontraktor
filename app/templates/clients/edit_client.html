@@ -88,7 +88,7 @@
                                 </td>
                                 <td>{{ proposal.created_at }}</td>
                                 <td>{{ proposal.uploaded.last.file_name }}</td>
-                                <td>{{ proposal.price }}</td>
+                                <td>{{ proposal.price_netto }}</td>
                                 <td>{% if proposal.signed_at %}potvrzena {{ proposal.signed_at }}{% else %}-{% endif %}</td>
                             </tr>
                         {% endfor %}
@@ -113,7 +113,7 @@
                                     </td>
                                     <td>{{ contract.created_at }}</td>
                                     <td>{{ contract.proposal.proposal_number }}</td>
-                                    <td>{{ contract.proposal.price }}</td>
+                                    <td>{{ contract.proposal.price_netto }}</td>
                                     <td>{% if contract.signed_at %}potvrzena {{ contract.signed_at }}{% else %}-{% endif %}</td>
                                 </tr>
                             {% endfor %}

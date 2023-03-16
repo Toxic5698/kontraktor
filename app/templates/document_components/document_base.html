@@ -1,0 +1,124 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>
+        {% if contract %}
+            Smlouva z kontraktoru
+        {% elif proposal %}
+            Nabídka z kontraktoru
+        {% endif %}
+        </title>
+        <link rel="icon" href="{% static "icons/icon.png" %}" type="image/png">
+        <link rel="shortcut icon" href="{% static "icons/icon.png" %}" type="image/png">
+
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+        <style>
+            @font-face {
+                font-family: 'TiltNeon';
+                font-weight: normal;
+                font-style: normal;
+                src: url('{% static "fonts/TiltNeon-Regular.ttf" %}');
+            }
+
+            @font-face {
+                font-family: 'TiltNeon';
+                font-weight: bold;
+                font-style: normal;
+                src: url('{% static "fonts/TiltNeon-Regular.ttf" %}');
+            }
+
+            /* the xhtml2pdf library can import only one of "bold" or "extra-bold" but not both at the same time. */
+            /* So if you want to use the "extra-bold" font weight, use this font family or "extra-bold" class below. */
+            @font-face {
+                font-family: 'TiltNeonExtraBold';
+                font-weight: normal;
+                src: url('{% static "fonts/TiltNeon-Regular.ttf" %}');
+            }
+
+            @page {
+                size: a4 portrait;
+                margin-top: 30mm;
+                margin-left: 12mm;
+                margin-right: 12mm;
+                margin-bottom: {% block first_page_margin_bottom %}30mm{% endblock %};
+
+
+                @frame first_page_header {
+                    -pdf-frame-content: first-header-frame;
+                }
+
+                @frame first_page_footer {
+                    -pdf-frame-content: footer-frame;
+                    margin-top: {% block footer_margin_top %}265mm{% endblock %};
+                    margin-left: 12mm;
+                    margin-right: 12mm;
+                }
+            }
+
+            @page standard_page {
+                size: a4 portrait;
+                margin-top: 38mm;
+                margin-left: 12mm;
+                margin-right: 12mm;
+                margin-bottom: 40mm;
+
+                @frame header_frame {
+                    -pdf-frame-content: header-frame;
+                    margin-top: 9mm;
+                    margin-left: 12mm;
+                    margin-right: 12mm;
+                }
+
+                @frame footer_frame {
+                    -pdf-frame-content: footer-frame;
+                    margin-top: 265mm;
+                    margin-left: 12mm;
+                    margin-right: 12mm
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="first-header-frame">
+            {% block first_header %}
+            {% include "document_components/first_page_header.html" %}
+            {% endblock %}
+        </div>
+
+        <!--
+            Header is not as a separate component so we can pass document_title block from the individual doc templates
+        -->
+        <div id="header-frame">
+            <table class="standard-page-header">
+                <thead>
+                    <tr>
+                        <td style="width: 50%;" class="header-text header-title">
+                        {% if proposal %}
+                            Nabídka č. {{ proposal.proposal_number }}
+                        {% elif contract %}
+                            Smlouva č. {{ proposal.contract_number }}
+                        {% endif %}
+                        </td>
+                        <td style="width: 50%;" class="header-logo">
+                            <img src="{% static '/img/logo.png'%}" width="20mm" height="20mm"></img>
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div id="footer-frame">
+            {% block footer %}
+            {% include "document_components/footer.html" %}
+            {% endblock footer %}
+        </div>
+
+        <pdf:nexttemplate name="standard_page" />
+
+        {% block content %}{% endblock %}
+    </body>
+
+</html>

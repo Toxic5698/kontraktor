@@ -1,0 +1,21 @@
+
+<table class="contact-section">
+    <tbody>
+      <tr>
+        <td class="contact-header">{{ operator.name }}</td>
+        <td class="contact-header">Kontakt</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>{{ operator.address }}</td>
+        <td>e-mail: {{ operator.email }}</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>IČ {{ operator.id_number }}</td>
+        <td>tel: {{ operator.phone_number }}</td>
+        <td class="web-link"><a href="{{ operator.web }}">{{ operator.web }}</a></td>
+      </tr>
+    </tbody>
+</table>
+

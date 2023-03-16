@@ -15,7 +15,7 @@ class ProposalTable(Table):
     class Meta:
         model = Proposal
         template_name = 'django_tables2/bootstrap4.html'
-        fields = ("proposal_number", "client", "items_quantity", "price", "fulfillment_place", "fulfillment_at",
+        fields = ("proposal_number", "client", "items_quantity", "price_netto", "fulfillment_place", "fulfillment_at",
                   "client__attachments__filter_proposals__count", "edited", "signed_at",)
         attrs = {"class": "table table-hover table-striped"}
 

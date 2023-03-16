@@ -16,7 +16,7 @@ class ContractTable(Table):
     class Meta:
         model = Contract
         template_name = 'django_tables2/bootstrap-responsive.html'
-        fields = ("contract_number", "client__name", "proposal__items__count", "proposal__price",
+        fields = ("contract_number", "client__name", "proposal__items__count", "proposal__price_netto",
                   "proposal__fulfillment_at", "proposal__fulfillment_place",
                   "client__attachments__filter_contracts__count", "edited_at", "signed_at",
                   )

@@ -1,0 +1,33 @@
+<table class="data-table">
+    <tbody>
+    <tr>
+        <td colspan="2" style="padding-bottom: 1mm;">
+            <span style="font-size: 11pt;" class="primary-color-text"><em>{{ operator.name }}</em></span>
+        </td>
+    </tr>
+    <tr>
+        <td>se sídlem:</td>
+        <td>{{ operator.address }}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold;">IČ:</td>
+        <td>{{ operator.id_number }}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold;">zastoupená:</td>
+        <td>{{ operator.acting_person }}</td>
+    </tr>
+    <td colspan="2" style="padding-top: 1mm;">
+            <span>na straně jedné (dále jen též "
+                <em class="extra-bold primary-color-text">
+                {% if proposal.contract_type.type == "KOUPE" %}
+                    prodávající
+                {% elif proposal.contract_type.type == "DILO" %}
+                    zhotovitel
+                {% endif %}
+                </em>
+                ")
+            </span>
+    </td>
+    </tbody>
+</table>

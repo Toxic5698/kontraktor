@@ -1,0 +1,34 @@
+{% load static %}
+<table class="data-table">
+    <tr>
+        <td>V Brně dne {% if contract.signed_at %}{{ contract.signed_at }}{% else %}...{% endif %}</td>
+    </tr>
+    <tr>
+        <td style="width: 50%;" class="text-center">
+            <img src="{% static 'img/podpis.png' %}" width="40mm">
+        </td>
+        <td style="width: 50%;" class="text-center">
+            <label>podpis klienta</label>
+        </td>
+    </tr>
+    <tr>
+        <td class="text-center">
+            <em class="extra-bold primary-color-text">
+                {% if proposal.contract_type.type == "KOUPE" %}
+                    prodávající
+                {% elif proposal.contract_type.type == "DILO" %}
+                    zhotovitel
+                {% endif %}
+            </em>
+        </td>
+        <td class="text-center">
+            <em class="extra-bold primary-color-text">
+                {% if proposal.contract_type.type == "KOUPE" %}
+                    kupující
+                {% elif proposal.contract_type.type == "DILO" %}
+                    objednatel
+                {% endif %}
+            </em>
+        </td>
+    </tr>
+</table>

@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -132,15 +134,6 @@ class ProposalItemsView(LoginRequiredMixin, View):
                 item.save(**data)
 
         return redirect('edit-items', proposal.id)
-
-
-class ProposalGenerateView(LoginRequiredMixin, View):
-    def get(self, request, pk=None, *args, **kwargs):
-        proposal = Proposal.objects.get(pk=pk)
-        context = {
-            "proposal": proposal,
-        }
-        return TemplateResponse(template="proposals/proposal_mustr.html", context=context, request=request)
 
 
 class ProposalSendView(LoginRequiredMixin, View):

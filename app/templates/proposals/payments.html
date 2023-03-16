@@ -1,7 +1,7 @@
 {% block content %}
     <h4 class="mt-2">Platební podmínky</h4>
     <div class="row">
-        <p>Celková cena je {{ proposal.price }} Kč a je rozložena do plateb:</p>
+        <p>Celková cena je {{ proposal.price_brutto }} Kč a je rozložena do plateb:</p>
     </div>
     <ol>
         <form method="post" action="{% url "edit-payments" proposal.id %}">

@@ -1,9 +1,13 @@
 import functools
 import ssl
+from datetime import timedelta
 
+from easy_pdf.views import PDFTemplateView
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
+from django.template.loader import get_template
 from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -15,6 +19,7 @@ from django_tables2 import SingleTableMixin
 from django_weasyprint import WeasyTemplateResponseMixin
 from django_weasyprint.utils import django_url_fetcher
 from django_weasyprint.views import WeasyTemplateResponse
+from weasyprint import HTML, CSS
 
 from clients.filters import ClientFilter
 from clients.forms import ClientForm
@@ -74,7 +79,7 @@ class DocumentsToSignView(View):
                 "id": proposal.id,
                 "type": "proposal",
                 "title": f"Nabídka č. {proposal.proposal_number}",
-                "price": proposal.price,
+                "price": proposal.price_brutto,
                 "attachments": client.attachments.filter_proposals(),
                 "attachments_count": client.attachments.filter_proposals().count(),
                 "signed": True if proposal.signed_at else False,
@@ -91,7 +96,7 @@ class DocumentsToSignView(View):
                 "id": contract.id,
                 "type": "contract",
                 "title": f"Smlouva č. {contract.contract_number}",
-                "price": contract.proposal.price,
+                "price": contract.proposal.price_brutto,
                 "attachments": client.attachments.filter_contracts(),
                 "attachments_count": client.attachments.filter_contracts().count(),
                 "signed": True if contract.signed_at else False,
@@ -117,7 +122,7 @@ class SigningDocument(View):
         return reverse_lazy("document-to-sign", document.client.sing_code)
 
 
-class MyDetailView(DetailView):
+class DocumentView(PDFTemplateView):
 
     def get_queryset(self):
         model = apps.get_model(model_name=self.kwargs["type"], app_label=(self.kwargs["type"] + "s"))
@@ -144,49 +149,9 @@ class MyDetailView(DetailView):
                     context["cores_" + str(index)] = cores
 
         if self.kwargs["type"] == "proposal":
-            context["proposal"] = self.get_queryset().get()
+            proposal = self.get_queryset().get()
+            context["proposal"] = proposal
+            context["proposal_validity"] = proposal.edited_at + timedelta(days=14)
+            context["production_data"] = proposal.items.filter(production_data__isnull=False)
 
         return context
-
-
-def custom_url_fetcher(url, *args, **kwargs):
-    # rewrite requests for CDN URLs to file path in STATIC_ROOT to use local file
-    storage_url = 'http://127.0.0.1:8099/'
-    if url.startswith(storage_url):
-        url = 'file://' + url.replace(storage_url, settings.STATIC_URL)
-    return django_url_fetcher(url, *args, **kwargs)
-
-
-class CustomWeasyTemplateResponse(WeasyTemplateResponse):
-    # customized response class to pass a kwarg to URL fetcher
-    def get_url_fetcher(self):
-        # disable host and certificate check
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-        return functools.partial(custom_url_fetcher, ssl_context=context)
-
-
-class PrintView(WeasyTemplateResponseMixin, MyDetailView):
-    # output of MyDetailView rendered as PDF with hardcoded CSS
-    # pdf_stylesheets = [
-    #     settings.STATIC_ROOT + 'css/css',
-    # ]
-    # show pdf in-line (default: True, show download dialog)
-    pdf_attachment = True
-    # custom response class to configure url-fetcher
-    response_class = CustomWeasyTemplateResponse
-
-
-class DownloadView(WeasyTemplateResponseMixin, MyDetailView):
-    # suggested filename (is required for attachment/download!)
-    pdf_filename = 'foo.pdf'
-
-
-class DynamicDocumentView(WeasyTemplateResponseMixin, MyDetailView):
-
-    # dynamically generate filename
-    def get_pdf_filename(self):
-        return 'foo-{at}.pdf'.format(
-            at=timezone.now().strftime('%Y%m%d-%H%M'),
-        )

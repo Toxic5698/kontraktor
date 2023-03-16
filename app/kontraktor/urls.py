@@ -18,7 +18,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from clients.views import DocumentsToSignView, PrintView
+from clients.views import DocumentsToSignView, DocumentView
 from operators.views import WelcomePageView
 
 urlpatterns = [
@@ -31,7 +31,7 @@ urlpatterns = [
 
     path("", WelcomePageView.as_view(), name="wp"),
     path("<str:sign_code>", DocumentsToSignView.as_view(), name="document-to-sign"),
-    path("<str:sign_code>/<str:type>/<int:pk>", PrintView.as_view(), name="print-document")
+    path("<str:sign_code>/<str:type>/<int:pk>", DocumentView.as_view(), name="print-document")
 
 
 ]

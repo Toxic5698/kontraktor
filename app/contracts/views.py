@@ -18,7 +18,6 @@ from contracts.filters import ContractFilter
 
 class ContractCreateView(LoginRequiredMixin, View):
     def post(self, request, proposal_id, *args, **kwargs):
-        # TODO: zkontrolovat všechny údaje než se smlova vytvoří a poslat zprávu o chybějících
         proposal = Proposal.objects.get(id=proposal_id)
         contract = Contract.objects.create(
             proposal=proposal,

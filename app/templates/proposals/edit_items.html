@@ -43,9 +43,9 @@
                             <input name="production_price" class="form-control" value="{{ item.production_price|stringformat:"d" }}" type="number">
                             {% endif %}
                         </td>
-                        <td><input name="sale_price" value="{{ item.sale_price|stringformat:"d" }}" class="form-control" required type="number"></td>
+                        <td><input name="price_per_unit" value="{{ item.price_per_unit|stringformat:"d" }}" class="form-control" required type="number"></td>
                         <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number"></td>
-                        <td>{{ item.total_sale_price }}</td>
+                        <td>{{ item.total_price }}</td>
                         <td>{{ item.revenue }}</td>
 
                         <td>
@@ -82,7 +82,7 @@
                         <td>
                             <input name="production_price" class="form-control" type="number">
                         </td>
-                        <td><input name="sale_price" value="{{ item.sale_price }}" class="form-control" required type="number"></td>
+                        <td><input name="price_per_unit" value="{{ item.price_per_unit }}" class="form-control" required type="number"></td>
                         <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number"></td>
                         <td>-</td>
                         <td>-</td>

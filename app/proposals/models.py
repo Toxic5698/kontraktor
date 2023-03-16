@@ -13,6 +13,15 @@ from proposals.managers import PaymentManager
 class ContractType(Model):
     type = CharField(max_length=255, blank=False, null=False)
     name = CharField(max_length=255, blank=False, null=True)
+    vat = IntegerField(default=21)
+
+    def __str__(self):
+        return self.name
+
+
+class ContractSubject(Model):
+    code = CharField(max_length=255, blank=False, null=False)
+    name = CharField(max_length=255, blank=False, null=True)
 
     def __str__(self):
         return self.name
@@ -27,12 +36,12 @@ class Proposal(Model):
     edited_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="proposal_edited_by",
                            verbose_name="Upravil")
     signed_at = DateField(blank=True, null=True, verbose_name="Potvrzena dne")
-
     contract_type = ForeignKey(ContractType, related_name="proposals", on_delete=SET_NULL, verbose_name="Typ smlouvy",
                                null=True)
-    subject = CharField(blank=True, null=True, max_length=100, choices=CONTRACT_SUBJECTS,
-                        verbose_name="Předmět nabídky")
-    price = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena", blank=True, null=True)
+    subject = ForeignKey(ContractSubject, related_name="proposals", on_delete=SET_NULL, verbose_name="Předmět nabídky",
+                               null=True)
+    price_netto = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena bez DPH", blank=True, null=True)
+    price_brutto = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena s DPH", blank=True, null=True)
     fulfillment_at = DateField(null=True, blank=True, verbose_name="Termín plnění")
     fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění", null=True, blank=True)
     client = ForeignKey(Client, related_name="proposals", on_delete=SET_NULL, verbose_name="klient", null=True,
@@ -51,7 +60,8 @@ class Proposal(Model):
     def save(self, *args, **kwargs):
         if self.id:
             if self.items.all():
-                self.price = self.items.all().aggregate(Sum("total_sale_price"))["total_sale_price__sum"]
+                self.price_netto = self.items.all().aggregate(Sum("total_price"))["total_price__sum"]
+                self.price_brutto = self.price_netto * Decimal((100 + self.contract_type.vat) / 100)
                 check_payments(self)
         self.edited_at = timezone.now()
         super(Proposal, self).save(*args, **kwargs)
@@ -92,8 +102,8 @@ class Item(Model):
     description = CharField(max_length=1000, blank=True, null=True, verbose_name="popis")
     production_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="nákladová cena za jednotku",
                                     null=True, blank=True)
-    sale_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="cena ze jednotku", null=True, blank=True)
-    total_sale_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="celková cena", null=True, blank=True)
+    price_per_unit = DecimalField(decimal_places=2, max_digits=10, verbose_name="cena ze jednotku", null=True, blank=True)
+    total_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="celková cena", null=True, blank=True)
     sale_discount = IntegerField(null=True, blank=True, verbose_name="sleva")
     revenue = DecimalField(null=True, blank=True, verbose_name="zisk", decimal_places=2, max_digits=10)
     quantity = IntegerField(null=True, blank=True, verbose_name="množství")
@@ -116,7 +126,7 @@ class Item(Model):
         self.priority = self.get_priority() if not self.priority else self.priority
         if len(kwargs) > 0 and "force_insert" not in kwargs.keys():  # data from form
             for key in kwargs.keys():
-                if key in ["production_price", "sale_price"]:
+                if key in ["production_price", "price_per_unit"]:
                     setattr(self, key, self.price_format(kwargs[key]))
                 elif key in ["sale_discount", "quantity"]:
                     setattr(self, key, self.number_format(kwargs[key]))
@@ -127,7 +137,7 @@ class Item(Model):
             self.title = self.title if self.title else ""
             self.description = self.description if self.description else ""
             self.production_price = Decimal(self.production_price) if self.production_price else 0
-            self.sale_price = Decimal(self.sale_price) if self.sale_price else 0
+            self.price_per_unit = Decimal(self.price_per_unit) if self.price_per_unit else 0
             self.sale_discount = self.sale_discount if self.sale_discount else 0
             self.quantity = self.quantity if self.quantity else 0
             self.production_date = self.production_date if self.production_date else ""
@@ -135,10 +145,10 @@ class Item(Model):
 
     def save(self, *args, **kwargs):
         self.clean(**kwargs)
-        if self.production_price and self.sale_price:
+        if self.production_price and self.price_per_unit:
             self.revenue = self.get_revenue()
-        if self.sale_price and self.quantity:
-            self.total_sale_price = (int(self.sale_price) * int(self.quantity)) * (
+        if self.price_per_unit and self.quantity:
+            self.total_price = (int(self.price_per_unit) * int(self.quantity)) * (
                         (100 - int(self.sale_discount)) / 100)
         super(Item, self).save()
         self.proposal.save()
@@ -169,10 +179,10 @@ class Item(Model):
 
     def get_revenue(self):
         production_price = int(self.production_price)
-        sale_price = int(self.sale_price)
+        price_per_unit = int(self.price_per_unit)
         quantity = int(self.quantity)
         discount = int(self.sale_discount)
-        revenue = ((sale_price * quantity) * ((100 - discount) / 100)) - (
+        revenue = ((price_per_unit * quantity) * ((100 - discount) / 100)) - (
                 production_price * quantity)
         return Decimal(revenue)
 
@@ -215,7 +225,7 @@ def check_payments(proposal):
     if not proposal.payments.all():
         Payment.objects.create(
             proposal=proposal,
-            amount=proposal.price,
+            amount=proposal.price_brutto,
             part=100,
             due="10"
         )
@@ -228,6 +238,6 @@ def check_payments(proposal):
             raise ValueError("Souhrn částí plateb se nerovná celku.")
         else:
             for payment in proposal.payments.all():
-                payment.amount = proposal.price * (payment.part / Decimal(100))
+                payment.amount = proposal.price_brutto * (payment.part / Decimal(100))
                 payment.save()
     return True
