@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -81,43 +82,60 @@ class ContractCoresEditView(LoginRequiredMixin, View):
 
     def get(self, request, pk, *args, **kwargs):
         contract = Contract.objects.get(id=pk)
-        cores = contract.contract_cores.all()
         context = {
             "contract": contract,
-            "cores": cores,
+            "cores": contract.contract_cores.all().order_by("contract_section__priority", "priority"),
+            "sections": contract.proposal.contract_type.contract_sections.all(),
         }
         return TemplateResponse(template="contracts/edit_cores.html", request=request, context=context)
 
     def post(self, request, pk, *args, **kwargs):
-        data = request.POST
+        data = request.POST.dict()
+        data.pop("csrfmiddlewaretoken")
         contract = Contract.objects.get(id=pk)
-        for id, text in data.items():
-            if id.isnumeric():
-                old_core = ContractCore.objects.get(id=id)
-                if old_core.text != text:
-                    # same in database
-                    match = ContractCore.objects.filter(text=text)  # redis?
-                    if match.count() == 1:
-                        contract.contract_cores.set(match)
-                        contract.contract_cores.remove(old_core)
-                    # TODO: implementovat sentry
-                    # elif match.count() > 1:
-                    #     print("pošli to do sentry")
-                    else:
-                        # make new core
-                        new_core = ContractCore.objects.create(
-                            text=text,
-                            priority=old_core.priority,
-                            essential=old_core.essential,
-                            editable=old_core.editable,
-                            parent_id=old_core.id,
-                            default=False,
-                        )
-                        new_core.contract_type.add(old_core.contract_type.get())  # how to add in create method?
-                        contract.contract_cores.add(new_core)
-                        contract.contract_cores.remove(old_core)
+        if "save_changes" in data.keys():
+            data.pop("save_changes")
+            for id, text in data.items():
+                if id.isnumeric():
+                    old_core = ContractCore.objects.get(id=id)
+                    if old_core.editable and old_core.text != text.strip("\r\n "):
+                        # same in database
+                        match = ContractCore.objects.filter(text=text.strip("\r\n "))  # redis?
+                        if match.count() == 1:
+                            contract.contract_cores.add(match.get())
+                            contract.contract_cores.remove(old_core)
+                        elif match.count() > 1:
+                            messages.warning(request, "Nalezeno více shodných ustanovení, kontaktujte správce systému.")
+                        else:
+                            # make new core
+                            new_core = ContractCore.objects.create(
+                                text=text.strip("\r\n "),
+                                contract_section=old_core.contract_section,
+                                priority=old_core.priority,
+                                essential=old_core.essential,
+                                editable=old_core.editable,
+                                parent_id=old_core.id,
+                                default=False,
+                            )
+                            new_core.contract_type.add(old_core.contract_type.get())  # how to add in create method?
+                            contract.contract_cores.add(new_core)
+                            contract.contract_cores.remove(old_core)
+        elif "save_new" in data.keys():
+            data.pop("save_new")
+            new_core = ContractCore.objects.create(
+                text=data.get("text").strip("\r\n "),
+                contract_section_id=data.get("section"),
+                priority=int(data.get("priority")),
+                essential=False,
+                editable=True,
+                default=False,
+            )
+            contract.contract_cores.add(new_core)
+        elif "remove_core" in data.keys():
+            core = ContractCore.objects.get(id=data.get("remove_core"))
+            contract.contract_cores.remove(core)
 
-        return redirect('edit-contract', contract.id)
+        return redirect('edit-cores', contract.id)
 
 
 class ContractSendView(LoginRequiredMixin, UpdateView):

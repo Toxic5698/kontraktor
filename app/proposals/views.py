@@ -1,5 +1,4 @@
-from datetime import timedelta
-
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -56,7 +55,6 @@ class ProposalEditView(LoginRequiredMixin, View):
             form = ProposalEditForm(request.POST, instance=proposal)
             if form.is_valid():
                 form.save()
-                # TODO: nějak to nacpat do formuláře
                 proposal.edited_by = request.user
                 proposal.save()
         else:
@@ -75,7 +73,8 @@ class ProposalEditView(LoginRequiredMixin, View):
                 )
 
             if Proposal.objects.filter(proposal_number=data["proposal_number"]).count() > 0:
-                raise ValueError("Nabídka s tímto číslem již existuje!")
+                messages.warning(request, "Nabídka s tímto číslem již existuje!")
+                return redirect("edit-proposal")
             proposal = Proposal.objects.create(
                 client=client,
                 proposal_number=data["proposal_number"],
@@ -86,7 +85,7 @@ class ProposalEditView(LoginRequiredMixin, View):
                 created_by=request.user,
             )
 
-        if len(request.FILES) > 0:
+        if len(request.FILES) > 0 and "proposal" in locals():
             file = request.FILES["file"]
             UploadedProposal.objects.create(
                 file=file,
@@ -138,7 +137,9 @@ class ProposalItemsView(LoginRequiredMixin, View):
 
 class ProposalSendView(LoginRequiredMixin, View):
     def get(self, request, pk=None, *args, **kwargs):
-        context = {}
+        context = {
+            "pk": pk,
+        }
         return TemplateResponse(template="proposals/send_proposal.html", context=context, request=request)
 
 
@@ -149,6 +150,9 @@ class PaymentsEditView(LoginRequiredMixin, View):
         for index, payment in enumerate(proposal.payments.all()):
             payment.part = request.POST.getlist("payment_part")[index]
             payment.due = request.POST.getlist("payment_due")[index]
-            payment.save()
-        check_payments(proposal)
+            success = payment.save()
+            if not success:
+                messages.warning(request, "U plateb musí být nastavena splatnost.")
+        if not check_payments(proposal):
+            messages.warning(request, "Souhrn částí plateb se nerovná celku.")
         return redirect(request.META.get('HTTP_REFERER'))

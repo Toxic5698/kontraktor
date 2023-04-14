@@ -4,7 +4,6 @@ from django.db.models import Model, DateTimeField, ForeignKey, CharField, SET_NU
 from django.utils import timezone
 
 from clients.models import Client
-from contracts.constants import CONTRACT_SUBJECTS
 from decimal import Decimal
 
 from proposals.managers import PaymentManager
@@ -89,8 +88,6 @@ class UploadedProposal(Model):
 
     def save(self, *args, **kwargs):
         from proposals.peli_parser import parse_items
-        # self.priority = 1
-        # self.file_name = "soubor 1"
         super().save(*args, **kwargs)
         if self.proposal.items.count() == 0:
             parse_items(self.file, self.proposal)
@@ -216,9 +213,10 @@ class Payment(Model):
             self.due = "99"
             self.part = 0
         if int(self.part) > 0 and self.due == "99":
-            raise ValueError(f"U platby {self} musí být nastavená splatnost.")
+            return False
 
         super(Payment, self).save(*args, **kwargs)
+        return True
 
 
 def check_payments(proposal):
@@ -235,7 +233,7 @@ def check_payments(proposal):
             proposal=proposal, part=0, amount=Decimal(0))
     else:
         if proposal.payments.all().aggregate(Sum("part"))["part__sum"] != 100:
-            raise ValueError("Souhrn částí plateb se nerovná celku.")
+            return False
         else:
             for payment in proposal.payments.all():
                 payment.amount = proposal.price_brutto * (payment.part / Decimal(100))

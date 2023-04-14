@@ -2,8 +2,7 @@
 {% block content %}
 <div class="p-3 pb-md-4 mx-auto text-center">
     <h1 class="fw-normal">Dostupné dokumenty pro klienta: {{ client.name }}</h1>
-    <p class="fs-5 text-muted">Níže je přehled dokumentů, které můžete online podepsat či k nim mít připomínky, které se
-        rovnou odešlou obsluze.</p>
+    <p class="fs-5 text-muted">Níže je přehled dokumentů, které si můžete zobrazit a online potvrdit.</p>
 </div>
 <div class="row row-cols-1 row-cols-md-3 mb-3 text-center justify-content-center">
     {% for document in documents %}
@@ -19,22 +18,24 @@
                         <li>Počet položek: {{ document.items_count }}</li>
                         <li>Počet příloh: {{ document.attachments_count }}</li>
                         {% if document.signed %}
-                        <li class="fw-bold">Podepsaná: {{ document.signed_at }}</li>
+                        <li class="fw-bold">Potvrzená: {{ document.signed_at }}</li>
                         {% endif %}
                     </ul>
                     <a type="button" class="w-100 btn btn-lg btn-outline-primary"
                        href="{% url "print-document" client.sign_code document.type document.id %}">
-                        {% if document.signed %}
                         Zobrazit
-                        {% else %}
-                        Zobrazit a podepsat
-                        {% endif %}
                     </a>
+                {% if not document.signed %}
+                    <a type="button" class="w-100 btn btn-lg btn-outline-success mt-2"
+                       href="{% url "signing-document" client.sign_code document.id document.type%}">
+                        Potvrdit
+                    </a>
+                {% endif %}
                 </div>
                 <div class="card-footer">
                     <p>Přílohy:</p>
                     {% for attachment in document.attachments %}
-                        <p><a href="{{ attachment.file }}">{{ attachment.tag }}</a></p>
+                        <p><a href="{{ attachment.file.url }}">{{ attachment.tag }}</a></p>
                     {% endfor %}
                 </div>
             </div>

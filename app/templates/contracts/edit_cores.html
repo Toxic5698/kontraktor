@@ -1,24 +1,81 @@
 {% extends "../main.html" %}
 {% block content %}
-
+    <h4>Změna ustanovení pro smlouvu č. {{ contract.contract_number }} s klientem {{ contract.client.name }}</h4>
     <form action="" method="POST">
         {% csrf_token %}
+        <a class="btn btn-warning" href="{% url "edit-contract" contract.id %}">Zpět</a>
+        <button class="btn btn-success" type="submit" name="save_changes">Uložit změny v ustanoveních</button>
+            <table class="table table-responsive">
+                <thead>
+                <tr>
+                    <th scope="col" style="width: auto">Název oddílu</th>
+                    <th scope="col" style="width: auto">Pořadí ustanovení</th>
+                    <th scope="col" style="width: 50%">Původní text ustanovení</th>
+                    <th scope="col" style="width: 50%">Navrhovaný text ustanovení</th>
+                    <th scope="col" style="width: auto">Odebrat ustanovení</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for par in cores %}
+                    <tr>
+                        <td class="text-center align-middle">{{ par.contract_section.priority }}. {{ par.contract_section.name }}</td>
+                        <td class="text-center align-middle">{{ par.priority }}</td>
+                        <td>{{ par.text }}</td>
+                        <td>
+                            {% if par.editable %}
+                        <textarea class="form-control" rows="3"
+                                  oninput="this.style.height = '' ;this.style.height = this.scrollHeight + 'px'"
+                                  id="{{ par.id }}" name="{{ par.id }}">{{ par.text }}
+                        </textarea>
+                            {% else %}
+                            <p>Nelze upravit</p>
+                            {% endif %}
+                        </td>
+                        <td class="text-center align-middle">
+                            {% if not par.essential %}
+                            <button class="btn btn-danger" type="submit" name="remove_core" value="{{ par.id }}">
+                                Odebrat
+                            </button>
+                                {% else %}
+                                <p>Nelze odebrat</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 
-    <a class="btn btn-warning" href="{% url "edit-contract" contract.id %}">Zpět</a>
-    <button class="btn btn-warning" type="submit">Uložit změny v ustanoveních</button>
-    <h4>Změna ustanovení pro smlouvu č. {{ contract.contract_number }} s klientem {{ contract.name }}</h4>
-        {% for par in cores %}
-            <div class="row">
-                <div class="col-6">
-                    <p>{{ par.priority }} {{ par.text }}</p>
-                </div>
-                <div class="col-6">
-                    <textarea class="form-control" id="{{ par.id }}" name="{{ par.id }}">{{ par.text }}</textarea>
-                </div>
-            </div>
-            <br>
-        {% endfor %}
-        <button class="btn btn-warning" type="submit">Uložit změny v ustanoveních</button>
+        <a class="btn btn-warning" href="{% url "edit-contract" contract.id %}">Zpět</a>
+        <button class="btn btn-success" type="submit" name="save_changes">Uložit změny v ustanoveních</button>
+    </form>
+    <h4 class="mt-3">Přidat nové ustanovení</h4>
+    <form method="post">
+    {% csrf_token %}
+            <table class="table table-responsive">
+                <thead>
+                    <th scope="col" style="width: 20%">Oddíl</th>
+                    <th scope="col" style="width: auto">Pořadí ustanovení</th>
+                    <th scope="col" style="width: 75%">Text</th>
+                </thead>
+                <tr>
+                    <td class="text-center align-middle">
+                        <select class="form-select" id="section" name="section">
+                            {% for section in sections %}
+                                <option value="{{ section.id }}">{{ section.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td class="text-center align-middle">
+                        <input class="form-control" type="number" required name="priority" id="priority">
+                    </td>
+                    <td>
+                        <textarea class="form-control" rows="3" placeholder="Text nového ustanovení" name="text"
+                                  id="text"></textarea>
+                    </td>
+                </tr>
+            </table>
+        <a class="btn btn-warning" href="{% url "edit-contract" contract.id %}">Zpět</a>
+        <button class="btn btn-success" type="submit" name="save_new">Přidat ustanovení</button>
     </form>
 
 {% endblock %}

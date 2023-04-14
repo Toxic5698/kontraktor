@@ -1,31 +1,26 @@
-import functools
-import ssl
+import base64
+import io
 from datetime import timedelta
 
-from easy_pdf.views import PDFTemplateView
 from django.apps import apps
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
-from django.template.loader import get_template
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import DetailView
 from django.views.generic import UpdateView, DeleteView, CreateView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
-from django_weasyprint import WeasyTemplateResponseMixin
-from django_weasyprint.utils import django_url_fetcher
-from django_weasyprint.views import WeasyTemplateResponse
-from weasyprint import HTML, CSS
+from easy_pdf.views import PDFTemplateView
+from ipware import get_client_ip
 
 from clients.filters import ClientFilter
 from clients.forms import ClientForm
-from clients.models import Client
+from clients.models import Client, Signature
 from clients.tables import ClientTable
-from contracts.constants import CONTRACT_SECTIONS
+from contracts.models import ContractSection
 from operators.models import Operator
 
 
@@ -114,12 +109,27 @@ class SigningDocument(View):
     def get(self, request, *args, **kwargs):
         model = apps.get_model(model_name=self.kwargs["type"], app_label=(self.kwargs["type"] + "s"))
         document = model.objects.get(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
+        if document.signed_at:
+            return redirect("document-to-sign", document.client.sign_code)
         context = {"document": document}
         return TemplateResponse(template="clients/signing_document.html", context=context, request=request)
 
     def post(self, request, *args, **kwargs):
-        document = self.get(request, *args, **kwargs)
-        return reverse_lazy("document-to-sign", document.client.sing_code)
+        model = apps.get_model(model_name=self.kwargs["type"], app_label=(self.kwargs["type"] + "s"))
+        document = model.objects.get(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
+        file = request.FILES.get("file")
+        ip, is_routable = get_client_ip(request)
+        Signature.objects.create(
+            client=document.client,
+            file=file,
+            document_object=document,
+            ip=ip,
+        )
+
+        document.signed_at = timezone.now()
+        document.save()
+
+        return HttpResponse("OK", status=200)
 
 
 class DocumentView(PDFTemplateView):
@@ -141,12 +151,15 @@ class DocumentView(PDFTemplateView):
             contract = self.get_queryset().get()
             context["contract"] = contract
             context["proposal"] = contract.proposal
-            context["sections"] = CONTRACT_SECTIONS
+            cores = contract.contract_cores.all()
 
-            for index, section in enumerate(CONTRACT_SECTIONS, 1):
-                cores = contract.contract_cores.filter(section=section[0])
-                if cores.count() > 0:
-                    context["cores_" + str(index)] = cores
+            sections = {}
+            for section in ContractSection.objects.filter(contract_cores__in=cores).distinct():
+                sections[section.name] = cores.filter(contract_section=section).values_list("text", flat=True)
+            context["sections"] = sections
+
+            if contract.client.signatures.exists():
+                context["signature"] = contract.client.signatures.filter(contract=contract).last()
 
         if self.kwargs["type"] == "proposal":
             proposal = self.get_queryset().get()

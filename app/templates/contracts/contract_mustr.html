@@ -14,7 +14,7 @@
 
     {% include "document_components/company_info.html" %}
     {% include "document_components/subject_info.html" %}
-<br>
+    <br>
     <h2>Podstatné náležitosti smlouvy</h2>
     <table>
         {% if proposal.subject %}
@@ -58,82 +58,28 @@
     </ol>
     <br>
 
-    <h2>Smluvní strany se dále dohodly:</h2>
-    <ol style="list-style-type: upper-roman;" class="tex">
-        {% if cores_1 %}
-            <li>{{ sections.0.1 }}</li>
-            <ol>
-                {% for par in cores_1 %}
-                    <li class="justify-list-item">{{ par.text }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
-        {% if cores_2 %}
-            <li>{{ sections.1.1 }}</li>
-            <ol>
-                {% for par in cores_2 %}
-                    <li class="justify-list-item">{{ par.text }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
-        {% if cores_3 %}
-            <li>{{ sections.2.1 }}</li>
-            <ol>
-                {% for par in cores_3 %}
-                    <li class="justify-list-item">{{ par.text }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
-        {% if cores_4 %}
-            <li>{{ sections.3.1 }}</li>
-            <ol>
-                {% for par in cores_4 %}
-                    <li class="justify-list-item">{{ par.text }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
-        {% if cores_5 %}
-            <li>{{ sections.4.1 }}</li>
-            <ol>
-                {% for par in cores_5 %}
-                    <li class="justify-list-item">{{ par.text }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
-        {% if cores_6 %}
-            <li>{{ sections.5.1 }}</li>
-            <ol>
-                {% for par in cores_6 %}
-                    <li class="justify-list-item">{{ par.text }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
-        {% if cores_7 %}
-            <li>{{ sections.6.1 }}</li>
-            <ol>
-                {% for par in cores_7 %}
-                    <li class="justify-list-item">{{ par.text }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
-        {% if cores_8 %}
-            <li>{{ sections.7.1 }}</li>
-            <ol>
-                {% for par in cores_8 %}
-                    <li class="justify-list-item">{{ par.text }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
-        {% if cores_9 %}
-            <li>{{ sections.8.1 }}</li>
-            <ol>
-                {% for par in cores_9 %}
-                    <li class="justify-list-item">{{ par.text }}</li>
-                {% endfor %}
-            </ol>
-        {% endif %}
-    </ol>
+    {% if contract.client.attachments.filter_contracts %}
+        <h2>Přílohy smlouvy</h2>
+        <ol>
+            {% for attachment in contract.client.attachments.filter_contracts %}
+                <li>{{ attachment }}</li>
+            {% endfor %}
+        </ol>
+        <br>
+    {% endif %}
 
+    <h2>Smluvní strany se dále dohodly:</h2>
+
+    <ol style="list-style-type: upper-roman;" class="tex">
+        {% for section, pars in sections.items %}
+            <li>{{ section }}</li>
+            <ol>
+                {% for par in pars %}
+                    <li class="justify-list-item">{{ par }}</li>
+                {% endfor %}
+            </ol>
+        {% endfor %}
+    </ol>
 
     {% include "document_components/signs.html" %}
 

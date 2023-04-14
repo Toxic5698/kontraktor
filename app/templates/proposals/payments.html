@@ -16,7 +16,7 @@
                             <label for="payment_part">% z celku</label>
                         </div>
                         <div class="form-floating">
-                            <select class="form-select" id="payment_due" name="payment_due">
+                            <select class="form-select" id="payment_due" name="payment_due" required>
                                 <option value="99" {% if payment.due == "99" %}selected{% endif %}>-
                                 </option>
                                 <option value="10" {% if payment.due == "10" %}selected{% endif %}>po

@@ -1,4 +1,5 @@
 {% load static %}
+
 <table class="data-table">
     <tr>
         <td>V Brně dne {% if contract.signed_at %}{{ contract.signed_at }}{% else %}...{% endif %}</td>
@@ -8,7 +9,9 @@
             <img src="{% static 'img/podpis.png' %}" width="40mm">
         </td>
         <td style="width: 50%;" class="text-center">
-            <label>podpis klienta</label>
+            {% if signature %}
+            <img src="{{ signature.file.url }}">
+            {% endif %}
         </td>
     </tr>
     <tr>
