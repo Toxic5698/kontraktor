@@ -11,8 +11,10 @@ from django_tables2 import SingleTableMixin
 from clients.forms import ClientForm
 from clients.models import Client
 from contracts.models import ContractType
+from emailing.models import Mail
+from operators.models import Operator
 from proposals.forms import ProposalUploadForm, ProposalEditForm
-from proposals.models import Proposal, UploadedProposal, Item, check_payments
+from proposals.models import Proposal, UploadedProposal, Item, check_payments, ContractSubject
 from proposals.peli_parser import parse_items
 from proposals.filters import ProposalFilter
 from proposals.tables import ProposalTable
@@ -78,7 +80,7 @@ class ProposalEditView(LoginRequiredMixin, View):
             proposal = Proposal.objects.create(
                 client=client,
                 proposal_number=data["proposal_number"],
-                subject=data["subject"],
+                subject=ContractSubject.objects.get(id=data["subject"]),
                 contract_type=ContractType.objects.get(id=data["contract_type"]),
                 fulfillment_at=data["fulfillment_at"],
                 fulfillment_place=data["fulfillment_place"],
@@ -136,11 +138,17 @@ class ProposalItemsView(LoginRequiredMixin, View):
 
 
 class ProposalSendView(LoginRequiredMixin, View):
-    def get(self, request, pk=None, *args, **kwargs):
-        context = {
-            "pk": pk,
-        }
-        return TemplateResponse(template="proposals/send_proposal.html", context=context, request=request)
+    def post(self, request, pk=None, *args, **kwargs):
+        proposal = Proposal.objects.get(pk=pk)
+        Mail.objects.create(
+            subject=f"Nabídka od společnosti {Operator.objects.get()}",
+            message=f"Nabídku naleznete na tomto odkazu: {request.META['HTTP_HOST']}/clients/{proposal.client.sign_code}",
+            recipients=proposal.client.email,
+            client=proposal.client
+        )
+        messages.warning(request, "Nabídka byla klientovi odeslána.")
+
+        return redirect("edit-proposal", proposal.id)
 
 
 class PaymentsEditView(LoginRequiredMixin, View):

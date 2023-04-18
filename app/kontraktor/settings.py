@@ -1,8 +1,11 @@
-import environ
 import os
 from pathlib import Path
 
+import environ
 from dj_database_url import parse as db_url
+
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Default values
 env = environ.Env(
@@ -10,8 +13,11 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, ["127.0.0.1"]),
     DBBACKUP_STORAGE_OPTIONS=(dict, {'location': 'backup/'}),
     SECRET_KEY=(str, "kjfdlskfjadsklůfhoajfkl55Z656W554534534dkfjdsklf"),
-    CSRF_TRUSTED_ORIGINS=(list, ['https://*.cechpetr.cz', 'http://*.cechpetr.cz',])
-
+    CSRF_TRUSTED_ORIGINS=(list, ['https://*.cechpetr.cz', 'http://*.cechpetr.cz',]),
+    ENVIRONMENT=(str, "localhost"),
+    EMAIL_HOST=(str, 'EMAIL_HOST'),
+    EMAIL_HOST_USER=(str, "EMAIL_HOST_USER"),
+    EMAIL_HOST_PASSWORD=(str, "EMAIL_HOST_PASSWORD"),
 )
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -60,6 +66,7 @@ INSTALLED_APPS = [
     "attachments",
     "clients",
     "contracts",
+    "emailing",
     "operators",
     "proposals",
 
@@ -161,3 +168,30 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 LOGIN_URL = "/authentication/login"
 
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+sentry_sdk.init(
+    dsn="https://9ea84b5992f44eda9cac15876c116655@o4505028506353664.ingest.sentry.io/4505028521689088",
+    integrations=[
+        DjangoIntegration(),
+    ],
+    traces_sample_rate=1.0,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True,
+    environment=env("ENVIRONMENT")
+)
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+
+# EMAIL_HOST = 'smtp.forpsi.com'
+# EMAIL_USE_TLS = True
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = "kontraktor@cechpetr.cz"
+# EMAIL_HOST_PASSWORD = "yPI38^7rG7&9"
+# DEFAULT_FROM_EMAIL = "kontraktor@cechpetr.cz"

@@ -26,6 +26,7 @@ urlpatterns = [
     path("authentication/", include('authentication.urls'), name='authentication'),
     path("clients/", include('clients.urls'), name='clients'),
     path('contracts/', include('contracts.urls'), name='contracts'),
+    path('emailing/', include('emailing.urls'), name='emailing'),
     path('proposals/', include('proposals.urls'), name='proposals'),
 
     path("", WelcomePageView.as_view(), name="welcome-page"),

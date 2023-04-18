@@ -1,0 +1,28 @@
+{% extends "main.html" %}
+{% block content %}
+    <a class="btn btn-warning m-2" href="{% url 'edit-client' client.id %}">Zpět</a>
+    <h4 class="m-2">Přehled e-mailů evidovaných ke clientovi {{ client }}</h4>
+    <table class="table m-2">
+        <thead>
+        <tr>
+            <td>Odeslán</td>
+            <td>Datum</td>
+            <td>Příjemci</td>
+            <td>Předmět</td>
+            <td>Text</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for mail in mails %}
+            <tr>
+                <td>{{ mail.sent }}</td>
+                <td>{{ mail.created_at }}</td>
+                <td>{{ mail.recipients }}</td>
+                <td>{{ mail.subject }}</td>
+                <td>{{ mail.message }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

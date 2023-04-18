@@ -8,6 +8,7 @@ from django.views.generic import UpdateView, DeleteView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
+from emailing.models import Mail
 from operators.models import Operator
 from proposals.forms import ProposalEditForm
 from proposals.models import Proposal
@@ -138,5 +139,15 @@ class ContractCoresEditView(LoginRequiredMixin, View):
         return redirect('edit-cores', contract.id)
 
 
-class ContractSendView(LoginRequiredMixin, UpdateView):
-    model = Contract
+class ContractSendView(LoginRequiredMixin, View):
+    def post(self, request, pk=None, *args, **kwargs):
+        contract = Contract.objects.get(pk=pk)
+        Mail.objects.create(
+            subject=f"Návrh smlouvy od společnosti {Operator.objects.get()}",
+            message=f"Návrh smlouvy naleznete na tomto odkazu: {request.META['HTTP_HOST']}/clients/{contract.client.sign_code}",
+            recipients=contract.client.email,
+            client=contract.client
+        )
+        messages.warning(request, "Smlouva byla klientovi odeslána.")
+
+        return redirect("edit-contract", contract.id)

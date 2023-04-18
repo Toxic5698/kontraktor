@@ -1,4 +1,4 @@
-{% extends "../main.html" %}
+{% extends "main.html" %}
 {% block content %}
     <a class="btn btn-warning" href="{% url "edit-proposal" proposal.id %}">Zpět na nabídku</a>
     <h4>Položky u nabídky č. {{ proposal.proposal_number }} pro klienta {{ proposal.client.name }}</h4>

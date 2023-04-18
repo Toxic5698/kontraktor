@@ -6,6 +6,7 @@ from django.template.response import TemplateResponse
 from django.views import View
 
 from clients.models import Client
+from emailing.models import Mail
 from operators.models import Operator
 
 
@@ -30,8 +31,15 @@ class WelcomePageView(View):
         elif "@" in data:
             client = Client.objects.filter(email=data)
             if client.count() == 1:
+                client = client.get()
                 messages.warning(
                     request, f'Odesílám e-mail s kódem na zadanou adresu, zkontrolujte svou e-mailovou schránku.'
+                )
+                Mail.objects.create(
+                    subject=f"Odkaz k dokumentům v Kontraktoru od společnosti {Operator.objects.get()}",
+                    message=f"Váš odkaz k dokumentům v Kontraktoru: {request.META['HTTP_HOST']}/clients/{client.sign_code}",
+                    recipients=client.email,
+                    client=client
                 )
             else:
                 messages.warning(

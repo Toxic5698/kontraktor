@@ -1,4 +1,4 @@
-{% extends "../main.html" %}
+{% extends "main.html" %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 {% block content %}
@@ -9,9 +9,12 @@
                     <a class="btn btn-warning " href="{% url "edit-client" proposal.client.id %}">Klient</a>
                     <a class="btn btn-secondary " href="{% url "edit-items" proposal.id %}">Upravit položky</a>
                     <a class="btn btn-info " href="{% url "print-document" proposal.client.sign_code 'proposal' proposal.id %}">Náhled nabídky</a>
-                    <a class="btn btn-dark " href="{% url "send-proposal" proposal.id %}">Odeslat klientovi</a>
+                    <form method="post" action="{% url "send-proposal" proposal.id %}">
+                    {% csrf_token %}
+                    <button class="btn btn-dark m-2" type="submit">Odeslat klientovi</button>
+                    </form>
                     {% if proposal.contract %}
-                        <a class="btn btn-primary mt-2" href="{% url "edit-contract" proposal.contract.id %}">Upravit
+                        <a class="btn btn-primary m-2" href="{% url "edit-contract" proposal.contract.id %}">Upravit
                             smlouvu</a>
                     {% else %}
                         <form method="post" action="{% url "create-contract" proposal.id %}" class="mt-2">

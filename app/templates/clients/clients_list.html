@@ -1,9 +1,9 @@
-{% extends "../main.html" %}
+{% extends "main.html" %}
 {% block content %}
 {% load render_table from django_tables2 %}
     <div class="d-flex justify-content-between">
     <h2 class="">Přehled klientů</h2>
-    <a class="btn btn-success h-75 align-self-center" href="{% url "create-client" %}">Přidat klienta</a>
+    <a class="btn btn-success h-75 align-self-center m-2" href="{% url "create-client" %}">Přidat klienta</a>
     </div>
 
     <form action="" method="get" class="form-control">

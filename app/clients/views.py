@@ -21,6 +21,7 @@ from clients.forms import ClientForm
 from clients.models import Client, Signature
 from clients.tables import ClientTable
 from contracts.models import ContractSection
+from emailing.models import Mail
 from operators.models import Operator
 
 
