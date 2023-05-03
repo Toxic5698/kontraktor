@@ -37,4 +37,4 @@ def parse_items(file, proposal):
             }
         )
 
-    return "zpracováno"
+    return "success"

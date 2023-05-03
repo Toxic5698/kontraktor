@@ -86,11 +86,11 @@ class UploadedProposal(Model):
     def __str__(self):
         return self.file_name
 
-    def save(self, *args, **kwargs):
-        from proposals.peli_parser import parse_items
-        super().save(*args, **kwargs)
-        if self.proposal.items.count() == 0:
-            parse_items(self.file, self.proposal)
+    # def save(self, *args, **kwargs):
+    #     from proposals.peli_parser import parse_items
+    #     super().save(*args, **kwargs)
+    #     if self.proposal.items.count() == 0:
+    #         parse_items(self.file, self.proposal)
 
 
 class Item(Model):
@@ -121,7 +121,7 @@ class Item(Model):
 
     def clean(self, **kwargs):
         self.priority = self.get_priority() if not self.priority else self.priority
-        if len(kwargs) > 0 and "force_insert" not in kwargs.keys():  # data from form
+        if len(kwargs) > 1:  # data from form
             for key in kwargs.keys():
                 if key in ["production_price", "price_per_unit"]:
                     setattr(self, key, self.price_format(kwargs[key]))

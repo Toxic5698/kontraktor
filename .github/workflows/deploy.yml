@@ -1,4 +1,4 @@
-name: Django Deploy CD
+name: Deploy to develop server
 
 on:
   push:

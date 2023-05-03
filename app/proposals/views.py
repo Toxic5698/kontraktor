@@ -89,12 +89,15 @@ class ProposalEditView(LoginRequiredMixin, View):
 
         if len(request.FILES) > 0 and "proposal" in locals():
             file = request.FILES["file"]
-            UploadedProposal.objects.create(
-                file=file,
-                file_name=file.name,
-                proposal=proposal,
-            )
             parse_result = parse_items(file, proposal)
+            if parse_result == "success":
+                UploadedProposal.objects.create(
+                    file=file,
+                    file_name=file.name,
+                    proposal=proposal,
+                )
+            else:
+                messages.warning(request, parse_result)
 
         return redirect('edit-proposal', proposal.id)
 

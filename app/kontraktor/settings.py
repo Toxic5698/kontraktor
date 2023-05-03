@@ -188,10 +188,3 @@ EMAIL_PORT = 587
 EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-
-# EMAIL_HOST = 'smtp.forpsi.com'
-# EMAIL_USE_TLS = True
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = "kontraktor@cechpetr.cz"
-# EMAIL_HOST_PASSWORD = "yPI38^7rG7&9"
-# DEFAULT_FROM_EMAIL = "kontraktor@cechpetr.cz"

@@ -13,7 +13,7 @@ class ProposalUploadForm(BetterModelForm):
 
 
 class ProposalEditForm(BetterModelForm):
-    fulfillment_at = forms.DateField(required=False, label="Termín plnění",
+    fulfillment_at = forms.DateField(required=True, label="Termín plnění",
                                      widget=forms.TextInput(attrs={'type': "date"}))
     signed_at = forms.DateField(required=False, label="Potvrzena dne", widget=forms.TextInput(attrs={'type': "date"}))
     client = forms.ModelChoiceField(label="Klient", queryset=Client.objects.all(), widget=forms.Select(attrs={"readonly": True}))
