@@ -31,7 +31,7 @@ class Attachment(Model):
         verbose_name_plural = "Attachments"
 
     def __str__(self):
-        return self.tag or self.file_file
+        return self.tag or self.file_name
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
