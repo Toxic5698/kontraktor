@@ -51,6 +51,7 @@
             <td><h2>Položky nabídky</h2></td>
         </tr>
         <tr>
+            <td>Číslo položky</td>
             <td>Popis položky</td>
             <td>Množství</td>
             <td>Cena za jednotku</td>
@@ -59,6 +60,7 @@
         </tr>
         {% for item in proposal.items.all %}
             <tr>
+                <td>{{ item.priority }}</td>
                 <td>{{ item.title }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.price_per_unit }} Kč</td>
@@ -94,11 +96,13 @@
     </p>
     <br>
 
-    {% if production_data %}
-        <h2>Detailní specifikace jednotlivých položek nabíkdy včetně výrobních dat</h2>
-        {% for item in production_data %}
-            {{ item.priority }} - {{ item.production_data }}
-        {% endfor %}
-    {% endif %}
+    <h2>Detailní specifikace jednotlivých položek nabíkdy včetně výrobních dat</h2>
+    {% for item in proposal.items.all %}
+        {% if item.description or item.production_data %}
+            <p>Položka č. {{ item.priority }}</p>
+            {% if item.description %}<p>Detailní popis: {{ item.description }}</p>{% endif %}
+            {% if item.production_data %}<p>Výrobní data: {{ item.production_data }}</p>{% endif %}
+        {% endif %}
+    {% endfor %}
 
 {% endblock %}
