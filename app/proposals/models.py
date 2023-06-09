@@ -67,7 +67,7 @@ class Proposal(Model):
 
 
 def uploaded_proposal_directory_path(instance, file):
-    return f"{instance.proposal.client_id}/uploaded/{file}"
+    return f"{instance.proposal.client.sign_code}/uploaded/{file}"
 
 
 class UploadedProposal(Model):
