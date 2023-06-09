@@ -25,7 +25,7 @@ class Client(Model):
         return self.name
 
 def signature_directory_path(instance, file):
-    return f"{instance.client_id}/signatures/{file}"
+    return f"{instance.client.sign_code}/signatures/{file}"
 
 
 class Signature(Model):

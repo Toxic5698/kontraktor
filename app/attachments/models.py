@@ -6,7 +6,7 @@ from attachments.managers import AttachmentManager
 
 
 def attachment_directory_path(instance, file):
-    return f"{instance.client_id}/attachments/{file}"
+    return f"{instance.client.sign_code}/attachments/{file}"
 
 
 class Attachment(Model):
