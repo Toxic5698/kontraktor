@@ -3,6 +3,7 @@ import io
 from datetime import timedelta
 
 from django.apps import apps
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -134,6 +135,8 @@ class SigningDocument(View):
 
 
 class DocumentView(PDFTemplateView):
+    # base_url = 'file://' + settings.STATIC_ROOT
+    # download_filename = 'hello.pdf'
 
     def get_queryset(self):
         model = apps.get_model(model_name=self.kwargs["type"], app_label=(self.kwargs["type"] + "s"))
