@@ -135,8 +135,6 @@ class SigningDocument(View):
 
 
 class DocumentView(PDFTemplateView):
-    # base_url = 'file://' + settings.STATIC_ROOT
-    # download_filename = 'hello.pdf'
 
     def get_queryset(self):
         model = apps.get_model(model_name=self.kwargs["type"], app_label=(self.kwargs["type"] + "s"))
@@ -162,7 +160,7 @@ class DocumentView(PDFTemplateView):
                 sections[section.name] = cores.filter(contract_section=section).values_list("text", flat=True)
             context["sections"] = sections
 
-            if contract.client.signatures.exists():
+            if contract.client.signatures.exists() and contract.signed_at:
                 context["signature"] = contract.client.signatures.filter(contract=contract).last()
 
         if self.kwargs["type"] == "proposal":
