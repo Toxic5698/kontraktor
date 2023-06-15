@@ -169,4 +169,8 @@ class DocumentView(PDFTemplateView):
             context["proposal_validity"] = proposal.edited_at + timedelta(days=14)
             context["production_data"] = proposal.items.filter(production_data__isnull=False)
 
+        if self.kwargs["type"] == "protocol":
+            protocol = self.get_queryset().get()
+            context["protocol"] = protocol
+
         return context

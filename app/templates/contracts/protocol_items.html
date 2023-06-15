@@ -1,0 +1,31 @@
+<form method="post" name="protocol" action="" class="form-control m-2">
+    {% csrf_token %}
+{% if items %}
+    {% for item in items %}
+        <div class="input-group mb-3">
+            <div class="input-group-text">
+                <span class="input-group-text">{{ item.title }}</span>
+                {% if protocol_item.item == item %}
+                    shoda
+                {% endif %}
+                <select class="form-control" name="handed_over_{{ item.id }}">
+                    <option value="yes">Předáno bez výhrad</option>
+                    <option value="with_note">Předáno s výhradou</option>
+                    <option value="no">Nepředáno z důvodu</option>
+                </select>
+            </div>
+            <input type="text" class="form-control" name="item_note_{{ item.id }}" placeholder="Poznámka k položce">
+        </div>
+    {% endfor %}
+{% elif protocol_items %}
+{% for item in protocol_items %}
+
+    {% endfor %}
+{% endif %}
+    <label>Další poznámky</label>
+    <input type="text" class="form-control" name="protocol_note">
+
+    <button class="btn btn-success btn-block m-2" type="submit" name="contract_id" value="{{ contract.id }}">Uložit</button>
+
+    <a href="" class="btn btn-outline-primary">Zobrazit pro klienta</a>
+</form>

@@ -27,7 +27,7 @@
                     </a>
                 {% if not document.signed %}
                     <a type="button" class="w-100 btn btn-lg btn-outline-success mt-2"
-                       href="{% url "signing-document" client.sign_code document.id document.type%}">
+                       href="{% url "signing-document" client.sign_code document.id document.type %}">
                         Potvrdit
                     </a>
                 {% endif %}

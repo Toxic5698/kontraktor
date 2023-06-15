@@ -15,6 +15,7 @@ class Attachment(Model):
         ("proposal", "proposal"),
         ("contract", "contract"),
         ("both", "both"),
+        ("protocol", "protocol"),
     ]
     tag = CharField(max_length=255, blank=True)
     file_name = CharField(max_length=255, blank=True, null=True)
