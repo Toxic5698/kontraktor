@@ -103,13 +103,28 @@ class DocumentsToSignView(View):
             if document["signed"]:
                 document["signed_at"] = contract.signed_at.strftime('%d. %m. %Y')
             documents.append(document)
+
+        protocols = client.protocols.all()
+        for protocol in protocols:
+            document = {
+                "id": protocol.id,
+                "type": "protocol",
+                "title": f"Předávací protokol ke smlouvě č. {protocol.contract.contract_number}",
+                "attachments": client.attachments.filter_protocols(),
+                "attachments_count": client.attachments.filter_protocols().count(),
+                "signed": True if protocol.signed_at else False,
+                "last_update": protocol.created_at.strftime('%d. %m. %Y'),
+            }
+            if document["signed"]:
+                document["signed_at"] = protocol.signed_at.strftime('%d. %m. %Y')
+            documents.append(document)
         return documents
 
 
 class SigningDocument(View):
 
     def get(self, request, *args, **kwargs):
-        model = apps.get_model(model_name=self.kwargs["type"], app_label=(self.kwargs["type"] + "s"))
+        model = get_document_model(self.kwargs["type"])
         document = model.objects.get(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
         if document.signed_at:
             return redirect("document-to-sign", document.client.sign_code)
@@ -117,7 +132,7 @@ class SigningDocument(View):
         return TemplateResponse(template="clients/signing_document.html", context=context, request=request)
 
     def post(self, request, *args, **kwargs):
-        model = apps.get_model(model_name=self.kwargs["type"], app_label=(self.kwargs["type"] + "s"))
+        model = get_document_model(self.kwargs["type"])
         document = model.objects.get(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
         file = request.FILES.get("file")
         ip, is_routable = get_client_ip(request)
@@ -137,7 +152,7 @@ class SigningDocument(View):
 class DocumentView(PDFTemplateView):
 
     def get_queryset(self):
-        model = apps.get_model(model_name=self.kwargs["type"], app_label=(self.kwargs["type"] + "s"))
+        model = get_document_model(self.kwargs["type"])
         queryset = model.objects.filter(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
         return queryset
 
@@ -172,5 +187,18 @@ class DocumentView(PDFTemplateView):
         if self.kwargs["type"] == "protocol":
             protocol = self.get_queryset().get()
             context["protocol"] = protocol
+            context["proposal"] = protocol.contract.proposal
+            
+            if protocol.client.signatures.exists() and protocol.signed_at:
+                context["signature"] = protocol.client.signatures.filter(protocol=protocol).last()
 
         return context
+
+
+def get_document_model(doc_type):
+    if doc_type == "proposal":
+        app_label = "proposals"
+    else:
+        app_label = "contracts"
+    model = apps.get_model(model_name=doc_type, app_label=app_label)
+    return model

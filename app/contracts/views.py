@@ -17,7 +17,7 @@ from operators.models import Operator
 from proposals.forms import ProposalEditForm
 from proposals.models import Proposal
 from contracts.forms import ContractForm
-from contracts.models import Contract, ContractCore, HandoverProtocol, HandoverProtocolItem
+from contracts.models import Contract, ContractCore, Protocol, ProtocolItem
 from contracts.tables import ContractTable
 from contracts.filters import ContractFilter
 
@@ -157,7 +157,7 @@ class ContractSendView(LoginRequiredMixin, View):
         return redirect("edit-contract", contract.id)
 
 
-class HandoverProtocolCreateView(LoginRequiredMixin, View):
+class ProtocolCreateView(LoginRequiredMixin, View):
 
     def get(self, request, pk, *args, **kwargs):
         client = Client.objects.get(pk=pk)
@@ -174,7 +174,7 @@ class HandoverProtocolCreateView(LoginRequiredMixin, View):
         data = get_data_in_dict(request)
         protocol_note = data.pop('protocol_note')
         contract_id = data.pop('contract_id')
-        protocol, created = HandoverProtocol.objects.get_or_create(contract_id=contract_id)
+        protocol, created = Protocol.objects.get_or_create(contract_id=contract_id)
         protocol.client = Client.objects.get(pk=pk)
         if created:
             protocol.created_by = request.user
@@ -186,7 +186,7 @@ class HandoverProtocolCreateView(LoginRequiredMixin, View):
         protocol.save()
         reference_date = timezone.now().date()
         for item in protocol.contract.proposal.items.all():
-            HandoverProtocolItem.objects.get_or_create(
+            ProtocolItem.objects.get_or_create(
                 protocol=protocol,
                 item=item,
                 created_by=request.user,
@@ -200,15 +200,14 @@ class HandoverProtocolCreateView(LoginRequiredMixin, View):
         messages.success(request, "Protokol uložen.")
         return redirect("manage-attachments", protocol.contract.client.id)
 
-class HandoverProtocolEditView(LoginRequiredMixin, View):
+class ProtocolEditView(LoginRequiredMixin, View):
 
     def get(self, request, pk, *args, **kwargs):
-        protocol = HandoverProtocol.objects.get(pk=pk)
+        protocol = Protocol.objects.get(pk=pk)
         form = AttachmentUploadForm()
         context = {
             "protocol" : protocol,
             "items": protocol.contract.proposal.items.all(),
-            "protocol_items": protocol.items.all(),
             "client": protocol.contract.client,
             "form": form,
         }

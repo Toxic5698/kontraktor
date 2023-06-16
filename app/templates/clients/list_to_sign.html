@@ -12,13 +12,17 @@
                     <h3 class="my-0 fw-normal">{{ document.title }}</h3>
                 </div>
                 <div class="card-body">
+                {% if document.price %}
                     <h4 class="card-title pricing-card-title">Celková hodnota: {{ document.price }} Kč</h4>
+                {% endif %}
                     <ul class="list-unstyled mt-3 mb-4">
                         <li>Poslední úprava: {{ document.last_update }}</li>
+                    {% if document.items_count %}
                         <li>Počet položek: {{ document.items_count }}</li>
+                    {% endif %}
                         <li>Počet příloh: {{ document.attachments_count }}</li>
                         {% if document.signed %}
-                        <li class="fw-bold">Potvrzená: {{ document.signed_at }}</li>
+                        <li class="fw-bold">Potvrzeno dne : {{ document.signed_at }}</li>
                         {% endif %}
                     </ul>
                     <a type="button" class="w-100 btn btn-lg btn-outline-primary"

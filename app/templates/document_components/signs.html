@@ -2,7 +2,11 @@
 
 <table class="data-table">
     <tr>
-        <td>V Brně dne {% if contract.signed_at %}{{ contract.signed_at }}{% else %}...{% endif %}</td>
+        {% if contract %}
+            <td>V Brně dne {% if contract.signed_at %}{{ contract.signed_at }}{% else %}...{% endif %}</td>
+        {% elif protocol %}
+            <td>V Brně dne {% if protocol.signed_at %}{{ protocol.signed_at }}{% else %}...{% endif %}</td>
+        {% endif %}
     </tr>
     <tr>
         <td style="width: 50%;" class="text-center">

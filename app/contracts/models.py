@@ -85,9 +85,9 @@ class ContractCore(Model):
         super().save(*args, **kwargs)
 
 
-class HandoverProtocol(Model):
+class Protocol(Model):
     contract = ForeignKey(Contract, on_delete=CASCADE, related_name="protocols", verbose_name="Smlouva")
-    # client = ForeignKey(Client, on_delete=CASCADE, related_name="protocols", verbose_name="Klient", null=True)
+    client = ForeignKey(Client, on_delete=CASCADE, related_name="protocols", verbose_name="Klient", null=True)
     created_at = DateTimeField(auto_now_add=True, blank=False, null=False, verbose_name="Vytvořen dne")
     created_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="protocol_created_by",
                             verbose_name="Vytvořil")
@@ -107,15 +107,16 @@ class HandoverProtocol(Model):
         return f"{self.contract}"
 
 
-class HandoverProtocolItem(Model):
+class ProtocolItem(Model):
     STATUS = [
         ("yes", "Předáno"),
         ("with_note", "Předáno s výhradou"),
         ("no", "Nepředáno"),
     ]
-    protocol = ForeignKey(HandoverProtocol, on_delete=CASCADE, related_name="items", verbose_name="Předávací protokol")
+    protocol = ForeignKey(Protocol, on_delete=CASCADE, related_name="items", verbose_name="Předávací protokol")
     item = ForeignKey(Item, on_delete=SET_NULL, related_name="items", verbose_name="Položka", null=True)
-    note = TextField(blank=True, null=True)
+    description = TextField(null=True, blank=True, verbose_name="Upřesnění")
+    note = TextField(blank=True, null=True, verbose_name="Poznámka")
     status = CharField(max_length=20, blank=False, null=False, verbose_name="Stav", choices=STATUS)
     created_at = DateField(auto_now_add=True, blank=False, null=False, verbose_name="Vytvořen dne")
     created_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="protocol_item_created_by",

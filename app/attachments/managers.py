@@ -7,3 +7,6 @@ class AttachmentManager(Manager):
 
     def filter_proposals(self):
         return super().get_queryset().filter(Q(client=self.instance), Q(purpose="proposal") | Q(purpose="both"))
+
+    def filter_protocols(self):
+        return super().get_queryset().filter(client=self.instance, purpose="protocol")

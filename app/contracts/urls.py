@@ -8,7 +8,7 @@ urlpatterns = [
     path("delete_contract/<int:pk>", ContractDeleteView.as_view(), name="delete-contract"),
     path("edit-cores/<int:pk>", ContractCoresEditView.as_view(), name="edit-cores"),
     path("send/<int:pk>", ContractSendView.as_view(), name="send-contract"),
-    path("create-protocol/<int:pk>", HandoverProtocolCreateView.as_view(), name="create-protocol"),
-    path("edit-protocol/<int:pk>", HandoverProtocolEditView.as_view(), name="edit-protocol"),
+    path("create-protocol/<int:pk>", ProtocolCreateView.as_view(), name="create-protocol"),
+    path("edit-protocol/<int:pk>", ProtocolEditView.as_view(), name="edit-protocol"),
 
 ]

@@ -35,20 +35,23 @@
 
     <h4 class="m-2">Vytvořené přílohy ke klientovi {{ client.name }}</h4>
     <table class="table table-striped m-2">
-    <thead>
-    <th scope="col">Název souboru</th>
-    <th scope="col">Patří k dokumentu</th>
-    <th scope="col">Odebrat</th>
-    </thead>
-    <tbody>
-    {% for protocol in protocols %}
-        <tr>
-            <td><a href="{% url "edit-protocol" protocol.id %}">Předávací protokol ze dne {{ protocol.created_at }}</a></td>
-            <td><a href="{% url "edit-contract" protocol.contract.id %}">{{ protocol.contract }}</a></td>
-            <td><a class="btn btn-danger" href="">Odebrat</a></td>
-        </tr>
-    {% endfor %}
-    </tbody>
+        <thead>
+        <th scope="col">Název souboru</th>
+        <th scope="col">Patří k dokumentu</th>
+        <th scope="col">Možnosti</th>
+        </thead>
+        <tbody>
+        {% for protocol in protocols %}
+            <tr>
+                <td><a href="{% url "print-document" client.sign_code "protocol" protocol.id %}">Předávací protokol ze
+                    dne {{ protocol.created_at }}</a></td>
+                <td><a href="{% url "edit-contract" protocol.contract.id %}">{{ protocol.contract }}</a></td>
+                <td><a class="btn btn-secondary" href="{% url "edit-protocol" protocol.id %}">Upravit</a>
+                    <a class="btn btn-success" href="{% url "signing-document" client.sign_code protocol.id "protocol" %}">Podepsat klientem</a>
+                    <a class="btn btn-danger" href="">Odebrat</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
     </table>
     <br>
 
@@ -83,7 +86,8 @@
                                 <option value="both" {% if attachment.purpose == "both" %}selected{% endif %}>Příloha je
                                     přílohou nabídky i smlouvy.
                                 </option>
-                                <option value="protocol" {% if attachment.purpose == "protocol" %}selected{% endif %}>Příloha je
+                                <option value="protocol" {% if attachment.purpose == "protocol" %}selected{% endif %}>
+                                    Příloha je
                                     přílohou předávacího protokolu.
                                 </option>
                             </select>
