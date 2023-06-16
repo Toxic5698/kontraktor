@@ -15,7 +15,7 @@ from clients.models import Client
 from emailing.models import Mail
 from operators.models import Operator
 from proposals.forms import ProposalEditForm
-from proposals.models import Proposal
+from proposals.models import Proposal, Item
 from contracts.forms import ContractForm
 from contracts.models import Contract, ContractCore, Protocol, ProtocolItem
 from contracts.tables import ContractTable
@@ -174,28 +174,35 @@ class ProtocolCreateView(LoginRequiredMixin, View):
         data = get_data_in_dict(request)
         protocol_note = data.pop('protocol_note')
         contract_id = data.pop('contract_id')
-        protocol, created = Protocol.objects.get_or_create(contract_id=contract_id)
-        protocol.client = Client.objects.get(pk=pk)
-        if created:
-            protocol.created_by = request.user
-            protocol.note = f"{timezone.now()} - {protocol_note}"
-        else:
-            protocol.edited_by = request.user
-            protocol.edited_at = timezone.now()
-            protocol.note += "\n" + f"{timezone.now()} - {protocol_note}"
-        protocol.save()
+        protocol = Protocol.objects.create(
+            contract_id=contract_id,
+            client=Client.objects.get(pk=pk),
+            created_by=request.user,
+            note=f"{timezone.now().strftime('%d. %m. %Y %H:%M')} - {protocol_note}"
+
+        )
+
         reference_date = timezone.now().date()
-        for item in protocol.contract.proposal.items.all():
-            ProtocolItem.objects.get_or_create(
+        statuses = {}
+        notes = {}
+        descs = {}
+        for key, value in data.items():
+            prefix, counter, id = key.split("_")
+            if "handedover" in prefix:
+                statuses[counter] = [id, value]
+            if "itemnote" in prefix and value != "":
+                notes[counter] = value
+            if "desc" in prefix and value != "":
+                descs[counter] = value
+        for key, value in statuses.items():
+            ProtocolItem.objects.create(
                 protocol=protocol,
-                item=item,
+                item=Item.objects.get(id=value[0]),
                 created_by=request.user,
                 created_at=reference_date,
-                defaults={
-                    "status": data.get("handed_over_" + str(item.id)),
-                    "note": data.get("item_note_" + str(item.id))
-                }
-
+                status=value[1],
+                note=notes.get(key),
+                description=descs.get(key)
             )
         messages.success(request, "Protokol uložen.")
         return redirect("manage-attachments", protocol.contract.client.id)
@@ -207,7 +214,7 @@ class ProtocolEditView(LoginRequiredMixin, View):
         form = AttachmentUploadForm()
         context = {
             "protocol" : protocol,
-            "items": protocol.contract.proposal.items.all(),
+            "items": protocol.items.all(),
             "client": protocol.contract.client,
             "form": form,
         }

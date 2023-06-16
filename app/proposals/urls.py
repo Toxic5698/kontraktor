@@ -11,5 +11,5 @@ urlpatterns = [
     path("delete/<int:pk>", ProposalDeleteView.as_view(), name="delete-proposal"),
     path("items/<int:pk>", ProposalItemsView.as_view(), name="edit-items"),
     path("send/<int:pk>", ProposalSendView.as_view(), name="send-proposal"),
-    path("get-items/", ItemsList.as_view(), name="get-items"),
+    path("get-items/", ProtocolItemListView.as_view(), name="get-items"),
 ]

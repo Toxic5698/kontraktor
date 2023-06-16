@@ -1,26 +1,34 @@
 <form method="post" name="protocol" action="" class="form-control m-2">
     {% csrf_token %}
     {% for item in items %}
-        <div class="input-group mb-3">
-            <div class="input-group-text">
+        <div class="input-group mb-3 d-flex">
+            <div class="input-group-text col-md-4 col-12">
                 <span class="input-group-text">{{ item.title }}</span>
                 {% if protocol_item.item == item %}
                     shoda
                 {% endif %}
-                <select class="form-control" name="handed_over_{{ item.id }}">
+                <select class="form-control" name="handedover_{{ forloop.counter }}_{{ item.id }}">
                     <option value="yes">Předáno bez výhrad</option>
                     <option value="with_note">Předáno s výhradou</option>
                     <option value="no">Nepředáno z důvodu</option>
                 </select>
             </div>
-            <input type="text" class="form-control" name="item_note_{{ item.id }}" placeholder="Poznámka k položce">
+            <div class="input-group-text col-md-2 col-12">
+                <input type="text" class="form-control" name="desc_{{ forloop.counter }}_{{ item.id }}"
+                       placeholder="Upřesnění umístění">
+            </div>
+            <div class="input-group-text col-md-6 col-12">
+                <input type="text" class="form-control" name="itemnote_{{ forloop.counter }}_{{ item.id }}"
+                       placeholder="Poznámka k položce">
+            </div>
         </div>
     {% endfor %}
 
     <label>Další poznámky</label>
     <input type="text" class="form-control" name="protocol_note">
 
-    <button class="btn btn-success btn-block m-2" type="submit" name="contract_id" value="{{ contract.id }}">Uložit</button>
+    <button class="btn btn-success btn-block m-2" type="submit" name="contract_id" value="{{ contract.id }}">Uložit
+    </button>
 
     <a href="" class="btn btn-outline-primary">Zobrazit pro klienta</a>
 </form>

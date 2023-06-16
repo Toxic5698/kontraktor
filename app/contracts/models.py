@@ -125,4 +125,3 @@ class ProtocolItem(Model):
     class Meta:
         verbose_name = "Handover protocol item"
         verbose_name_plural = "Handover protocol items"
-        unique_together = ("item", "created_at")

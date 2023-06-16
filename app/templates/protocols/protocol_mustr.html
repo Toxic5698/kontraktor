@@ -14,7 +14,7 @@
     <table>
         <thead>
         <tr>
-            <th>Název položky</th>
+            <th>Číslo a název položky ze smlouvy</th>
             <th>Upřesnění</th>
             <th>Stav</th>
             <th>Poznámka</th>
@@ -23,10 +23,14 @@
         <tbody>
         {% for item in protocol.items.all %}
             <tr>
-                <td>{{ item.item.title }}</td>
-                <td>{{ item.item.description }}</td>
-                <td>{{ item.status }} ze dne {{ item.created_at }}</td>
-                <td>{{ item.note }}</td>
+                <td>{{ item.item.id }} - {{ item.item.title }}</td>
+                <td>{% if item.description %}{{ item.description }}{% else %}-{% endif %}</td>
+                <td>{% if item.status == "yes" %} Předáno dne {{ item.created_at }}
+                    {% elif item.status == "with_note" %} Předáno s výhradou dne {{ item.created_at }}
+                    {% elif item.status == "no" %} Nepředáno
+                    {% endif %}
+                </td>
+                <td>{% if item.note %}{{ item.note }}{% else %}-{% endif %}</td>
             </tr>
         {% endfor %}
         </tbody>
