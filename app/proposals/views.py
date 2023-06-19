@@ -10,7 +10,7 @@ from django_tables2 import SingleTableMixin
 
 from clients.forms import ClientForm
 from clients.models import Client
-from contracts.models import ContractType
+from contracts.models import ContractType, Contract, ProtocolItem
 from emailing.models import Mail
 from operators.models import Operator
 from proposals.forms import ProposalUploadForm, ProposalEditForm
@@ -138,6 +138,22 @@ class ProposalItemsView(LoginRequiredMixin, View):
                 item.save(**data)
 
         return redirect('edit-items', proposal.id)
+
+
+class ProtocolItemListView(View):
+
+    def get(self, request, *args, **kwargs):
+        protocol_items = []
+        for item in Item.objects.filter(proposal_id=request.GET.get("pk")):
+            protocol_item = {
+                "id": item.id,
+                "title": item.title,
+            }
+            handed_over = ProtocolItem.objects.filter(item=item, status="yes").count()
+            protocol_items.extend(protocol_item for x in range(item.quantity - handed_over))
+        contract = Contract.objects.get(proposal_id=request.GET.get("pk"))
+        context = {"items": protocol_items, "contract": contract}
+        return TemplateResponse(request, "contracts/protocol_items.html", context)
 
 
 class ProposalSendView(LoginRequiredMixin, View):

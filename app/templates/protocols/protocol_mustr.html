@@ -1,0 +1,55 @@
+{% extends "document_components/document_base.html" %}
+
+{% block content %}
+    <h1>Předávací protokol ke smlouvě č. {{ protocol.contract.contract_number }}</h1>
+    <h2>ze dne {{ protocol.created_at }}</h2>
+    {% include "document_components/company_info.html" %}
+    {% include "document_components/subject_info.html" %}
+    <br>
+    {% if protocol.note %}
+        <h2> Poznámky k předávacímu protokolu</h2>
+        <p>{{ protocol.note }}</p>
+    {% endif %}
+    <h2>Položky</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Číslo a název položky ze smlouvy</th>
+            <th>Upřesnění</th>
+            <th>Stav</th>
+            <th>Poznámka</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in protocol.items.all %}
+            <tr>
+                <td>{{ item.item.id }} - {{ item.item.title }}</td>
+                <td>{% if item.description %}{{ item.description }}{% else %}-{% endif %}</td>
+                <td>{% if item.status == "yes" %} Předáno dne {{ item.created_at }}
+                    {% elif item.status == "with_note" %} Předáno s výhradou dne {{ item.created_at }}
+                    {% elif item.status == "no" %} Nepředáno
+                    {% endif %}
+                </td>
+                <td>{% if item.note %}{{ item.note }}{% else %}-{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h4>Protokol vytvořil: {{ protocol.created_by }}</h4>
+
+    {% if protocol.client.attachments.filter_protocols %}
+        <h2>Přílohy protokolu</h2>
+        <ol>
+            {% for attachment in protocol.client.attachments.filter_protocols %}
+                <li>{{ attachment }}</li>
+            {% endfor %}
+        </ol>
+        <br>
+    {% endif %}
+
+
+
+    {% include "document_components/signs.html" %}
+
+{% endblock %}

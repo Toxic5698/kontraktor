@@ -10,7 +10,7 @@
                     data-bs-target="#addAttachModal">Připojit přílohu
             </button>
         </li>
-        <li><a href="{% url "edit-client" client.id %}"
+        <li><a href="{% url "create-protocol" client.id %}"
                class="btn btn-outline-success mx-2">Vytvořit předávací protokol</a></li>
     </ul>
 
@@ -18,7 +18,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Vyberte soubory k nahrání a přiřazení ke klientovi {{ client.name }}</h5>
+                    <h5 class="modal-title" id="addAttachModal">Vyberte soubory k nahrání a přiřazení ke
+                        klientovi {{ client.name }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -32,8 +33,30 @@
         </div>
     </div>
 
+    <h4 class="m-2">Vytvořené přílohy ke klientovi {{ client.name }}</h4>
+    <table class="table table-striped m-2">
+        <thead>
+        <th scope="col">Název souboru</th>
+        <th scope="col">Patří k dokumentu</th>
+        <th scope="col">Možnosti</th>
+        </thead>
+        <tbody>
+        {% for protocol in protocols %}
+            <tr>
+                <td><a href="{% url "print-document" client.sign_code "protocol" protocol.id %}">Předávací protokol ze
+                    dne {{ protocol.created_at }}</a></td>
+                <td><a href="{% url "edit-contract" protocol.contract.id %}">{{ protocol.contract }}</a></td>
+                <td><a class="btn btn-secondary" href="{% url "edit-protocol" protocol.id %}">Upravit</a>
+                    <a class="btn btn-success" href="{% url "signing-document" client.sign_code protocol.id "protocol" %}">Podepsat klientem</a>
+                    <a class="btn btn-danger" href="">Odebrat</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
 
-    <h4 class="m-2">Již nahrané přílohy ke klientovi {{ client.name }}</h4>
+
+    <h4 class="m-2">Nahrané přílohy ke klientovi {{ client.name }}</h4>
     <table class="table table-striped m-2">
         <thead>
         <th scope="col">Název souboru</th>
@@ -43,7 +66,7 @@
         <tbody>
         {% for attachment in client.attachments.all %}
             <tr>
-                <td>{{ attachment.file_name }}</td>
+                <td><a href="{{ attachment.file.url }}">{{ attachment.file_name }}</a></td>
                 <td>
                     <form method="post" name="add_attachment_to" action="{{ attachment.id }}">
                         {% csrf_token %}
@@ -62,6 +85,10 @@
                                 </option>
                                 <option value="both" {% if attachment.purpose == "both" %}selected{% endif %}>Příloha je
                                     přílohou nabídky i smlouvy.
+                                </option>
+                                <option value="protocol" {% if attachment.purpose == "protocol" %}selected{% endif %}>
+                                    Příloha je
+                                    přílohou předávacího protokolu.
                                 </option>
                             </select>
                             <button class="btn btn-success" type="submit">Uložit</button>

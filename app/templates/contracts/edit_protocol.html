@@ -1,0 +1,38 @@
+{% extends "main.html" %}
+{% block content %}
+    {% load crispy_forms_tags %}
+
+    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="{% url "edit-client" client.id %}" class="btn btn-outline-warning mx-2">Klient</a>
+        </li>
+        <li>
+            <button class="btn btn-outline-info mx-2 button open-button" data-bs-toggle="modal"
+                    data-bs-target="#addAttachModal">Připojit přílohu
+            </button>
+        </li>
+    </ul>
+
+    <div class="modal fade" id="addAttachModal" tabindex="-1" aria-labelledby="addAttachModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAttachModal">Vyberte soubory k nahrání a přiřazení ke
+                        klientovi {{ client.name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                </div>
+                <div class="modal-body">
+                    <form enctype="multipart/form-data" name="add_file" class="m-2" hx-post="attachments/manage">
+                        {% csrf_token %}
+                        {{ form.file|as_crispy_field }}
+                        <button class="btn btn-success" type="submit">Nahrát</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="m-2">Předávací protokol ke smlouvě {{ protocol.contract }}</h4>
+    {% include "contracts/protocol_items.html" %}
+
+
+{% endblock %}

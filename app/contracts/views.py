@@ -3,17 +3,21 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views import View
 from django.views.generic import UpdateView, DeleteView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
+from attachments.forms import AttachmentUploadForm
+from base.methods import get_data_in_dict
+from clients.models import Client
 from emailing.models import Mail
 from operators.models import Operator
 from proposals.forms import ProposalEditForm
-from proposals.models import Proposal
+from proposals.models import Proposal, Item
 from contracts.forms import ContractForm
-from contracts.models import Contract, ContractCore
+from contracts.models import Contract, ContractCore, Protocol, ProtocolItem
 from contracts.tables import ContractTable
 from contracts.filters import ContractFilter
 
@@ -151,3 +155,67 @@ class ContractSendView(LoginRequiredMixin, View):
         messages.warning(request, "Smlouva byla klientovi odeslána.")
 
         return redirect("edit-contract", contract.id)
+
+
+class ProtocolCreateView(LoginRequiredMixin, View):
+
+    def get(self, request, pk, *args, **kwargs):
+        client = Client.objects.get(pk=pk)
+        contracts = Contract.objects.filter(client=client).select_related("proposal")
+        form = AttachmentUploadForm()
+        context = {
+            "client": client,
+            "contracts": contracts,
+            "form": form,
+        }
+        return TemplateResponse(template="contracts/create_protocol.html", request=request, context=context)
+
+    def post(self, request, pk, *args, **kwargs):
+        data = get_data_in_dict(request)
+        protocol_note = data.pop('protocol_note')
+        contract_id = data.pop('contract_id')
+        protocol = Protocol.objects.create(
+            contract_id=contract_id,
+            client=Client.objects.get(pk=pk),
+            created_by=request.user,
+            note=f"{timezone.now().strftime('%d. %m. %Y %H:%M')} - {protocol_note}"
+
+        )
+
+        reference_date = timezone.now().date()
+        statuses = {}
+        notes = {}
+        descs = {}
+        for key, value in data.items():
+            prefix, counter, id = key.split("_")
+            if "handedover" in prefix:
+                statuses[counter] = [id, value]
+            if "itemnote" in prefix and value != "":
+                notes[counter] = value
+            if "desc" in prefix and value != "":
+                descs[counter] = value
+        for key, value in statuses.items():
+            ProtocolItem.objects.create(
+                protocol=protocol,
+                item=Item.objects.get(id=value[0]),
+                created_by=request.user,
+                created_at=reference_date,
+                status=value[1],
+                note=notes.get(key),
+                description=descs.get(key)
+            )
+        messages.success(request, "Protokol uložen.")
+        return redirect("manage-attachments", protocol.contract.client.id)
+
+class ProtocolEditView(LoginRequiredMixin, View):
+
+    def get(self, request, pk, *args, **kwargs):
+        protocol = Protocol.objects.get(pk=pk)
+        form = AttachmentUploadForm()
+        context = {
+            "protocol" : protocol,
+            "items": protocol.items.all(),
+            "client": protocol.contract.client,
+            "form": form,
+        }
+        return TemplateResponse(request=request, template="contracts/edit_protocol.html", context=context)
