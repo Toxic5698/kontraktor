@@ -2,9 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import Model, DateTimeField, ForeignKey, CharField, TextField, BooleanField, SET_NULL, \
     IntegerField, ManyToManyField, DateField, CASCADE, OneToOneField
-from django.db.models.fields import related
 from django.utils import timezone
-from oscrypto._ffi import null
 
 from clients.models import Client, Signature
 from proposals.models import Proposal, ContractType, Item
