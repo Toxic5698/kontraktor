@@ -7,6 +7,7 @@ from django.views.generic import View, DeleteView
 from attachments.forms import AttachmentUploadForm
 from attachments.models import Attachment
 from clients.models import Client
+from contracts.models import Protocol
 
 
 class AttachmentManageView(LoginRequiredMixin, View):
@@ -15,7 +16,8 @@ class AttachmentManageView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         form = AttachmentUploadForm()
         client = Client.objects.get(pk=pk)
-        context = {"form": form, "client": client}
+        protocols = Protocol.objects.filter(contract__client=client)
+        context = {"form": form, "client": client, "protocols": protocols}
         return TemplateResponse(request=request, template="attachments/manage_attachments.html", context=context)
 
     def post(self, request, pk, *args, **kwargs):
