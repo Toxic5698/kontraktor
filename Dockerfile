@@ -1,5 +1,11 @@
 FROM python:3.11.4-slim-bullseye
 
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends build-essential curl libpq-dev git\
+  && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man \
+  && apt-get clean
+
 RUN pip install --upgrade pip
 
 COPY app/requirements.txt .
