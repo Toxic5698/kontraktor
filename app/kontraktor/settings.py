@@ -10,7 +10,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 # Default values
 env = environ.Env(
     DEBUG=(bool, False),
-    ALLOWED_HOSTS=(list, ["127.0.0.1"]),
+    ALLOWED_HOSTS=(list, ["localhost"]),
     DBBACKUP_STORAGE_OPTIONS=(dict, {'location': 'backup/'}),
     SECRET_KEY=(str, "kjfdlskfjadsklůfhoajfkl55Z656W554534534dkfjdsklf"),
     CSRF_TRUSTED_ORIGINS=(list, ['https://*.cechpetr.cz', 'http://*.cechpetr.cz',]),

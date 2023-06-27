@@ -1,17 +1,41 @@
-version: '3'
-
+#version: "3.7"
 services:
+#  web:
+#    restart: always
+#    build:
+#      context: .
+#    expose:
+#      - "8000"
+#    links:
+#      - postgres:postgres
+#    volumes:
+#      - web-static:/static
+#    env_file: .env
+
   web:
-    restart: always
     build:
-      context: .
-    expose:
-      - "8000"
-    links:
-      - postgres:postgres
+      context: "."
+      target: "app"
+      args:
+        - "UID=1000"
+        - "GID=1000"
+    depends_on:
+      - "postgres"
+    env_file:
+      - ".env"
+    restart: "always"
+    stop_grace_period: "3s"
+    tty: true
     volumes:
       - web-static:/static
-    env_file: .env
+    deploy:
+      resources:
+        limits:
+          cpus: "0"
+          memory: "0"
+    ports:
+      - "8000:8000"
+    profiles: [ "web" ]
 
   nginx:
     restart: always
@@ -36,3 +60,5 @@ services:
 volumes:
   web-static:
   pgdata:
+
+
