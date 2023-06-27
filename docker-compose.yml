@@ -12,6 +12,7 @@ services:
     volumes:
       - web-static:/static
     env_file: .env
+    profiles: ["web"]
 
   nginx:
     restart: always
@@ -22,10 +23,12 @@ services:
       - web-static:/static
     links:
       - web:web
+    profiles: ["nginx"]
 
   postgres:
     restart: always
-    image: postgres:latest
+    image: "postgres:15.3-bullseye"
+    profiles: [ "postgres" ]
     ports:
       - "5432"
     volumes:
