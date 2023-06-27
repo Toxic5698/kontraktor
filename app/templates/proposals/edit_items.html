@@ -22,29 +22,29 @@
         {% if proposal.items.all %}
             <tbody>
                 {% for item in proposal.items.all %}
-                    <form method="post" action="{{ item.id }}" >
+                    <form method="post" action="{{ item.id }}" id="edit-items-form">
                     {% csrf_token %}
                     <tr>
                         <td>{{ item.priority }}</td>
-                        <td><input name="title" value="{{ item.title }}" class="form-control" required></td>
-                        <td><input name="description"  value="{{ item.description }}" class="form-control"></td>
+                        <td><input name="title" value="{{ item.title }}" class="form-control" required id="title_{{ item.priority }}"></td>
+                        <td><input name="description"  value="{{ item.description }}" class="form-control" id="description_{{ item.priority }}"></td>
                         <td>
                             {% if item.from_upload %}
                             {{ item.production_date }}
                             {% else %}
-                            <input name="production_date" class="form-control" value="{{ item.production_date }}" type="date">
+                            <input name="production_date" class="form-control" value="{{ item.production_date }}" type="date" id="production_date_{{ item.priority }}">
                             {% endif %}
                         </td>
-                        <td><input name="quantity" value="{{ item.quantity }}" class="form-control" type="number" required></td>
+                        <td><input name="quantity" value="{{ item.quantity }}" class="form-control" type="number" required id="quantity_{{ item.priority }}"></td>
                         <td>
                             {% if item.from_upload %}
                             {{ item.production_price }}
                             {% else %}
-                            <input name="production_price" class="form-control" value="{{ item.production_price|stringformat:"d" }}" type="number">
+                            <input name="production_price" class="form-control" value="{{ item.production_price|stringformat:"d" }}" type="number" id="production_price_{{ item.priority }}">
                             {% endif %}
                         </td>
-                        <td><input name="price_per_unit" value="{{ item.price_per_unit|stringformat:"d" }}" class="form-control" required type="number"></td>
-                        <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number"></td>
+                        <td><input name="price_per_unit" value="{{ item.price_per_unit|stringformat:"d" }}" class="form-control" required type="number" id="price_per_unit_{{ item.priority }}"></td>
+                        <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number" id="sale_discount{{ item.priority }}"></td>
                         <td>{{ item.total_price }}</td>
                         <td>{{ item.revenue }}</td>
 
@@ -53,11 +53,11 @@
                               <button type="submit" class="btn btn-success" name="save" id="{{ item.id }}">Uložit</button>
 
                               <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="delete">
                                   Smazat
                                 </button>
                                 <ul class="dropdown-menu">
-                                  <li><button class="dropdown-item" type="submit" name="delete">Smazat</button></li>
+                                  <li><button class="dropdown-item" type="submit" name="delete" id="delete-confirm">Smazat</button></li>
                                 </ul>
                               </div>
                             </div>
@@ -68,22 +68,22 @@
             </tbody>
                {% endif %}
         <tfoot>
-        <form method="post" action="{{ proposal.id }}" >
+        <form method="post" action="{{ proposal.id }}" id="create-item-form">
                     {% csrf_token %}
                     <tr>
                         <td>-</td>
-                        <td><input name="title" value="{{ item.title }}" class="form-control" required></td>
-                        <td><input name="description"  value="{{ item.description }}" class="form-control"></td>
+                        <td><input name="title" value="{{ item.title }}" class="form-control" required id="title_new"></td>
+                        <td><input name="description"  value="{{ item.description }}" class="form-control" id="description_new"></td>
 
                         <td>
-                            <input name="production_date" class="form-control" type="date">
+                            <input name="production_date" class="form-control" type="date" id="production_date_new">
                         </td>
-                        <td><input name="quantity" value="{{ item.quantity }}" class="form-control" required type="number"></td>
+                        <td><input name="quantity" value="{{ item.quantity }}" class="form-control" required type="number" id="quantity_new"></td>
                         <td>
-                            <input name="production_price" class="form-control" type="number">
+                            <input name="production_price" class="form-control" type="number" id="production_price_new">
                         </td>
-                        <td><input name="price_per_unit" value="{{ item.price_per_unit }}" class="form-control" required type="number"></td>
-                        <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number"></td>
+                        <td><input name="price_per_unit" value="{{ item.price_per_unit }}" class="form-control" required type="number" id="price_per_unit_new"></td>
+                        <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number" id="sale_discount_new"></td>
                         <td>-</td>
                         <td>-</td>
                         <td>

@@ -13,9 +13,15 @@ from operators.models import Operator
 class WelcomePageView(View):
 
     def get(self, request, *args, **kwargs):
-        context = {
-            "operator": Operator.objects.get()
-        }
+        operator = Operator.objects.filter()
+        if operator.count() == 1:
+            context = {
+                "operator": operator.get()
+            }
+        else:
+            messages.warning(request,
+                             f"Sedadlo kontraktoru je prázdné nebo v něm sedí více subjektů, zkontrolujte operátora v adminu!")
+            return redirect("admin/login")
         return TemplateResponse(template="operators/welcome_page.html", request=request, context=context)
 
     def post(self, request, *args, **kwargs):
@@ -26,7 +32,7 @@ class WelcomePageView(View):
                 return redirect("document-to-sign", data)
             else:
                 messages.warning(
-                    request, f'Kontaktujte prosím svého prodejce.'
+                    request, f'Kód není správný, překontrolujte jej nebo kontaktujte svého prodejce.'
                 )
         elif "@" in data:
             client = Client.objects.filter(email=data)

@@ -87,7 +87,7 @@ ROOT_URLCONF = 'kontraktor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ["templates"],
+        'DIRS': ["templates", "app/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
