@@ -17,5 +17,6 @@ jobs:
           script: |
             cd /home/kontraktor/
             git pull
+            docker system prune -a 
             docker-compose down 
             docker-compose up --build -d
