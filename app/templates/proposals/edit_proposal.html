@@ -4,34 +4,34 @@
 {% block content %}
     {% if proposal %}
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-            <li><a href="{% url "edit-client" proposal.client.id %}" class="btn btn-outline-warning mx-2">Klient</a>
+            <li><a href="{% url "edit-client" proposal.client.id %}" class="btn btn-outline-warning mx-2" id="client-button">Klient</a>
             </li>
-            <li><a href="{% url "edit-items" proposal.id %}" class="btn btn-outline-secondary mx-2">Upravit položky</a>
+            <li><a href="{% url "edit-items" proposal.id %}" class="btn btn-outline-secondary mx-2" id="items-button">Upravit položky</a>
             </li>
             <li><a href="{% url "print-document" proposal.client.sign_code 'proposal' proposal.id %}"
-                   class="btn btn-outline-info mx-2">Náhled nabídky</a></li>
+                   class="btn btn-outline-info mx-2" id="show-proposal-button">Náhled nabídky</a></li>
             <li>
                 <form method="post" action="{% url "send-proposal" proposal.id %}">
                     {% csrf_token %}
-                    <button class="btn btn-outline-dark mx-2" type="submit">Odeslat klientovi</button>
+                    <button class="btn btn-outline-dark mx-2" type="submit" id="send-proposal-button">Odeslat klientovi</button>
                 </form>
             </li>
             <li>{% if proposal.contract %}
-                <a class="btn btn-outline-primary mx-2" href="{% url "edit-contract" proposal.contract.id %}">Upravit
+                <a class="btn btn-outline-primary mx-2" href="{% url "edit-contract" proposal.contract.id %}" id="edit-contract-button">Upravit
                     smlouvu</a>
             {% else %}
                 <form method="post" action="{% url "create-contract" proposal.id %}">
                     {% csrf_token %}
-                    <button class="btn btn-outline-primary mx-2" type="submit">Vytvořit smlouvu</button>
+                    <button class="btn btn-outline-primary mx-2" type="submit" id="create-contract-button">Vytvořit smlouvu</button>
                 </form>
             {% endif %}</li>
-        <li><a class="btn btn-outline-secondary mx-2" href="{% url "manage-attachments" proposal.client.id %}">Spravovat
+        <li><a class="btn btn-outline-secondary mx-2" href="{% url "manage-attachments" proposal.client.id %}" id="manage-attachments-button">Spravovat
             přílohy</a></li>
         </ul>
     {% endif %}
     <div class="d-flex row">
         <div class="col-md-6">
-            <form action="" method="POST" enctype="multipart/form-data" class="ms-2">
+            <form action="" method="POST" enctype="multipart/form-data" class="ms-2" id="proposal-form">
                 {% csrf_token %}
                 <h4 class="mt-2">Údaje k doplnění do nabídky</h4>
                 <div class="row">
@@ -76,7 +76,7 @@
                         </div>
                     {% endif %}
                 </div>
-                <input class="btn btn-success" type="submit" value="Uložit">
+                <input class="btn btn-success" type="submit" value="Uložit" id="submit-proposal">
             </form>
         </div>
         <div class="col-md-6">
