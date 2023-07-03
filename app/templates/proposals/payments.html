@@ -11,12 +11,12 @@
                     <div class="input-group">
                         <span class="input-group-text" style="width: 35%">část ve výši {{ payment.amount }} Kč</span>
                         <div class="form-floating">
-                            <input class="form-control" value="{{ payment.part }}" id="payment_part"
+                            <input class="form-control" value="{{ payment.part }}" id="payment_part_{{ forloop.counter }}"
                                    name="payment_part">
                             <label for="payment_part">% z celku</label>
                         </div>
                         <div class="form-floating">
-                            <select class="form-select" id="payment_due" name="payment_due" required>
+                            <select class="form-select" id="payment_due_{{ forloop.counter }}" name="payment_due" required>
                                 <option value="99" {% if payment.due == "99" %}selected{% endif %}>-
                                 </option>
                                 <option value="10" {% if payment.due == "10" %}selected{% endif %}>po
@@ -43,7 +43,7 @@
                     </div>
                 </li>
             {% endfor %}
-            <button class="btn btn-success mt-1" type="submit">Aktualizovat platební podmínky</button>
+            <button class="btn btn-success mt-1" type="submit" id="save_payments">Aktualizovat platební podmínky</button>
         </form>
     </ol>
 {% endblock %}
