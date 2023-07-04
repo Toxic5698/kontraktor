@@ -43,7 +43,7 @@ class Proposal(Model):
     price_brutto = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena s DPH", blank=True, null=True)
     fulfillment_at = DateField(null=True, blank=True, verbose_name="Termín plnění")
     fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění", null=True, blank=True)
-    client = ForeignKey(Client, related_name="proposals", on_delete=SET_NULL, verbose_name="klient", null=True,
+    client = ForeignKey(Client, related_name="proposals", on_delete=CASCADE, verbose_name="klient", null=True,
                         blank=True)
 
     class Meta:
@@ -121,7 +121,7 @@ class Item(Model):
 
     def clean(self, **kwargs):
         self.priority = self.get_priority() if not self.priority else self.priority
-        if "price_per_unit" in kwargs.keys():  # data from form
+        if "price_per_unit" in kwargs.keys(): # data from edit form
             for key in kwargs.keys():
                 if key in ["production_price", "price_per_unit"]:
                     setattr(self, key, self.price_format(kwargs[key]))
@@ -129,6 +129,11 @@ class Item(Model):
                     setattr(self, key, self.number_format(kwargs[key]))
                 else:
                     setattr(self, key, kwargs[key])
+        else: # data from create form and upload
+            self.production_price = Decimal(self.production_price) if self.production_price else 0
+            self.price_per_unit = Decimal(self.price_per_unit) if self.price_per_unit else 0
+            self.sale_discount = int(self.sale_discount) if self.sale_discount else 0
+            self.quantity = int(self.quantity) if self.quantity else 1
 
     def save(self, *args, **kwargs):
         self.clean(**kwargs)
@@ -137,6 +142,8 @@ class Item(Model):
         if self.price_per_unit and self.quantity:
             self.total_price = (int(self.price_per_unit) * int(self.quantity)) * (
                         (100 - int(self.sale_discount)) / 100)
+        else:
+            self.total_price = self.price_per_unit
         super(Item, self).save()
         self.proposal.save()
 

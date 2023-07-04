@@ -17,9 +17,9 @@ class Attachment(Model):
         ("both", "both"),
         ("protocol", "protocol"),
     ]
-    tag = CharField(max_length=255, blank=True)
-    file_name = CharField(max_length=255, blank=True, null=True)
-    file = FileField(upload_to=attachment_directory_path, blank=True, null=True)
+    tag = CharField(max_length=255, blank=True, verbose_name="Označení souboru")
+    file_name = CharField(max_length=255, blank=True, null=True, verbose_name="Název souboru")
+    file = FileField(upload_to=attachment_directory_path, blank=True, null=True, verbose_name="Soubor")
     added_at = DateTimeField(auto_now_add=True)
     added_by = ForeignKey(User, related_name="attachments", on_delete=SET_NULL, blank=True, null=True)
     client = ForeignKey(Client, blank=True, null=True, on_delete=SET_NULL, related_name="attachments")
