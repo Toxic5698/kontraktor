@@ -4,12 +4,12 @@
 {% block content %}
     <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
         <li>{% if client.id %}
-            <a class="btn btn-outline-info m-2" href="{% url "client-mail-list" client.id %}">Přehled
+            <a class="btn btn-outline-info m-2" href="{% url "client-mail-list" client.id %}" id="emails-overview-button">Přehled
                 e-mailů</a>
         {% endif %}</li>
-    <li><a class="btn btn-outline-secondary m-2" href="{% url "manage-attachments" client.id %}">Spravovat
+    <li><a class="btn btn-outline-secondary m-2" href="{% url "manage-attachments" client.id %}" id="manage-attachments-button">Spravovat
                     přílohy</a></li>
-    <li><a class="btn btn-outline-success m-2" href="{% url "create-proposal" client.id %}">Vytvořit
+    <li><a class="btn btn-outline-success m-2" href="{% url "create-proposal" client.id %}" id="create-proposal-button">Vytvořit
                         nabídku</a></li>
     </ul>
     <div class="d-flex row">

@@ -44,7 +44,7 @@ def parse_items(file, proposal):
                 defaults={
                     "title": title,
                     "description": description,
-                    "production_price": Decimal(float(price_without_sale)),
+                    "production_price": 0,
                     "price_per_unit": Decimal(float(price_without_sale)),
                     "sale_discount": int(sale.split(".")[0]),
                     "quantity": int(quantity.split(".")[0]),
