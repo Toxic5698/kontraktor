@@ -46,7 +46,7 @@
                         <td><input name="price_per_unit" value="{{ item.price_per_unit|stringformat:"d" }}" class="form-control" required type="number" id="price_per_unit_{{ item.priority }}"></td>
                         <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number" id="sale_discount_{{ item.priority }}"></td>
                         <td>{{ item.total_price }}</td>
-                        <td>{{ item.revenue }}</td>
+                        <td>{% if item.revenue %}{{ item.revenue }}{% else %} - {% endif %}</td>
 
                         <td>
                             <div class="btn-group" role="group" aria-label="Save/Delete">

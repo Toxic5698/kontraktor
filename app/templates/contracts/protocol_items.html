@@ -25,10 +25,10 @@
     {% endfor %}
 
     <label>Další poznámky</label>
-    <input type="text" class="form-control" name="protocol_note">
+    <input type="text" class="form-control" name="protocol_note" id="protocol-note">
 
-    <button class="btn btn-success btn-block m-2" type="submit" name="contract_id" value="{{ contract.id }}">Uložit
+    <button class="btn btn-success btn-block m-2" type="submit" name="contract_id" value="{{ contract.id }}" id="submit-protocol-form">Uložit
     </button>
 
-    <a href="" class="btn btn-outline-primary">Zobrazit pro klienta</a>
+{#    <a href="" class="btn btn-outline-primary">Zobrazit pro klienta</a>#}
 </form>

@@ -86,3 +86,9 @@ class BaseViewsTest(LiveServerTestCase):
         new_data = self.webdriver.find_element(by="id", value="title_" + item_id).get_attribute("value")
         return old_data, new_data
 
+    def fill_upload_form(self):
+        self.webdriver.find_element(by="id", value="id_file").send_keys(
+            os.path.abspath("/Users/petr/github/kontraktor/NAB_TIC.pdf"))
+        self.webdriver.find_element(by="id", value="id_tag").send_keys(
+            os.path.abspath("nahraný testový soubor"))
+
