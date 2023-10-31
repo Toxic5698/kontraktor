@@ -43,8 +43,9 @@ jobs:
           username: ${{ vars.DETA_DEVEL_USER }}
           password: ${{ secrets.DETA_DEVEL_PASSWORD }}
           script: |
-            cd /home/kontraktor/
+            cd kontraktor/
+            git checkout deta-devel
             git pull
-            docker system prune -f
+            docker image prune -f
             docker-compose down 
             docker-compose up --build -d
