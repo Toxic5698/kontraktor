@@ -39,8 +39,8 @@ jobs:
       - name: Deploy to devel server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ variables.SHI_HOST }}
-          username: ${{ variables.DETA_DEVEL_USER }}
+          host: ${{ vars.SHI_HOST }}
+          username: ${{ vars.DETA_DEVEL_USER }}
           password: ${{ secrets.DETA_DEVEL_PASSWORD }}
           script: |
             cd /home/kontraktor/
