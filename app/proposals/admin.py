@@ -1,7 +1,7 @@
 from django.contrib.admin import site
 from django.contrib import admin
 
-from proposals.models import Proposal, UploadedProposal, Item, ContractType, ContractSubject
+from proposals.models import Proposal, UploadedProposal, Item, ContractType, ContractSubject, DefaultItem
 
 
 class ItemInline(admin.TabularInline):
@@ -19,6 +19,10 @@ class ProposalAdmin(admin.ModelAdmin):
     fields = ("proposal_number", "price_netto", )
     inlines = [UploadedProposalInline, ItemInline]
 
+
+class DefaultItemAdmin(admin.ModelAdmin):
+    model = DefaultItem
+    fields = ("subject", "contract_type", "title", "description", "production_price", "price_per_unit", "unit")
 
 class UploadedProposalAdmin(admin.ModelAdmin):
     model = UploadedProposal
@@ -39,3 +43,4 @@ site.register(Proposal, ProposalAdmin)
 site.register(UploadedProposal, UploadedProposalAdmin)
 site.register(ContractType, ContractTypeAdmin)
 site.register(ContractSubject, ContractSubjectAdmin)
+site.register(DefaultItem, DefaultItemAdmin)

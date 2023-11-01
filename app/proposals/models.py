@@ -38,7 +38,7 @@ class Proposal(Model):
     contract_type = ForeignKey(ContractType, related_name="proposals", on_delete=SET_NULL, verbose_name="Typ smlouvy",
                                null=True)
     subject = ForeignKey(ContractSubject, related_name="proposals", on_delete=SET_NULL, verbose_name="Předmět nabídky",
-                               null=True)
+                         null=True)
     price_netto = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena bez DPH", blank=True, null=True)
     price_brutto = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena s DPH", blank=True, null=True)
     fulfillment_at = DateField(null=True, blank=True, verbose_name="Termín plnění")
@@ -86,20 +86,32 @@ class UploadedProposal(Model):
     def __str__(self):
         return self.file_name
 
-    # def save(self, *args, **kwargs):
-    #     from proposals.peli_parser import parse_items
-    #     super().save(*args, **kwargs)
-    #     if self.proposal.items.count() == 0:
-    #         parse_items(self.file, self.proposal)
 
+class AbstractItem(Model):
+    class UnitOptions(TextChoices):
+        KS = "ks"
+        KG = "kg"
+        LITERS = "l"
+        CUBIC_METERS = "mb"
+        SQUARE_METERS = "m2"
+        HOURS = "hod"
 
-class Item(Model):
-    priority = IntegerField(null=True, verbose_name="pořadí", blank=True)
     title = CharField(max_length=200, blank=True, null=True, verbose_name="název")
     description = CharField(max_length=1000, blank=True, null=True, verbose_name="popis")
     production_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="nákladová cena za jednotku",
                                     null=True, blank=True)
-    price_per_unit = DecimalField(decimal_places=2, max_digits=10, verbose_name="cena ze jednotku", null=True, blank=True)
+    price_per_unit = DecimalField(decimal_places=2, max_digits=10, verbose_name="cena ze jednotku", null=True,
+                                  blank=True)
+    unit = CharField(max_length=5, verbose_name="jednotka", null=True, blank=True,
+                     choices=UnitOptions.choices)
+
+    class Meta:
+        abstract = True
+        verbose_name = "Abstract Item"
+        verbose_name_plural = "Abstract Items"
+
+class Item(AbstractItem):
+    priority = IntegerField(null=True, verbose_name="pořadí", blank=True)
     total_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="celková cena", null=True, blank=True)
     sale_discount = IntegerField(null=True, blank=True, verbose_name="sleva")
     revenue = DecimalField(null=True, blank=True, verbose_name="zisk", decimal_places=2, max_digits=10)
@@ -146,7 +158,7 @@ class Item(Model):
             self.revenue = self.get_revenue()
         if self.price_per_unit and self.quantity:
             self.total_price = (int(self.price_per_unit) * int(self.quantity)) * (
-                        (100 - int(self.sale_discount)) / 100)
+                    (100 - int(self.sale_discount)) / 100)
         super(Item, self).save()
         self.proposal.save()
 
@@ -182,6 +194,18 @@ class Item(Model):
         revenue = ((price_per_unit * quantity) * ((100 - discount) / 100)) - (
                 production_price * quantity)
         return Decimal(revenue)
+
+
+class DefaultItem(AbstractItem):
+    subject = ForeignKey(ContractSubject, related_name="default_item", on_delete=CASCADE, verbose_name="předmět smlouvy")
+    contract_type = ForeignKey(ContractType, related_name="default_item", on_delete=CASCADE, verbose_name="typ smlouvy")
+
+    class Meta:
+        verbose_name = "Default Item"
+        verbose_name_plural = "Default Items"
+
+    def __str__(self):
+        return f"{self.contract_type} - {self.subject} - {self.title}"
 
 
 class Payment(Model):
