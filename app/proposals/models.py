@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import Model, DateTimeField, ForeignKey, CharField, SET_NULL, \
-    IntegerField, DateField, FileField, DecimalField, CASCADE, BooleanField, Sum, TextChoices
+    IntegerField, DateField, FileField, DecimalField, CASCADE, BooleanField, Sum, TextChoices, TextField
 from django.utils import timezone
 
 from clients.models import Client
@@ -43,7 +43,7 @@ class Proposal(Model):
     price_brutto = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena s DPH", blank=True, null=True)
     fulfillment_at = DateField(null=True, blank=True, verbose_name="Termín plnění")
     fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění", null=True, blank=True)
-    client = ForeignKey(Client, related_name="proposals", on_delete=SET_NULL, verbose_name="klient", null=True,
+    client = ForeignKey(Client, related_name="proposals", on_delete=CASCADE, verbose_name="klient", null=True,
                         blank=True)
 
     class Meta:
@@ -117,7 +117,7 @@ class Item(AbstractItem):
     revenue = DecimalField(null=True, blank=True, verbose_name="zisk", decimal_places=2, max_digits=10)
     quantity = IntegerField(null=True, blank=True, verbose_name="množství")
     production_date = CharField(max_length=50, blank=True, null=True, verbose_name="výrobní termín")
-    production_data = CharField(max_length=1000, blank=True, null=True, verbose_name="výrobní data")
+    production_data = TextField(blank=True, null=True, verbose_name="výrobní data")
     from_upload = BooleanField(default=False, verbose_name="nahraná položka")
 
     proposal = ForeignKey(Proposal, on_delete=CASCADE, blank=True, null=True, verbose_name="nabídka",
@@ -133,7 +133,7 @@ class Item(AbstractItem):
 
     def clean(self, **kwargs):
         self.priority = self.get_priority() if not self.priority else self.priority
-        if len(kwargs) > 1:  # data from form
+        if "price_per_unit" in kwargs.keys(): # data from edit form
             for key in kwargs.keys():
                 if key in ["production_price", "price_per_unit"]:
                     setattr(self, key, self.price_format(kwargs[key]))
@@ -141,16 +141,11 @@ class Item(AbstractItem):
                     setattr(self, key, self.number_format(kwargs[key]))
                 else:
                     setattr(self, key, kwargs[key])
-
-        else:  # data from uploaded proposal
-            self.title = self.title if self.title else ""
-            self.description = self.description if self.description else ""
+        else: # data from create form and upload
             self.production_price = Decimal(self.production_price) if self.production_price else 0
             self.price_per_unit = Decimal(self.price_per_unit) if self.price_per_unit else 0
-            self.sale_discount = self.sale_discount if self.sale_discount else 0
-            self.quantity = self.quantity if self.quantity else 0
-            self.production_date = self.production_date if self.production_date else ""
-            self.production_data = self.production_data if self.production_data else ""
+            self.sale_discount = int(self.sale_discount) if self.sale_discount else 0
+            self.quantity = int(self.quantity) if self.quantity else 1
 
     def save(self, *args, **kwargs):
         self.clean(**kwargs)

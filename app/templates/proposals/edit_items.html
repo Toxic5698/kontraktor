@@ -1,10 +1,10 @@
 {% extends "main.html" %}
 {% block content %}
-    <a class="btn btn-warning" href="{% url "edit-proposal" proposal.id %}">Zpět na nabídku</a>
-    <h4>Položky u nabídky č. {{ proposal.proposal_number }} pro klienta {{ proposal.client.name }}</h4>
+    <a class="btn btn-warning m-2" href="{% url "edit-proposal" proposal.id %}" id="back_to_proposal_button">Zpět na nabídku</a>
+    <h4 class="m-2">Položky u nabídky č. {{ proposal.proposal_number }} pro klienta {{ proposal.client.name }}</h4>
 
         <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped m-2">
             <thead>
                 <th scope="col">Pořadí</th>
                 <th scope="col">Název položky</th>
@@ -22,7 +22,7 @@
         {% if proposal.items.all %}
             <tbody>
                 {% for item in proposal.items.all %}
-                    <form method="post" action="{{ item.id }}" id="edit-items-form">
+                    <form method="post" action="{{ item.id }}" id="edit_item_form_{{ item.id }}" class="edit-form">
                     {% csrf_token %}
                     <tr>
                         <td>{{ item.priority }}</td>
@@ -44,13 +44,13 @@
                             {% endif %}
                         </td>
                         <td><input name="price_per_unit" value="{{ item.price_per_unit|stringformat:"d" }}" class="form-control" required type="number" id="price_per_unit_{{ item.priority }}"></td>
-                        <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number" id="sale_discount{{ item.priority }}"></td>
+                        <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number" id="sale_discount_{{ item.priority }}"></td>
                         <td>{{ item.total_price }}</td>
-                        <td>{{ item.revenue }}</td>
+                        <td>{% if item.revenue %}{{ item.revenue }}{% else %} - {% endif %}</td>
 
                         <td>
                             <div class="btn-group" role="group" aria-label="Save/Delete">
-                              <button type="submit" class="btn btn-success" name="save" id="{{ item.id }}">Uložit</button>
+                              <button type="submit" class="btn btn-success" name="save" id="save_{{ item.id }}">Uložit</button>
 
                               <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="delete">
@@ -87,7 +87,7 @@
                         <td>-</td>
                         <td>-</td>
                         <td>
-                              <button type="submit" class="btn btn-success" name="create">Uložit</button>
+                              <button type="submit" class="btn btn-success" name="create" id="create_button">Uložit</button>
                         </td>
                     </tr>
                     </form>

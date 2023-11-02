@@ -31,6 +31,7 @@ class AttachmentManageView(LoginRequiredMixin, View):
                         client=client,
                         file=file,
                         file_name=file.name,
+                        tag=form.cleaned_data["tag"]
                     )
         else:
             attachment = Attachment.objects.get(pk=pk)
