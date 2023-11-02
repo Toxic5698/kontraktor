@@ -1,14 +1,21 @@
-name: Deploy to develop server
+name: Deploy to servers
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - deta-devel
 
 jobs:
-  deploy:
+  deploy-on-devel:
+    name: Deploy on devel server
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
-      - name: Deploy to server
+      - name: Check codebase
+        uses: actions/checkout@v4
+
+      - name: Deploy to devel server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -19,4 +26,26 @@ jobs:
             git pull
             docker-compose down
             docker system prune -f
+            docker-compose up --build -d
+
+  deploy-on-deta-devel:
+    name: Deploy on DETA devel server
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/deta-devel'
+    steps:
+      - name: Check codebase
+        uses: actions/checkout@v4
+
+      - name: Deploy to devel server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SHI_HOST }}
+          username: ${{ vars.DETA_DEVEL_USER }}
+          password: ${{ secrets.DETA_DEVEL_PASSWORD }}
+          script: |
+            cd kontraktor/
+            git checkout deta-devel
+            git pull
+            docker image prune -f
+            docker-compose down 
             docker-compose up --build -d

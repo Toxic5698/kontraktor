@@ -14,7 +14,7 @@ from contracts.models import ContractType, Contract, ProtocolItem
 from emailing.models import Mail
 from operators.models import Operator
 from proposals.forms import ProposalUploadForm, ProposalEditForm
-from proposals.models import Proposal, UploadedProposal, Item, check_payments, ContractSubject
+from proposals.models import Proposal, UploadedProposal, Item, check_payments, ContractSubject, DefaultItem
 from proposals.peli_parser import parse_items
 from proposals.filters import ProposalFilter
 from proposals.tables import ProposalTable
@@ -86,6 +86,18 @@ class ProposalEditView(LoginRequiredMixin, View):
                 fulfillment_place=data["fulfillment_place"],
                 created_by=request.user,
             )
+            default_items = DefaultItem.objects.filter(subject=proposal.subject, contract_type=proposal.contract_type)
+            if default_items.exists():
+                for item in default_items:
+                    Item.objects.create(
+                        proposal=proposal,
+                        quantity=1,
+                        title=item.title,
+                        description=item.description,
+                        production_price=item.production_price,
+                        price_per_unit=item.price_per_unit,
+                        unit=item.unit,
+                    )
 
         if len(request.FILES) > 0 and "proposal" in locals():
             file = request.FILES["file"]
