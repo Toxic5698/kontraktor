@@ -113,7 +113,7 @@ class AbstractItem(Model):
 class Item(AbstractItem):
     priority = IntegerField(null=True, verbose_name="pořadí", blank=True)
     total_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="celková cena", null=True, blank=True)
-    sale_discount = IntegerField(null=True, blank=True, verbose_name="sleva")
+    sale_discount = IntegerField(null=True, blank=True, verbose_name="sleva", default=0)
     revenue = DecimalField(null=True, blank=True, verbose_name="zisk", decimal_places=2, max_digits=10)
     quantity = IntegerField(null=True, blank=True, verbose_name="množství")
     production_date = CharField(max_length=50, blank=True, null=True, verbose_name="výrobní termín")
