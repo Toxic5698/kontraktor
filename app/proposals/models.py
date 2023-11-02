@@ -159,6 +159,8 @@ class Item(AbstractItem):
         if self.price_per_unit and self.quantity:
             self.total_price = (int(self.price_per_unit) * int(self.quantity)) * (
                     (100 - int(self.sale_discount)) / 100)
+        else:
+            self.total_price = self.price_per_unit
         super(Item, self).save()
         self.proposal.save()
 
