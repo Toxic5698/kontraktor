@@ -110,6 +110,7 @@ class AbstractItem(Model):
         verbose_name = "Abstract Item"
         verbose_name_plural = "Abstract Items"
 
+
 class Item(AbstractItem):
     priority = IntegerField(null=True, verbose_name="pořadí", blank=True)
     total_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="celková cena", null=True, blank=True)
@@ -194,7 +195,8 @@ class Item(AbstractItem):
 
 
 class DefaultItem(AbstractItem):
-    subject = ForeignKey(ContractSubject, related_name="default_item", on_delete=CASCADE, verbose_name="předmět smlouvy")
+    subject = ForeignKey(ContractSubject, related_name="default_item", on_delete=CASCADE,
+                         verbose_name="předmět smlouvy")
     contract_type = ForeignKey(ContractType, related_name="default_item", on_delete=CASCADE, verbose_name="typ smlouvy")
 
     class Meta:
