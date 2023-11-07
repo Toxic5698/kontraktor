@@ -23,16 +23,16 @@ class AttachmentManageView(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
         if len(request.FILES) > 0:
             client = Client.objects.get(pk=pk)
-            form = AttachmentUploadForm(request.POST)
-            if form.is_valid():
-                files = request.FILES.getlist('file')
-                for file in files:
-                    Attachment.objects.create(
-                        client=client,
-                        file=file,
-                        file_name=file.name,
-                        tag=form.cleaned_data["tag"]
-                    )
+            # form = AttachmentUploadForm(request.POST)
+            # if form.is_valid():
+            files = request.FILES.getlist('file')
+            for file in files:
+                Attachment.objects.create(
+                    client=client,
+                    file=file,
+                    file_name=file.name,
+                    # tag=form.cleaned_data["tag"]
+                )
         else:
             attachment = Attachment.objects.get(pk=pk)
             client = attachment.client

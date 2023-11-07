@@ -23,7 +23,8 @@ class Attachment(Model):
     added_at = DateTimeField(auto_now_add=True)
     added_by = ForeignKey(User, related_name="attachments", on_delete=SET_NULL, blank=True, null=True)
     client = ForeignKey(Client, blank=True, null=True, on_delete=SET_NULL, related_name="attachments")
-    purpose = CharField(max_length=10, null=True, blank=True, choices=PURPOSES)
+    purpose = CharField(max_length=10, null=True, blank=True, choices=PURPOSES, default="intern",
+                        verbose_name="Účel přílohy")
 
     objects = AttachmentManager()
 
@@ -36,4 +37,3 @@ class Attachment(Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
