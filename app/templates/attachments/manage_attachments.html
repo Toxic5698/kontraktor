@@ -25,9 +25,10 @@
                 <div class="modal-body">
                     <form method="post" enctype="multipart/form-data" name="add_file" class="m-2">
                         {% csrf_token %}
-                        {{ form.file|as_crispy_field }}
-                        {{ form.tag|as_crispy_field }}
-                        <button class="btn btn-success" type="submit" id="submit-upload-button">Nahrát</button>
+                        <label for="id_file" class="m-2">Vyberte soubory</label>
+                        <input type="file" name="file" class="form-control m-2" multiple id="id_file" required>
+{#                        <input type="text" name="tag" placeholder="např. Zaměření ze dne..." class="textinput textInput form-control" id="id_tag">#}
+                        <button class="btn btn-success m-2" type="submit" id="submit-upload-button">Nahrát</button>
                     </form>
                 </div>
             </div>

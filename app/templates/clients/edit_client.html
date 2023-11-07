@@ -52,7 +52,7 @@
                     <tbody>
                     {% for attachment in client.attachments.all %}
                         <tr>
-                            <td>{{ attachment.file_name }}</td>
+                            <td><a href="{{ attachment.file.url }}">{{ attachment.file_name }}</a></td>
                             <td>{{ attachment.tag }}</td>
                             <td>
                                 {% if attachment.purpose == "intern" or "" %}
