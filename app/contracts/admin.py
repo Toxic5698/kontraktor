@@ -17,8 +17,8 @@ class ContractAdmin(admin.ModelAdmin):
 
 class ContractCoreAdmin(admin.ModelAdmin):
     model = ContractCore
-    fields = ["contract_type", "parent_id", "contract_section", "priority", "text", "essential", "editable", "default",
-              "created_at", "created_by", "edited_at", "edited_by", "note"
+    fields = ["parent_id", "contract_section", "priority", "text", "essential", "editable", "default",
+              "created_at", "created_by", "edited_at", "edited_by", "note", "subject"
               ]
     readonly_fields = ["created_at", ]
     list_display = ["contract_section", "priority", "essential", "editable", "default",

@@ -8,6 +8,7 @@ from django.views.generic import DeleteView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
+from attachments.models import DefaultAttachment
 from clients.forms import ClientForm
 from clients.models import Client
 from contracts.models import ContractType, Contract, ProtocolItem
@@ -98,6 +99,10 @@ class ProposalEditView(LoginRequiredMixin, View):
                         price_per_unit=item.price_per_unit,
                         unit=item.unit,
                     )
+            default_attachments = DefaultAttachment.objects.filter(subject=proposal.subject, contract_type=proposal.contract_type)
+            if default_attachments.exists():
+                for attachment in default_attachments:
+                    client.default_attachments.add(attachment)
 
         if len(request.FILES) > 0 and "proposal" in locals():
             file = request.FILES["file"]

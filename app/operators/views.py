@@ -8,20 +8,24 @@ from django.views import View
 from clients.models import Client
 from emailing.models import Mail
 from operators.models import Operator
+from operators.services import initial_creation
 
 
 class WelcomePageView(View):
 
     def get(self, request, *args, **kwargs):
         operator = Operator.objects.filter()
-        if operator.count() == 1:
-            context = {
-                "operator": operator.get()
-            }
-        else:
+        if not operator.exists():
+            operator = initial_creation()
+            messages.info(request,
+                          f"Proběhlo prvotní nastavení, zkontrolujte údaje v adminu.")
+        elif operator.count() > 1:
             messages.warning(request,
-                             f"Sedadlo kontraktoru je prázdné nebo v něm sedí více subjektů, zkontrolujte operátora v adminu!")
+                             f"Sedadlo kontraktoru je přeplněné, zkontrolujte operátora v adminu!")
             return redirect("admin/login")
+        context = {
+            "operator": operator.get()
+        }
         return TemplateResponse(template="operators/welcome_page.html", request=request, context=context)
 
     def post(self, request, *args, **kwargs):

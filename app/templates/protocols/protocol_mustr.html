@@ -38,11 +38,11 @@
 
     <h4>Protokol vytvořil: {{ protocol.created_by }}</h4>
 
-    {% if protocol.client.attachments.filter_protocols %}
+    {% if attachments %}
         <h2>Přílohy protokolu</h2>
         <ol>
-            {% for attachment in protocol.client.attachments.filter_protocols %}
-                <li>{{ attachment }}</li>
+            {% for attachment in attachments %}
+                <li>{{ attachment.tag }} - {{ attachment.file_name }}</li>
             {% endfor %}
         </ol>
         <br>

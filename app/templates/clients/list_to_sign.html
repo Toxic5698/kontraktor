@@ -39,7 +39,7 @@
                 <div class="card-footer">
                     <p>Přílohy:</p>
                     {% for attachment in document.attachments %}
-                        <p><a href="{{ attachment.file.url }}">{{ attachment.tag }}</a></p>
+                        <p><a href="{{ attachment.file_url }}">{{ attachment.tag }}</a></p>
                     {% endfor %}
                 </div>
             </div>

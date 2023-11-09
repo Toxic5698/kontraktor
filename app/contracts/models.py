@@ -5,7 +5,7 @@ from django.db.models import Model, DateTimeField, ForeignKey, CharField, TextFi
 from django.utils import timezone
 
 from clients.models import Client, Signature
-from proposals.models import Proposal, ContractType, Item
+from proposals.models import Proposal, ContractType, Item, ContractSubject
 from attachments.models import Attachment
 
 
@@ -54,7 +54,9 @@ class ContractSection(Model):
 
 class ContractCore(Model):
     priority = IntegerField(verbose_name="Číslo ustanovení")
-    contract_type = ManyToManyField(ContractType, related_name="contract_cores")
+    subject = ForeignKey(ContractSubject, related_name="contract_cores", on_delete=SET_NULL,
+                         verbose_name="Předmět smlouvy", null=True)
+    contract_type = ForeignKey(ContractType, on_delete=SET_NULL, verbose_name="Typ smlouvy", null=True)
     contract_section = ForeignKey(ContractSection, on_delete=SET_NULL, verbose_name="Oddíl",
                                   related_name="contract_cores", null=True)
     text = TextField(max_length=10000, blank=True, null=True, verbose_name="Text ustanovení")
@@ -72,7 +74,7 @@ class ContractCore(Model):
     class Meta:
         verbose_name = "Contract Core"
         verbose_name_plural = "Contract Cores"
-        unique_together = ["priority", "text"]
+        unique_together = ["priority", "text", "contract_section"]
         ordering = ["priority", ]
 
     def __str__(self):
@@ -95,7 +97,6 @@ class Protocol(Model):
     signed_at = DateField(blank=True, null=True, verbose_name="Podepsán dne")
     signatures = GenericRelation(Signature, verbose_name="Podpisy", related_query_name="protocol")
     note = TextField(blank=True, null=True, verbose_name="Poznámka k protokolu")
-
 
     class Meta:
         verbose_name = "Handover Protocol"
