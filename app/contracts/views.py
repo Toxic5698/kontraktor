@@ -13,6 +13,7 @@ from attachments.forms import AttachmentUploadForm
 from base.methods import get_data_in_dict
 from clients.models import Client
 from emailing.models import Mail
+from emailing.services import send_email_service
 from operators.models import Operator
 from proposals.forms import ProposalEditForm
 from proposals.models import Proposal, Item
@@ -146,11 +147,11 @@ class ContractCoresEditView(LoginRequiredMixin, View):
 class ContractSendView(LoginRequiredMixin, View):
     def post(self, request, pk=None, *args, **kwargs):
         contract = Contract.objects.get(pk=pk)
-        Mail.objects.create(
-            subject=f"Návrh smlouvy od společnosti {Operator.objects.get()}",
-            message=f"Návrh smlouvy naleznete na tomto odkazu: {request.META['HTTP_HOST']}/clients/{contract.client.sign_code}",
-            recipients=contract.client.email,
-            client=contract.client
+        send_email_service(
+            subject=f"new_contract {contract.contract_number}",
+            client=contract.client,
+            sender = request.user,
+            link = request.META['HTTP_HOST']
         )
         messages.warning(request, "Smlouva byla klientovi odeslána.")
 

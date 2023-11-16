@@ -12,8 +12,7 @@ from attachments.models import DefaultAttachment
 from clients.forms import ClientForm
 from clients.models import Client
 from contracts.models import ContractType, Contract, ProtocolItem
-from emailing.models import Mail
-from operators.models import Operator
+from emailing.services import send_email_service
 from proposals.forms import ProposalUploadForm, ProposalEditForm
 from proposals.models import Proposal, UploadedProposal, Item, check_payments, ContractSubject, DefaultItem
 from proposals.peli_parser import parse_items
@@ -176,13 +175,13 @@ class ProtocolItemListView(View):
 class ProposalSendView(LoginRequiredMixin, View):
     def post(self, request, pk=None, *args, **kwargs):
         proposal = Proposal.objects.get(pk=pk)
-        Mail.objects.create(
-            subject=f"Nabídka od společnosti {Operator.objects.get()}",
-            message=f"Nabídku naleznete na tomto odkazu: {request.META['HTTP_HOST']}/clients/{proposal.client.sign_code}",
-            recipients=proposal.client.email,
-            client=proposal.client
+        send_email_service(
+            subject=f"new_proposal {proposal.proposal_number}",
+            sender=request.user,
+            client=proposal.client,
+            link=request.META['HTTP_HOST']
         )
-        messages.warning(request, "Nabídka byla klientovi odeslána.")
+        messages.warning(request, "E-mail byl vytvořen, odeslání zkontrolujte v seznamu zpráv.")
 
         return redirect("edit-proposal", proposal.id)
 

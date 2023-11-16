@@ -16,6 +16,7 @@ env = environ.Env(
     CSRF_TRUSTED_ORIGINS=(list, ['https://*.cechpetr.cz', 'http://*.cechpetr.cz',]),
     ENVIRONMENT=(str, "localhost"),
     EMAIL_HOST=(str, 'EMAIL_HOST'),
+    EMAIL_PORT=(str, '587'),
     EMAIL_HOST_USER=(str, "EMAIL_HOST_USER"),
     EMAIL_HOST_PASSWORD=(str, "EMAIL_HOST_PASSWORD"),
 )
@@ -213,7 +214,7 @@ sentry_sdk.init(
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
-EMAIL_PORT = 587
+EMAIL_PORT = env('EMAIL_PORT', default=587)
 EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")

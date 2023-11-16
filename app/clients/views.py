@@ -25,6 +25,7 @@ from clients.models import Client, Signature
 from clients.tables import ClientTable
 from contracts.models import ContractSection
 from emailing.models import Mail
+from emailing.services import send_email_service
 from operators.models import Operator
 
 
@@ -160,6 +161,18 @@ class SigningDocument(View):
 
         document.signed_at = timezone.now()
         document.save()
+
+        document_type = model.__name__.lower()
+        if document_type == "proposal":
+            number = document.proposal_number
+        else:
+            number = document.contract_number
+
+        send_email_service(
+            subject=f"signed_{document_type} {number}",
+            client=document.client,
+            link=request.META['HTTP_HOST']
+        )
 
         return HttpResponse("OK", status=200)
 
