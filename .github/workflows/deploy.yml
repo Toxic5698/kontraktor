@@ -47,6 +47,6 @@ jobs:
             cd kontraktor/
             git checkout deta-devel
             git pull
-            docker image prune -f
+            docker image prune -a -f
             docker-compose down 
             docker-compose up --build -d
