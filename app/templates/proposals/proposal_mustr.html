@@ -12,12 +12,31 @@
     <br>
     <table>
         <tr>
-            <td><h2>Údaje nabídky</h2></td>
+            <td><h2>Hlavní údaje nabídky</h2></td>
         </tr>
         {% if proposal.subject %}
             <tr>
                 <td style="font-weight: bold;">předmět nabídky:</td>
-                <td>{{ proposal.subject.name }}</td>
+                {% if proposal.subject.name == "pouze dveře" and proposal.contract_type.type == "KOUPE" %}
+                    <td>dodávka dveřních kompletů dle položkového seznamu</td>
+                {% elif proposal.subject.name == "pouze dveře" and proposal.contract_type.type == "DILO" %}
+                    <td>dodávka a montáž dveřních kompletů dle položkového seznamu</td>
+                {% elif proposal.subject.name == "pouze podlaha" and proposal.contract_type.type == "KOUPE" %}
+                    <td>dodávka prodlahové krytiny dle položkového seznamu</td>
+                {% elif proposal.subject.name == "pouze podlaha" and proposal.contract_type.type == "DILO" %}
+                    <td>dodávka a montáž podlahové krytiny dle položkového seznamu</td>
+                {% elif proposal.subject.name == "dveře i podlaha" and proposal.contract_type.type == "DILO" %}
+                    <td>dodávka a montáž dveřních kompletů a podlahové krytiny dle položkového seznamu</td>
+                {% elif proposal.subject.name == "dveře i podlaha" and proposal.contract_type.type == "KOUPE" %}
+                    <td>dodávka dveřních kompletů a podlahové krytiny dle položkového seznamu</td>
+                {% elif proposal.subject.name == "zboží" and proposal.contract_type.type == "DILO" %}
+                    <td>dodávka a montáž zboží dle položkového seznamu</td>
+                {% elif proposal.subject.name == "zboží" and proposal.contract_type.type == "KOUPE" %}
+                    <td>dodávka a montáž zboží dle položkového seznamu</td>
+                {% elif proposal.subject.name == "stavba" and proposal.contract_type.type == "DILO" %}
+                    <td>dodávka stavebních prací dle položkového seznamu</td>
+
+                {% endif %}
             </tr>
         {% endif %}
         {% if proposal.fulfillment_place %}
@@ -46,13 +65,11 @@
         {% endif %}
     </table>
     <br>
+    <h2>Položkový seznam nabídky</h2>
     <table>
         <tr>
-            <td><h2>Položky nabídky</h2></td>
-        </tr>
-        <tr>
             <td>Číslo položky</td>
-            <td>Popis položky</td>
+            <td>Název položky</td>
             <td>Množství</td>
             <td>Cena za jednotku</td>
             <td>Sleva na položce</td>
@@ -62,7 +79,7 @@
             <tr>
                 <td>{{ item.priority }}</td>
                 <td>{{ item.title }}</td>
-                <td>{{ item.quantity }}</td>
+                <td>{{ item.quantity }} {{ item.unit }}</td>
                 <td>{{ item.price_per_unit }} Kč</td>
                 <td>{{ item.sale_discount }} %</td>
                 <td>{{ item.total_price }} Kč</td>
@@ -77,23 +94,29 @@
             <li>část ve výši {{ payment.amount }} Kč se splatností {{ payment.get_due_display }}</li>
         {% endfor %}
     </ol>
-    {% if proposal.client.attachments.filter_proposals %}
+    {% if attachments %}
         <h2>Přílohy nabídky</h2>
         <ol>
-            {% for attachment in proposal.client.attachments.filter_proposals %}
-                <li>{{ attachment }}</li>
+            {% for attachment in attachments %}
+                <li>{{ attachment.tag }} - {{ attachment.file_name }}</li>
             {% endfor %}
         </ol>
         <br>
     {% endif %}
 
-    <p>Tato nabídka je platná do {{ proposal_validity|date }}.
-        {% if proposal.contract_type.type == "DILO" %}
+    <h2>Informace před uzavřením smlouvy</h2>
+    <ol>
+        <li>Tato nabídka je platná do {{ proposal_validity|date }}.</li>
+        <li>{% if proposal.contract_type.type == "DILO" %}
             Zahájení montáže je možné zpravidla 15 až 20 týdnů od uzavření smlouvy a zaplacení zálohové faktury.
         {% elif proposal.contract_type.type == "KOUPE" %}
             Dodání předmětu nabídky je možné zpravidla 15 až 20 týdnů od uzavření smlouvy a zaplacení zálohové faktury.
-        {% endif %}
-    </p>
+        {% endif %}</li>
+        <li>Záruční doba je obvykle 24 měsíců od předání.</li>
+        <li>Pokud není přílohou této nabídky zaměření, jsou množstevní a cenové údaje pouze orientační a mohou se změnit
+            po provedení zaměření.
+        </li>
+    </ol>
     <br>
 
     <h2>Detailní specifikace jednotlivých položek nabíkdy včetně výrobních dat</h2>

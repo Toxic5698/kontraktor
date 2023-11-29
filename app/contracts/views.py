@@ -12,7 +12,7 @@ from django_tables2 import SingleTableMixin
 from attachments.forms import AttachmentUploadForm
 from base.methods import get_data_in_dict
 from clients.models import Client
-from emailing.models import Mail
+from emailing.services import send_email_service
 from operators.models import Operator
 from proposals.forms import ProposalEditForm
 from proposals.models import Proposal, Item
@@ -81,6 +81,7 @@ class ContractsTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Contract
     template_name = "contracts/contract_list.html"
     filterset_class = ContractFilter
+    ordering = "-id"
 
 
 class ContractCoresEditView(LoginRequiredMixin, View):
@@ -146,11 +147,11 @@ class ContractCoresEditView(LoginRequiredMixin, View):
 class ContractSendView(LoginRequiredMixin, View):
     def post(self, request, pk=None, *args, **kwargs):
         contract = Contract.objects.get(pk=pk)
-        Mail.objects.create(
-            subject=f"Návrh smlouvy od společnosti {Operator.objects.get()}",
-            message=f"Návrh smlouvy naleznete na tomto odkazu: {request.META['HTTP_HOST']}/clients/{contract.client.sign_code}",
-            recipients=contract.client.email,
-            client=contract.client
+        send_email_service(
+            subject=f"new_contract {contract.contract_number}",
+            client=contract.client,
+            sender = request.user,
+            link = request.META['HTTP_HOST']
         )
         messages.warning(request, "Smlouva byla klientovi odeslána.")
 
@@ -212,10 +213,72 @@ class ProtocolEditView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         protocol = Protocol.objects.get(pk=pk)
         form = AttachmentUploadForm()
+        items = protocol.items.all().values("id", "item__title")
+        for item in items:
+            item["title"] = item.pop("item__title")
         context = {
             "protocol" : protocol,
-            "items": protocol.items.all(),
+            "items": items,
             "client": protocol.contract.client,
             "form": form,
         }
         return TemplateResponse(request=request, template="contracts/edit_protocol.html", context=context)
+
+    def post(self, request, pk, *args, **kwargs):
+        protocol = Protocol.objects.get(pk=pk)
+        data = get_data_in_dict(request)
+        protocol_note = data.pop('protocol_note')
+        contract_id = data.pop('contract_id')
+        protocol.note = f"{timezone.now().strftime('%d. %m. %Y %H:%M')} - {protocol_note}"
+        protocol.save()
+
+        statuses = {}
+        notes = {}
+        descs = {}
+        for key, value in data.items():
+            prefix, counter, id = key.split("_")
+            if "handedover" in prefix:
+                statuses[id] = value
+            if "itemnote" in prefix and value != "":
+                notes[id] = value
+            if "desc" in prefix and value != "":
+                descs[id] = value
+        for pk, value in statuses.items():
+            protocol_item = ProtocolItem.objects.get(id=pk)
+            protocol_item.status = value
+            protocol_item.note = notes.get(pk)
+            protocol_item.description = descs.get(pk)
+            protocol_item.edited_by=request.user
+            protocol_item.edited_at=timezone.now().date()
+            protocol_item.save()
+
+        messages.success(request, "Protokol uložen.")
+        return redirect("manage-attachments", protocol.contract.client.id)
+
+
+
+class ProtocolItemListView(View):
+
+    def get(self, request, *args, **kwargs):
+        protocol_items = []
+        for item in Item.objects.filter(proposal_id=request.GET.get("pk")):
+            protocol_item = {
+                "id": item.id,
+                "title": item.title,
+            }
+            handed_over = ProtocolItem.objects.filter(item=item, status="yes").count()
+            if item.unit == "ks":
+                protocol_items.extend(protocol_item for x in range(item.quantity - handed_over))
+            if item.unit != "ks" and handed_over == 0:
+                protocol_items.append(protocol_item)
+        contract = Contract.objects.get(proposal_id=request.GET.get("pk"))
+        context = {"items": protocol_items, "contract": contract}
+        return TemplateResponse(request, "contracts/protocol_items.html", context)
+
+
+class ProtocolDeleteView(LoginRequiredMixin, DeleteView):
+    model = Protocol
+    template_name = "contracts/confirm_delete_protocol.html"
+
+    def get_success_url(self):
+        return reverse_lazy("manage-attachments", args=(self.object.client.id,))

@@ -1,0 +1,20 @@
+{% extends "emailing/message_templates/email_base.html" %}
+
+{% block content %}
+<h1>Nový dokument od společnosti {{ operator }}</h1>
+
+<p>
+    Pěkný den,<br>
+
+    v naší službě Contrakor je pro Vás připraven nový dokument s označením {{ document }}.<br>
+
+    Kliknětě prosím na níže uvedený odkaz, kde naleznete podrobnosti a budete moci dokument zkontrolovat a schválit.<br>
+    <br>
+    <a href="{{ link }}">{{ code }}</a><br>
+    <br>
+    Děkujeme, že využíváte služby <a href="http://www.contraktor.cz">Contrakoru</a>.<br>
+    <br>
+    S pozdravem,<br>
+    {{ sender }}
+</p>
+{% endblock %}

@@ -2,11 +2,11 @@
 
 {% block content %}
 
-    {% if contract.proposal.contract_type.type == "DILO" %}
+    {% if proposal.contract_type.type == "DILO" %}
         <h1>Smlouva o dílo č. {{ contract.contract_number }}</h1>
         <p class="text-center">uzavřená podle ustanovení § 2586 a násl. zákona č. 89/2012 Sb., občanského zákoníku,
             v platném znění, mezi</p>
-    {% elif contract.contract_type.type == "KOUPE" %}
+    {% elif proposal.contract_type.type == "KOUPE" %}
         <h1>Kupní smlouva č. {{ contract.contract_number }}</h1>
         <p class="text-center">uzavřená podle ustanovení § 2079 a násl. zákona č. 89/2012 Sb., občanského zákoníku,
             v platném znění, mezi</p>
@@ -52,17 +52,17 @@
 
     <h2>Platební podmínky</h2>
     <ol>
-        {% for payment in proposal.payments.filter_contracts %}
+        {% for payment in proposal.payments.filter_not_null %}
             <li>část ve výši {{ payment.amount }} Kč se splatností {{ payment.get_due_display }}</li>
         {% endfor %}
     </ol>
     <br>
 
-    {% if contract.client.attachments.filter_contracts %}
+    {% if attachments %}
         <h2>Přílohy smlouvy</h2>
         <ol>
-            {% for attachment in contract.client.attachments.filter_contracts %}
-                <li>{{ attachment }}</li>
+            {% for attachment in attachments %}
+                <li>{{ attachment.tag }} - {{ attachment.file_name }}</li>
             {% endfor %}
         </ol>
         <br>

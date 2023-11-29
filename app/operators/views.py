@@ -6,27 +6,31 @@ from django.template.response import TemplateResponse
 from django.views import View
 
 from clients.models import Client
-from emailing.models import Mail
+from emailing.services import send_email_service
 from operators.models import Operator
+from operators.services import initial_creation
 
 
 class WelcomePageView(View):
 
     def get(self, request, *args, **kwargs):
         operator = Operator.objects.filter()
-        if operator.count() == 1:
-            context = {
-                "operator": operator.get()
-            }
-        else:
+        if not operator.exists():
+            operator = initial_creation()
+            messages.info(request,
+                          f"Proběhlo prvotní nastavení, zkontrolujte údaje v adminu.")
+        elif operator.count() > 1:
             messages.warning(request,
-                             f"Sedadlo kontraktoru je prázdné nebo v něm sedí více subjektů, zkontrolujte operátora v adminu!")
+                             f"Sedadlo kontraktoru je přeplněné, zkontrolujte operátora v adminu!")
             return redirect("admin/login")
+        context = {
+            "operator": operator.get()
+        }
         return TemplateResponse(template="operators/welcome_page.html", request=request, context=context)
 
     def post(self, request, *args, **kwargs):
         data = request.POST.get("sign_code")
-        if "@" not in data and self.check_uuid(data):
+        if "@" not in data and self.check_uuid(data.strip(" ")):
             client = Client.objects.filter(sign_code=data)
             if client.count() == 1:
                 return redirect("document-to-sign", data)
@@ -41,11 +45,10 @@ class WelcomePageView(View):
                 messages.warning(
                     request, f'Odesílám e-mail s kódem na zadanou adresu, zkontrolujte svou e-mailovou schránku.'
                 )
-                Mail.objects.create(
-                    subject=f"Odkaz k dokumentům v Kontraktoru od společnosti {Operator.objects.get()}",
-                    message=f"Váš odkaz k dokumentům v Kontraktoru: {request.META['HTTP_HOST']}/clients/{client.sign_code}",
-                    recipients=client.email,
-                    client=client
+                send_email_service(
+                    subject=f"resend {client}",
+                    client=client,
+                    link=request.META['HTTP_HOST']
                 )
             else:
                 messages.warning(

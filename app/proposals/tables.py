@@ -10,7 +10,7 @@ class ProposalTable(Table):
     proposal_number = Column(linkify=("edit-proposal", [A("pk")]))
     items_quantity = Column(verbose_name="Počet položek", empty_values=(), orderable=False)
     edited = Column(verbose_name="Vytvořená/Upravená", empty_values=(), orderable=False)
-    client__attachments__filter_proposals__count = Column(verbose_name="Počet příloh", orderable=False)
+    client__attachments__filter_proposals__count = Column(verbose_name="Počet nahraných příloh", orderable=False)
 
     class Meta:
         model = Proposal
