@@ -52,7 +52,7 @@
                     <a class="btn btn-secondary m-1" href="{% url "edit-protocol" protocol.id %}">Upravit</a>
                     <a class="btn btn-success m-1"
                        href="{% url "signing-document" client.sign_code protocol.id "protocol" %}">Podepsat klientem</a>
-                    <a class="btn btn-danger m-1" href="">Odebrat</a></td>{% endif %}
+                    <a class="btn btn-danger m-1" href="{% url "delete-protocol" protocol.id %}">Odebrat</a></td>{% endif %}
             </tr>
         {% endfor %}
         </tbody>

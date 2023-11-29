@@ -11,10 +11,11 @@ from django_tables2 import SingleTableMixin
 from attachments.models import DefaultAttachment
 from clients.forms import ClientForm
 from clients.models import Client
-from contracts.models import ContractType, Contract, ProtocolItem
 from emailing.services import send_email_service
+from proposals.enums import UnitOptions
 from proposals.forms import ProposalUploadForm, ProposalEditForm
-from proposals.models import Proposal, UploadedProposal, Item, check_payments, ContractSubject, DefaultItem
+from proposals.models import Proposal, UploadedProposal, Item, check_payments, ContractSubject, DefaultItem, \
+    ContractType
 from proposals.peli_parser import parse_items
 from proposals.filters import ProposalFilter
 from proposals.tables import ProposalTable
@@ -130,6 +131,7 @@ class ProposalItemsView(LoginRequiredMixin, View):
         proposal = Proposal.objects.get(pk=pk)
         context = {
             "proposal": proposal,
+            "units": UnitOptions,
         }
         return TemplateResponse(template="proposals/edit_items.html", context=context, request=request)
 
@@ -154,22 +156,6 @@ class ProposalItemsView(LoginRequiredMixin, View):
                 item.save(**data)
 
         return redirect('edit-items', proposal.id)
-
-
-class ProtocolItemListView(View):
-
-    def get(self, request, *args, **kwargs):
-        protocol_items = []
-        for item in Item.objects.filter(proposal_id=request.GET.get("pk")):
-            protocol_item = {
-                "id": item.id,
-                "title": item.title,
-            }
-            handed_over = ProtocolItem.objects.filter(item=item, status="yes").count()
-            protocol_items.extend(protocol_item for x in range(item.quantity - handed_over))
-        contract = Contract.objects.get(proposal_id=request.GET.get("pk"))
-        context = {"items": protocol_items, "contract": contract}
-        return TemplateResponse(request, "contracts/protocol_items.html", context)
 
 
 class ProposalSendView(LoginRequiredMixin, View):

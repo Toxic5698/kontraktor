@@ -35,7 +35,6 @@ class Contract(Model):
         if self.contract_cores.count() == 0:
             cores = ContractCore.objects.filter(default=True, contract_type=self.proposal.contract_type)
             self.contract_cores.set(cores)
-            return print(self.contract_cores.count())
 
 
 class ContractSection(Model):

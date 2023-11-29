@@ -1,11 +1,12 @@
 from django.contrib.auth.models import User
 from django.db.models import Model, DateTimeField, ForeignKey, CharField, SET_NULL, \
-    IntegerField, DateField, FileField, DecimalField, CASCADE, BooleanField, Sum, TextChoices, TextField
+    IntegerField, DateField, FileField, DecimalField, CASCADE, BooleanField, Sum, TextField
 from django.utils import timezone
 
 from clients.models import Client
 from decimal import Decimal
 
+from proposals.enums import UnitOptions, DueOptions
 from proposals.managers import PaymentManager
 
 
@@ -88,14 +89,6 @@ class UploadedProposal(Model):
 
 
 class AbstractItem(Model):
-    class UnitOptions(TextChoices):
-        KS = "ks"
-        KG = "kg"
-        LITERS = "l"
-        CUBIC_METERS = "mb"
-        SQUARE_METERS = "m2"
-        HOURS = "hod"
-
     title = CharField(max_length=200, blank=True, null=True, verbose_name="název")
     description = CharField(max_length=1000, blank=True, null=True, verbose_name="popis")
     production_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="nákladová cena za jednotku",
@@ -208,14 +201,6 @@ class DefaultItem(AbstractItem):
 
 
 class Payment(Model):
-    class DueOptions(TextChoices):
-        AFTER_SIGN = "10", "po podpisu smlouvy"
-        BEFORE_DELIVERY = "21", "před dodáním"
-        AFTER_DELIVERY = "31", "po dodání"
-        AFTER_COMPLETION = "32", "po dokončení"
-        BEFORE_COMPLETION = "22", "před dokončením"
-        EMPTY = "99", "-"
-
     amount = DecimalField(max_digits=10, decimal_places=2, verbose_name="výše")
     part = IntegerField(verbose_name="část z celku")
     due = CharField(max_length=100, default=DueOptions.EMPTY, choices=DueOptions.choices, verbose_name="splatnost")

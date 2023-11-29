@@ -1,99 +1,138 @@
 {% extends "main.html" %}
 {% block content %}
-    <a class="btn btn-warning m-2" href="{% url "edit-proposal" proposal.id %}" id="back_to_proposal_button">Zpět na nabídku</a>
+    <a class="btn btn-warning m-2" href="{% url "edit-proposal" proposal.id %}" id="back_to_proposal_button">Zpět na
+        nabídku</a>
     <h4 class="m-2">Položky u nabídky č. {{ proposal.proposal_number }} pro klienta {{ proposal.client.name }}</h4>
 
-        <div class="table-responsive">
+    <div class="table-responsive">
         <table class="table table-striped m-2">
             <thead>
-                <th scope="col">Pořadí</th>
-                <th scope="col">Název položky</th>
-                <th scope="col">Popis položky</th>
-                <th scope="col">Výrobní termín</th>
-                <th scope="col">Množství</th>
-                <th scope="col">Nákladová cena za jednotku</th>
-                <th scope="col">Prodejní cena za jednotku</th>
-                <th scope="col">Sleva</th>
-                <th scope="col">Prodejní cena za položku</th>
-                <th scope="col">Zisk z položky</th>
-                <th scope="col">Uložit/Smazat</th>
+            <th scope="col">Pořadí</th>
+            <th scope="col">Název položky</th>
+            <th scope="col">Popis položky</th>
+            <th scope="col">Výrobní termín</th>
+            <th scope="col">Množství</th>
+            <th scope="col">Jednotka</th>
+            <th scope="col">Nákladová cena za jednotku</th>
+            <th scope="col">Prodejní cena za jednotku</th>
+            <th scope="col">Sleva</th>
+            <th scope="col">Prodejní cena za položku</th>
+            <th scope="col">Zisk z položky</th>
+            <th scope="col">Uložit/Smazat</th>
 
             </thead>
-        {% if proposal.items.all %}
-            <tbody>
+            {% if proposal.items.all %}
+                <tbody>
                 {% for item in proposal.items.all %}
                     <form method="post" action="{{ item.id }}" id="edit_item_form_{{ item.id }}" class="edit-form">
-                    {% csrf_token %}
-                    <tr>
-                        <td>{{ item.priority }}</td>
-                        <td><input name="title" value="{{ item.title }}" class="form-control" required id="title_{{ item.priority }}"></td>
-                        <td><input name="description"  value="{{ item.description }}" class="form-control" id="description_{{ item.priority }}"></td>
-                        <td>
-                            {% if item.from_upload %}
-                            {{ item.production_date }}
-                            {% else %}
-                            <input name="production_date" class="form-control" value="{{ item.production_date }}" type="date" id="production_date_{{ item.priority }}">
-                            {% endif %}
-                        </td>
-                        <td><input name="quantity" value="{{ item.quantity }}" class="form-control" type="number" required id="quantity_{{ item.priority }}"></td>
-                        <td>
-                            {% if item.from_upload %}
-                            {{ item.production_price }}
-                            {% else %}
-                            <input name="production_price" class="form-control" value="{{ item.production_price|stringformat:"d" }}" type="number" id="production_price_{{ item.priority }}">
-                            {% endif %}
-                        </td>
-                        <td><input name="price_per_unit" value="{{ item.price_per_unit|stringformat:"d" }}" class="form-control" required type="number" id="price_per_unit_{{ item.priority }}"></td>
-                        <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number" id="sale_discount_{{ item.priority }}"></td>
-                        <td>{{ item.total_price }}</td>
-                        <td>{% if item.revenue %}{{ item.revenue }}{% else %} - {% endif %}</td>
+                        {% csrf_token %}
+                        <tr>
+                            <td>{{ item.priority }}</td>
+                            <td><input name="title" value="{{ item.title }}" class="form-control" required
+                                       id="title_{{ item.priority }}"></td>
+                            <td><input name="description" value="{{ item.description }}" class="form-control"
+                                       id="description_{{ item.priority }}"></td>
+                            <td>
+                                {% if item.from_upload %}
+                                    {{ item.production_date }}
+                                {% else %}
+                                    <input name="production_date" class="form-control"
+                                           value="{{ item.production_date }}" type="date"
+                                           id="production_date_{{ item.priority }}">
+                                {% endif %}
+                            </td>
+                            <td><input name="quantity" value="{{ item.quantity }}" class="form-control" type="number"
+                                       required id="quantity_{{ item.priority }}"></td>
+                            <td>
+                                <select class="form-select" id="unit_{{ item.priority }}" name="unit" required>
+                                    {% for unit in units %}
+                                        <option value="{{ unit }}" {% if item.unit == unit %}selected{% endif %}>{{ unit }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                {% if item.from_upload %}
+                                    {{ item.production_price }}
+                                {% else %}
+                                    <input name="production_price" class="form-control"
+                                           value="{{ item.production_price|stringformat:"d" }}" type="number"
+                                           id="production_price_{{ item.priority }}">
+                                {% endif %}
+                            </td>
+                            <td><input name="price_per_unit" value="{{ item.price_per_unit|stringformat:"d" }}"
+                                       class="form-control" required type="number"
+                                       id="price_per_unit_{{ item.priority }}"></td>
+                            <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control"
+                                       type="number" id="sale_discount_{{ item.priority }}"></td>
+                            <td>{{ item.total_price }}</td>
+                            <td>{% if item.revenue %}{{ item.revenue }}{% else %} - {% endif %}</td>
 
-                        <td>
-                            <div class="btn-group" role="group" aria-label="Save/Delete">
-                              <button type="submit" class="btn btn-success" name="save" id="save_{{ item.id }}">Uložit</button>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Save/Delete">
+                                    <button type="submit" class="btn btn-success" name="save" id="save_{{ item.id }}">
+                                        Uložit
+                                    </button>
 
-                              <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="delete">
-                                  Smazat
-                                </button>
-                                <ul class="dropdown-menu">
-                                  <li><button class="dropdown-item" type="submit" name="delete" id="delete-confirm">Smazat</button></li>
-                                </ul>
-                              </div>
-                            </div>
-                        </td>
-                    </tr>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-danger dropdown-toggle"
+                                                data-bs-toggle="dropdown" aria-expanded="false" id="delete">
+                                            Smazat
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <button class="dropdown-item" type="submit" name="delete"
+                                                        id="delete-confirm">Smazat
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                     </form>
                 {% endfor %}
-            </tbody>
-               {% endif %}
-        <tfoot>
-        <form method="post" action="{{ proposal.id }}" id="create-item-form">
-                    {% csrf_token %}
-                    <tr>
-                        <td>-</td>
-                        <td><input name="title" value="{{ item.title }}" class="form-control" required id="title_new"></td>
-                        <td><input name="description"  value="{{ item.description }}" class="form-control" id="description_new"></td>
+                </tbody>
+            {% endif %}
+            <tfoot>
+            <form method="post" action="{{ proposal.id }}" id="create-item-form">
+                {% csrf_token %}
+                <tr>
+                    <td>-</td>
+                    <td><input name="title" value="{{ item.title }}" class="form-control" required id="title_new"></td>
+                    <td><input name="description" value="{{ item.description }}" class="form-control"
+                               id="description_new"></td>
 
-                        <td>
-                            <input name="production_date" class="form-control" type="date" id="production_date_new">
-                        </td>
-                        <td><input name="quantity" value="{{ item.quantity }}" class="form-control" required type="number" id="quantity_new"></td>
-                        <td>
-                            <input name="production_price" class="form-control" type="number" id="production_price_new">
-                        </td>
-                        <td><input name="price_per_unit" value="{{ item.price_per_unit }}" class="form-control" required type="number" id="price_per_unit_new"></td>
-                        <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number" id="sale_discount_new"></td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>
-                              <button type="submit" class="btn btn-success" name="create" id="create_button">Uložit</button>
-                        </td>
-                    </tr>
-                    </form>
-        </tfoot>
+                    <td>
+                        <input name="production_date" class="form-control" type="date" id="production_date_new">
+                    </td>
+                    <td><input name="quantity" value="{{ item.quantity }}" class="form-control" required type="number"
+                               id="quantity_new"></td>
+                    <td>
+                                <select class="form-select" id="unit_{{ item.priority }}" name="unit" required>
+                                    {% for unit in units %}
+                                        <option value="{{ unit }}" {% if item.unit == unit %}selected{% endif %}>{{ unit }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                    <td>
+                        <input name="production_price" class="form-control" type="number" id="production_price_new">
+                    </td>
+                    <td><input name="price_per_unit" value="{{ item.price_per_unit }}" class="form-control" required
+                               type="number" id="price_per_unit_new"></td>
+                    <td><input name="sale_discount" value="{{ item.sale_discount }}" class="form-control" type="number"
+                               id="sale_discount_new"></td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                        <button type="submit" class="btn btn-success" name="create" id="create_button">Uložit</button>
+                    </td>
+                </tr>
+            </form>
+            </tfoot>
         </table>
-        </div>
+    </div>
 
 
 

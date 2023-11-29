@@ -22,9 +22,9 @@ from attachments.serializers import attachments_serializer
 from clients.filters import ClientFilter
 from clients.forms import ClientForm
 from clients.models import Client, Signature
+from clients.services import create_demo_client
 from clients.tables import ClientTable
 from contracts.models import ContractSection
-from emailing.models import Mail
 from emailing.services import send_email_service
 from operators.models import Operator
 
@@ -34,6 +34,7 @@ class ClientsTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Client
     template_name = "clients/clients_list.html"
     filterset_class = ClientFilter
+    ordering = "-id"
 
 
 class ClientCreateView(LoginRequiredMixin, CreateView):
@@ -165,8 +166,10 @@ class SigningDocument(View):
         document_type = model.__name__.lower()
         if document_type == "proposal":
             number = document.proposal_number
-        else:
+        elif document_type == "contract":
             number = document.contract_number
+        else:
+            number = document.contract.contract_number
 
         send_email_service(
             subject=f"signed_{document_type} {number}",
@@ -239,3 +242,10 @@ def get_document_model(doc_type):
         app_label = "contracts"
     model = apps.get_model(model_name=doc_type, app_label=app_label)
     return model
+
+
+class CreateDemoClient(View):
+
+    def get(self, request, *args, **kwargs):
+        sign_code =  create_demo_client()
+        return redirect("document-to-sign", sign_code)

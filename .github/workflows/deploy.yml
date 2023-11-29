@@ -22,10 +22,11 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            cd /home/kontraktor/
+            cd kontraktor/
+            git checkout main
             git pull
-            docker-compose down
-            docker system prune -f
+            docker image prune -f
+            docker-compose down 
             docker-compose up --build -d
 
   deploy-on-deta-devel:
