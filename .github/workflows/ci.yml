@@ -26,4 +26,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: Toxic5698/kontraktor:${{ github.run_number }}
+          tags: kontraktor:${{ github.run_number }}
