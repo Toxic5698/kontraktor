@@ -26,5 +26,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          github-token: ${{ secrets.PACKAGES_TOKEN }}
-          tags: ghcr.io/toxic5698/kontraktor:latest
+          tags: cechpetr/kontraktor:latest
