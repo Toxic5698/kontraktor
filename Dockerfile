@@ -20,4 +20,4 @@ WORKDIR .
 COPY ./web-entrypoint.sh /
 ENTRYPOINT ["sh", "/web-entrypoint.sh"]
 
-CMD ["gunicorn", "-c", "python:config.gunicorn", "config.wsgi"]
+#CMD ["gunicorn", "-c", "python:config.gunicorn", "config.wsgi"]
