@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "app/kontrakor/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app/kontrakor/wsgi.py"
+    }
+  ]
+}
