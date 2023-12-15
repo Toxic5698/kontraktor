@@ -1,6 +1,14 @@
 name: Deploy to server
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      web_id:
+        description: Number of desired CI pipeline
+        default: "latest"
+        type: string
+
+
 
 jobs:
   deploy-on-shi:
@@ -19,5 +27,6 @@ jobs:
           script: |
             cd kontraktor/
             docker compose down
+            sed -i 's/\(export WEB_ID=\).*/\1${{ inputs.web_id }}/' .env
             docker compose pull
             docker compose up -d
