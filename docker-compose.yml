@@ -3,7 +3,7 @@ services:
   web:
     container_name: demo-web
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
-    image: cechpetr/kontraktor:18
+    image: "cechpetr/kontraktor:${WEB_ID:-latest}"
     deploy:
       resources:
         limits:
