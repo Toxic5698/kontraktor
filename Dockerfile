@@ -1,5 +1,7 @@
 FROM python:3.9
 
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends build-essential curl libpq-dev git\
@@ -15,5 +17,7 @@ COPY /app .
 
 WORKDIR .
 
-COPY ./entrypoint.sh /
-ENTRYPOINT ["sh", "/entrypoint.sh"]
+COPY ./web-entrypoint.sh /
+ENTRYPOINT ["sh", "/web-entrypoint.sh"]
+
+#CMD ["gunicorn", "-c", "python:config.gunicorn", "config.wsgi"]
