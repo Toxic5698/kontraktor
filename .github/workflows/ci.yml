@@ -1,12 +1,12 @@
-name: ci
+name: CI
 
 on:
   push:
     branches:
-      - 'devel'
+      - 'main'
 
 jobs:
-  docker:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       -

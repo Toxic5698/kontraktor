@@ -1,14 +1,14 @@
+
 services:
   web:
+    container_name: demo-web
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
-    image: cechpetr/kontraktor:latest
+    image: cechpetr/kontraktor:18
     deploy:
       resources:
         limits:
           cpus: "${DOCKER_WEB_CPUS:-0}"
           memory: "${DOCKER_WEB_MEMORY:-0}"
-    ports:
-      - "${DOCKER_WEB_PORT_FORWARD:-127.0.0.1:8000}:${PORT:-8000}"
     expose:
       - "${PORT:-8000}"
     links:
@@ -17,8 +17,12 @@ services:
       - web-static:/static
     env_file: .env
     stop_grace_period: "3s"
+    depends_on:
+      - postgres
+    entrypoint: ["gunicorn", "-c", "python:config.gunicorn", "config.wsgi"]
 
   nginx:
+    container_name: nginx-shi
     restart: always
     image: cechpetr/shi-server:latest
     ports:
@@ -27,8 +31,11 @@ services:
       - web-static:/static
     links:
       - web:web
+    depends_on:
+      - web
 
   postgres:
+    container_name: demo-postgres
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     image: postgres:16-bookworm
     deploy:
@@ -45,7 +52,9 @@ services:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_HOST_AUTH_METHOD: trust
 
 volumes:
   web-static:
   pgdata:
+    driver: local
