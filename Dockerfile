@@ -8,7 +8,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man \
   && apt-get clean
 
-RUN pip install --upgrade pip
+RUN pip install --upgrade pip setuptools wheel
 
 COPY app/requirements.txt .
 RUN pip install -r requirements.txt
