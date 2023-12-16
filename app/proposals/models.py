@@ -96,7 +96,7 @@ class AbstractItem(Model):
     price_per_unit = DecimalField(decimal_places=2, max_digits=10, verbose_name="cena ze jednotku", null=True,
                                   blank=True)
     unit = CharField(max_length=5, verbose_name="jednotka", null=True, blank=True,
-                     choices=UnitOptions.choices)
+                     choices=UnitOptions.choices, default="ks")
 
     class Meta:
         abstract = True

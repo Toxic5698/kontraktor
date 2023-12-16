@@ -1,5 +1,5 @@
 - kombinace s crispy? https://github.com/jazzband/django-widget-tweaks
-- zálohování db, odesílání záloh do e-mailu? + celery
+- zálohování db, odesílání záloh do e-mailu? + celery nebo https://django-extensions.readthedocs.io/en/latest/jobs_scheduling.html
 - sledovaní stavu smluvy (zobrazení, podepsaní, dis) pro obsluhu
 - šifrování osobních dat
 -

@@ -55,7 +55,6 @@ INSTALLED_APPS = [
 
     "django_extensions",
     "betterforms",
-    "weasyprint",
     "django_filters",
     "django_tables2",
     "crispy_forms",
