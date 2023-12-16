@@ -8,8 +8,6 @@ on:
         default: "latest"
         type: string
 
-
-
 jobs:
   deploy-on-shi:
     name: Deploy on devel server
@@ -30,3 +28,8 @@ jobs:
             sed -i 's/\(export WEB_ID=\).*/\1${{ inputs.web_id }}/' .env
             docker compose pull
             docker compose up -d
+            docker compose exec web python manage.py migrate --noinput
+            docker compose exec web python manage.py collectstatic --noinput
+            docker compose exec web python manage.py createsuperuser --noinput --username=${{ secrets.SUP_USER}}  --email=${{ secrets.SUP_EMAIL }}
+#            docker compose exec web python manage.py compilemessages --noinput
+

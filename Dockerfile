@@ -10,14 +10,5 @@ RUN apt-get update \
 
 RUN pip install --upgrade pip setuptools wheel
 
-COPY app/requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY /app .
-
-WORKDIR .
-
-COPY ./web-entrypoint.sh /
-ENTRYPOINT ["sh", "/web-entrypoint.sh"]
-
-#CMD ["gunicorn", "-c", "python:config.gunicorn", "config.wsgi"]
+COPY app .
+RUN pip install -r app/requirements.txt
