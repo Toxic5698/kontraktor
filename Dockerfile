@@ -10,5 +10,5 @@ RUN apt-get update \
 
 RUN pip install --upgrade pip setuptools wheel
 
-COPY app .
-RUN pip install -r app/requirements.txt
+COPY app .app
+RUN pip install -r .app/requirements.txt
