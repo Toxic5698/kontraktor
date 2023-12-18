@@ -19,7 +19,7 @@ services:
     stop_grace_period: "3s"
     depends_on:
       - postgres
-    entrypoint: ["gunicorn", "-c", "python:app.config.gunicorn", "app.config.wsgi"]
+    entrypoint: ["gunicorn", "-c", "python:config.gunicorn", "config.wsgi"]
 
   nginx:
     container_name: nginx-shi
