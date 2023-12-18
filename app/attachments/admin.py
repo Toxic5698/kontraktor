@@ -13,8 +13,7 @@ class AttachmentAdmin(admin.ModelAdmin):
 class DefaultAttachmentAdmin(admin.ModelAdmin):
     model = DefaultAttachment
     fields = ("file_name", "file", "tag", "subject", "contract_type", "purpose")
-    list_display = ["file_name", "file", "tag", "subject", "contract_type", "purpose"]
-
+    list_display = ["file_name", "file", "tag", "purpose"]
 
 
 site.register(Attachment, AttachmentAdmin)
