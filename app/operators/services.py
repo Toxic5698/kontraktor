@@ -1,3 +1,4 @@
+from attachments.models import DefaultAttachment
 from contracts.models import ContractSection, ContractCore
 from operators.models import Operator
 from proposals.models import ContractType, ContractSubject
@@ -178,5 +179,21 @@ def initial_creation():
             contract_type=koupe,
             text=text,
         )
+
+    # # default attachments now working
+    # with open('default_attachment.txt', 'w') as file:
+    #     file.write(
+    #         'Tato příloha je vzor přílohy, která je přiřazena automaticky při vzniku dokumentu, což mohou být např. '
+    #         'obchodní podmínky nebo podmínky používání. Takže už nemusíte myslet na to je k nabídce či smlouvě vždy'
+    #         'přiložit.')
+    #
+    # default_attachment = DefaultAttachment.objects.create(
+    #     tag="Obchodní podmínky Demo s.r.o.",
+    #     file_name=file.name,
+    #     purpose="both",
+    #     file=file,
+    # )
+    # default_attachment.subject.add(ContractSubject.objects.all())
+    # default_attachment.contract_type.add(ContractType.objects.all())
 
     return Operator.objects.filter()

@@ -10,5 +10,5 @@ RUN apt-get update \
 
 RUN pip install --upgrade pip setuptools wheel
 
-COPY app .
-RUN pip install -r requirements.txt
+COPY app ./app
+RUN pip install --no-cache-dir -r app/requirements.txt

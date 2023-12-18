@@ -37,7 +37,7 @@ class Attachment(BaseAttachment):
                           verbose_name="přidána uživatelem")
     client = ForeignKey(Client, blank=True, null=True, on_delete=SET_NULL, related_name="attachments",
                         verbose_name="klient")
-    file = FileField(upload_to=attachment_directory_path, blank=True, null=True, verbose_name="Soubor")
+    file = FileField(upload_to=attachment_directory_path, blank=True, null=True, verbose_name="soubor")
 
     objects = AttachmentManager()
 
@@ -53,11 +53,10 @@ class Attachment(BaseAttachment):
 
 
 class DefaultAttachment(BaseAttachment):
-    subject = ForeignKey(ContractSubject, related_name="default_attachment", on_delete=CASCADE,
-                         verbose_name="předmět smlouvy")
-    contract_type = ForeignKey(ContractType, related_name="default_attachment", on_delete=CASCADE, verbose_name="typ smlouvy")
-    client = ManyToManyField(Client, related_name="default_attachments", blank=True)
-    file = FileField(upload_to=default_attachment_directory_path, blank=True, null=True, verbose_name="Soubor")
+    subject = ManyToManyField(ContractSubject, related_name="default_attachment", verbose_name="předmět smlouvy")
+    contract_type = ManyToManyField(ContractType, related_name="default_attachment", verbose_name="typ smlouvy")
+    client = ManyToManyField(Client, related_name="default_attachments", blank=True, verbose_name="klient")
+    file = FileField(upload_to=default_attachment_directory_path, blank=True, null=True, verbose_name="soubor")
 
     objects = AttachmentManager()
 
