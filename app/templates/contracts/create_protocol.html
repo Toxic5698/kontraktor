@@ -32,7 +32,7 @@
     </div>
 
     <label class="h4 m-2">Předávací protokol ke smlouvě
-    <select name="pk" class="form-control" hx-get="/proposals/get-items/" hx-target="#itemList" hx-trigger="click" id="select-contract">
+    <select name="pk" class="form-control" hx-get="/contracts/get-items/" hx-target="#itemList" hx-trigger="click" id="select-contract">
 {#        <option value="">Vyberte smlouvu...</option>#}
         {% for contract in contracts %}
             <option value="{{ contract.proposal.id }}">č. {{ contract.contract_number }} klient: {{ contract.client }}</option>

@@ -90,7 +90,7 @@
                     <thead>
                     <th scope="col">Pořadí</th>
                     <th scope="col">Název položky</th>
-                    <th scope="col">Cena</th>
+                    <th scope="col">Prodejní cena</th>
                     <th scope="col">Množství</th>
                     </thead>
                     <tbody>
@@ -99,7 +99,7 @@
                             <td>{{ item.priority }}</td>
                             <td>{{ item.title }}</td>
                             <td>{{ item.price_per_unit }}</td>
-                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.quantity }} {{ item.unit }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

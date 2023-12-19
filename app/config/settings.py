@@ -16,6 +16,7 @@ env = environ.Env(
     CSRF_TRUSTED_ORIGINS=(list, ['https://*.cechpetr.cz', 'http://*.cechpetr.cz',]),
     ENVIRONMENT=(str, "localhost"),
     EMAIL_HOST=(str, 'EMAIL_HOST'),
+    EMAIL_PORT=(str, '587'),
     EMAIL_HOST_USER=(str, "EMAIL_HOST_USER"),
     EMAIL_HOST_PASSWORD=(str, "EMAIL_HOST_PASSWORD"),
 )
@@ -54,7 +55,6 @@ INSTALLED_APPS = [
 
     "django_extensions",
     "betterforms",
-    "weasyprint",
     "django_filters",
     "django_tables2",
     "crispy_forms",
@@ -82,7 +82,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'kontraktor.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -101,7 +101,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'kontraktor.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -169,15 +169,15 @@ if USE_S3:
     STATIC_LOCATION = 'static'
     STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
     STATIC_ROOT = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
-    STATICFILES_STORAGE = 'kontraktor.storage_backends.StaticStorage'
+    STATICFILES_STORAGE = 'config.storage_backends.StaticStorage'
     # s3 public media settings
     PUBLIC_MEDIA_LOCATION = 'media'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
     MEDIA_ROOT = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
-    DEFAULT_FILE_STORAGE = 'kontraktor.storage_backends.PublicMediaStorage'
+    DEFAULT_FILE_STORAGE = 'config.storage_backends.PublicMediaStorage'
     # s3 private media settings
     PRIVATE_MEDIA_LOCATION = 'private'
-    PRIVATE_FILE_STORAGE = 'kontraktor.storage_backends.PrivateMediaStorage'
+    PRIVATE_FILE_STORAGE = 'config.storage_backends.PrivateMediaStorage'
 else:
     STATIC_URL = '/staticfiles/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -213,7 +213,7 @@ sentry_sdk.init(
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
-EMAIL_PORT = 587
+EMAIL_PORT = env('EMAIL_PORT', default=587)
 EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")

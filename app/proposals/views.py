@@ -8,13 +8,14 @@ from django.views.generic import DeleteView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
+from attachments.models import DefaultAttachment
 from clients.forms import ClientForm
 from clients.models import Client
-from contracts.models import ContractType, Contract, ProtocolItem
-from emailing.models import Mail
-from operators.models import Operator
+from emailing.services import send_email_service
+from proposals.enums import UnitOptions
 from proposals.forms import ProposalUploadForm, ProposalEditForm
-from proposals.models import Proposal, UploadedProposal, Item, check_payments, ContractSubject, DefaultItem
+from proposals.models import Proposal, UploadedProposal, Item, check_payments, ContractSubject, DefaultItem, \
+    ContractType
 from proposals.peli_parser import parse_items
 from proposals.filters import ProposalFilter
 from proposals.tables import ProposalTable
@@ -98,6 +99,10 @@ class ProposalEditView(LoginRequiredMixin, View):
                         price_per_unit=item.price_per_unit,
                         unit=item.unit,
                     )
+            default_attachments = DefaultAttachment.objects.filter(subject=proposal.subject, contract_type=proposal.contract_type)
+            if default_attachments.exists():
+                for attachment in default_attachments:
+                    client.default_attachments.add(attachment)
 
         if len(request.FILES) > 0 and "proposal" in locals():
             file = request.FILES["file"]
@@ -126,6 +131,7 @@ class ProposalItemsView(LoginRequiredMixin, View):
         proposal = Proposal.objects.get(pk=pk)
         context = {
             "proposal": proposal,
+            "units": UnitOptions,
         }
         return TemplateResponse(template="proposals/edit_items.html", context=context, request=request)
 
@@ -152,32 +158,16 @@ class ProposalItemsView(LoginRequiredMixin, View):
         return redirect('edit-items', proposal.id)
 
 
-class ProtocolItemListView(View):
-
-    def get(self, request, *args, **kwargs):
-        protocol_items = []
-        for item in Item.objects.filter(proposal_id=request.GET.get("pk")):
-            protocol_item = {
-                "id": item.id,
-                "title": item.title,
-            }
-            handed_over = ProtocolItem.objects.filter(item=item, status="yes").count()
-            protocol_items.extend(protocol_item for x in range(item.quantity - handed_over))
-        contract = Contract.objects.get(proposal_id=request.GET.get("pk"))
-        context = {"items": protocol_items, "contract": contract}
-        return TemplateResponse(request, "contracts/protocol_items.html", context)
-
-
 class ProposalSendView(LoginRequiredMixin, View):
     def post(self, request, pk=None, *args, **kwargs):
         proposal = Proposal.objects.get(pk=pk)
-        Mail.objects.create(
-            subject=f"Nabídka od společnosti {Operator.objects.get()}",
-            message=f"Nabídku naleznete na tomto odkazu: {request.META['HTTP_HOST']}/clients/{proposal.client.sign_code}",
-            recipients=proposal.client.email,
-            client=proposal.client
+        send_email_service(
+            subject=f"new_proposal {proposal.proposal_number}",
+            sender=request.user,
+            client=proposal.client,
+            link=request.META['HTTP_HOST']
         )
-        messages.warning(request, "Nabídka byla klientovi odeslána.")
+        messages.warning(request, "E-mail byl vytvořen, odeslání zkontrolujte v seznamu zpráv.")
 
         return redirect("edit-proposal", proposal.id)
 

@@ -96,10 +96,12 @@
                 <thead>
                     <tr>
                         <td style="width: 50%;" class="header-text header-title">
-                        {% if proposal %}
+                        {% if contract %}
+                            Smlouva č. {{ contract.contract_number }}
+                        {% elif protocol %}
+                            Protokol ke smlouvě č. {{ contract.contract_number }}
+                        {% elif proposal %}
                             Nabídka č. {{ proposal.proposal_number }}
-                        {% elif contract %}
-                            Smlouva č. {{ proposal.contract_number }}
                         {% endif %}
                         </td>
                         <td style="width: 50%;" class="header-logo">

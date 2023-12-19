@@ -1,38 +1,60 @@
-version: '3.7'
 
 services:
   web:
-    restart: always
-    build:
-      context: .
+    container_name: demo-web
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    image: "cechpetr/kontraktor:${WEB_ID:-latest}"
+    deploy:
+      resources:
+        limits:
+          cpus: "${DOCKER_WEB_CPUS:-0}"
+          memory: "${DOCKER_WEB_MEMORY:-0}"
     expose:
-      - "8000"
+      - "${PORT:-8000}"
     links:
       - postgres:postgres
     volumes:
       - web-static:/static
     env_file: .env
+    stop_grace_period: "3s"
+    depends_on:
+      - postgres
+    entrypoint: ["gunicorn", "-c", "python:config.gunicorn", "config.wsgi"]
 
   nginx:
+    container_name: nginx-shi
     restart: always
-    build: ./nginx/
+    image: cechpetr/shi-server:latest
     ports:
       - "80:80"
     volumes:
       - web-static:/static
     links:
       - web:web
+    depends_on:
+      - web
 
   postgres:
-    restart: always
-    image: "postgres:15.3-bullseye"
+    container_name: demo-postgres
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    image: postgres:16-bookworm
+    deploy:
+      resources:
+        limits:
+          cpus: "${DOCKER_POSTGRES_CPUS:-0}"
+          memory: "${DOCKER_POSTGRES_MEMORY:-0}"
     ports:
       - "5432"
+    stop_grace_period: "3s"
     volumes:
       - pgdata:/var/lib/postgresql/data/
     environment:
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_HOST_AUTH_METHOD: trust
 
 volumes:
   web-static:
   pgdata:
+    driver: local

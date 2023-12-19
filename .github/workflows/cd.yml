@@ -1,0 +1,35 @@
+name: Deploy to server
+
+on:
+  workflow_dispatch:
+    inputs:
+      web_id:
+        description: Number of desired CI pipeline
+        default: "latest"
+        type: string
+
+jobs:
+  deploy-on-shi:
+    name: Deploy on devel server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check codebase
+        uses: actions/checkout@v4
+
+      - name: Deploy to devel server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SHI_HOST }}
+          username: ${{ vars.DEMO_USER }}
+          password: ${{ secrets.DEMO_PASSWORD }}
+          script: |
+            cd kontraktor/
+            docker compose down
+            sed -i 's/\(export WEB_ID=\).*/\1${{ inputs.web_id }}/' .env
+            docker compose pull
+            docker compose up -d
+            docker compose exec web python manage.py migrate --noinput
+            docker compose exec web python manage.py collectstatic --noinput
+#            docker compose exec web python manage.py createsuperuser --noinput --username=${{ secrets.SUP_USER}}  --email=${{ secrets.SUP_EMAIL }}
+#            docker compose exec web python manage.py compilemessages --noinput
+

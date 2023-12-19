@@ -1,3 +1,5 @@
+import factory
+from django.contrib.auth.models import AnonymousUser
 from factory import SubFactory, LazyAttribute, django
 
 from faker import Faker
@@ -6,7 +8,7 @@ from clients.models import *
 from proposals.models import *
 from operators.models import Operator
 
-faker = Faker()
+faker = Faker(["cs_CZ"])
 
 
 class UserFactory(django.DjangoModelFactory):
@@ -55,7 +57,34 @@ class ClientFactory(django.DjangoModelFactory):
         model = Client
 
     name = LazyAttribute(lambda _: faker.name())
-    id_number = "555566666"
+    id_number = LazyAttribute(lambda _: faker.passport_number())
     address = LazyAttribute(lambda _: faker.address())
     email = LazyAttribute(lambda _: faker.email())
-    phone_number = "555566666"
+    phone_number = LazyAttribute(lambda _: faker.phone_number())
+
+
+class ProposalFactory(django.DjangoModelFactory):
+    class Meta:
+        model = Proposal
+
+    client = factory.SubFactory(ClientFactory)
+    proposal_number = LazyAttribute(lambda _: faker.bothify(text="??####"))
+    contract_type = factory.Iterator(ContractType.objects.all())
+    subject = factory.Iterator(ContractSubject.objects.all())
+    price_netto = LazyAttribute(lambda _: faker.random_digit_not_null())
+    fulfillment_at = LazyAttribute(lambda _: faker.date())
+    fulfillment_place = LazyAttribute(lambda _: faker.city())
+
+
+class ItemFactory(django.DjangoModelFactory):
+    class Meta:
+        model = Item
+
+    title = LazyAttribute(lambda _: faker.text(max_nb_chars=20))
+    description = LazyAttribute(lambda _: faker.paragraph(nb_sentences=1))
+    production_date = LazyAttribute(lambda _: faker.date())
+    production_price = LazyAttribute(lambda _: faker.random_int(min=1000, max=1500))
+    price_per_unit = LazyAttribute(lambda _: faker.random_int(min=2000, max=2500))
+    unit = factory.Iterator(UnitOptions)
+    quantity = LazyAttribute(lambda _: faker.random_digit_not_null())
+    sale_discount = LazyAttribute(lambda _: faker.random_digit_not_null())

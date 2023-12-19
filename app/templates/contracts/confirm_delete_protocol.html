@@ -1,0 +1,23 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-body m-2">
+            <p>Opravdu smazat předávací prokol z {{protocol.created_at|date}}?</p>
+
+
+            <form action="{% url 'delete-protocol' protocol.id %}" method="POST">
+            {% csrf_token%}
+
+            <a class ="btn btn-warning" href="{{ request.META.HTTP_REFERER }}">Zpět</a>
+
+            <input class="btn btn-danger" type="submit" name="Submit" value="Smazat">
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
