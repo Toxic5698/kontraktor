@@ -1,7 +1,7 @@
 #?/bin/sh
 
-# fill token above -p
+# fill token for -p as password
 docker login -u cechpetr -p
 docker build -t cechpetr/shi-server --platform linux/amd64 .
-# change number of version
-docker push cechpetr/shi-server:v1.0
+
+docker push cechpetr/shi-server:latest

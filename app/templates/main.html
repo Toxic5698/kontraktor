@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Contraktor</title>
+    <title>SAMOSET</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
@@ -32,7 +32,7 @@
 <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
     <a href="{% url "welcome-page" %}"
        class="d-flex align-items-center col-md-3 mb-2 mb-md-0 ms-2 text-dark text-decoration-none">
-        <h3><img src="{% static 'img/logo.png' %}" width="50px" height="50px">Contraktor</h3>
+        <h3>SAMOSET >>> <img class="aligned" src="{% static 'img/logo.png' %}" width="80px" height="50px"></h3>
     </a>
     {% if user.is_authenticated %}
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
@@ -64,7 +64,7 @@
         <div class="d-flex align-items-center justify-content-center mb-3">
             <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header bg-warning">
-                    <strong class="me-auto">Contraktor Vám sděluje:</strong>
+                    <strong class="me-auto">Samoset Vám sděluje:</strong>
                     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                 </div>
                 <div class="toast-body">

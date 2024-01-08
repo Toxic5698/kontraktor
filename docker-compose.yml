@@ -1,7 +1,7 @@
 
 services:
-  web:
-    container_name: demo-web
+  web1:
+    container_name: demo1-web
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     image: "cechpetr/kontraktor:${WEB_ID:-latest}"
     deploy:
@@ -15,11 +15,32 @@ services:
       - postgres:postgres
     volumes:
       - web-static:/static
-    env_file: .env
+    env_file: .env.demo1
     stop_grace_period: "3s"
     depends_on:
       - postgres
     entrypoint: ["gunicorn", "-c", "python:config.gunicorn", "config.wsgi"]
+
+  web2:
+    container_name: demo2-web
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    image: "cechpetr/kontraktor:${WEB_ID:-latest}"
+    deploy:
+      resources:
+        limits:
+          cpus: "${DOCKER_WEB_CPUS:-0}"
+          memory: "${DOCKER_WEB_MEMORY:-0}"
+    expose:
+      - "${PORT:-8000}"
+    links:
+      - postgres:postgres
+    volumes:
+      - web-static:/static
+    env_file: .env.demo2
+    stop_grace_period: "3s"
+    depends_on:
+      - postgres
+    entrypoint: [ "gunicorn", "-c", "python:config.gunicorn", "config.wsgi" ]
 
   nginx:
     container_name: nginx-shi
@@ -34,8 +55,9 @@ services:
     depends_on:
       - web
 
-  postgres:
-    container_name: demo-postgres
+  postgres1:
+    container_name: demo1-postgres
+    env_file: .env.demo1
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     image: postgres:16-bookworm
     deploy:
@@ -44,7 +66,28 @@ services:
           cpus: "${DOCKER_POSTGRES_CPUS:-0}"
           memory: "${DOCKER_POSTGRES_MEMORY:-0}"
     ports:
-      - "5432"
+      - "${POSTGRES_PORT:-5432}"
+    stop_grace_period: "3s"
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+  postgres2:
+    container_name: demo2-postgres
+    env_file: .env.demo2
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    image: postgres:16-bookworm
+    deploy:
+      resources:
+        limits:
+          cpus: "${DOCKER_POSTGRES_CPUS:-0}"
+          memory: "${DOCKER_POSTGRES_MEMORY:-0}"
+    ports:
+      - "${POSTGRES_PORT:-5432}"
     stop_grace_period: "3s"
     volumes:
       - pgdata:/var/lib/postgresql/data/

@@ -9,7 +9,7 @@ from tests.views.base import BaseViewsTest
 class OnDevServerTest(BaseViewsTest):
 
     def test_user_login_success(self):
-        self.webdriver.get("http://kontraktor.cechpetr.cz")
+        self.webdriver.get("http://demo.samoset.cechpetr.cz")
         self.webdriver.find_element(by="id", value="login").click()
         self.webdriver.find_element(by="id", value="username").send_keys("petr")
         self.webdriver.find_element(by="id", value="password").send_keys("12345")

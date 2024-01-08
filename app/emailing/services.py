@@ -53,7 +53,7 @@ def get_subject_and_message(link, client, subject, sender=None):
         prefix = "Podepsaný dokument "
         template = "emailing/message_templates/signed_document.html"
     elif "resend" in subject:
-        prefix = "Odkaz k dokumentům v Contraktoru pro klienta "
+        prefix = "Odkaz k dokumentům v Samosetu pro klienta "
         suffix = client.name
         template = "emailing/message_templates/resend.html"
 

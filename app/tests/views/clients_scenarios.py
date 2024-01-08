@@ -10,7 +10,7 @@ class WelcomePageTest(BaseViewsTest):
         self.assertIn("Spravujte své dokumenty jednoduše!", self.webdriver.find_element(by="id", value="welcome-header").text)
 
     def test_welcome_page_devel(self):
-        self.webdriver.get("http://kontraktor.cechpetr.cz")
+        self.webdriver.get("http://demo.samoset.cz")
         self.assertIn("Spravujte své dokumenty jednoduše!", self.webdriver.find_element(by="id", value="welcome-header").text)
 
 

@@ -21,7 +21,7 @@ class WelcomePageView(View):
                           f"Proběhlo prvotní nastavení, zkontrolujte údaje v adminu.")
         elif operator.count() > 1:
             messages.warning(request,
-                             f"Sedadlo kontraktoru je přeplněné, zkontrolujte operátora v adminu!")
+                             f"Je nastaveno více operátorů, zkontrolujte operátora v adminu!")
             return redirect("admin/login")
         context = {
             "operator": operator.get()

@@ -12,8 +12,8 @@ def initial_creation():
         id_number="45242455",
         bank_number="45242/435",
         acting_person="Daemonem, ředitelem",
-        web="http://www.contraktor.cz",
-        email="admin@contraktor.cz",
+        web="http://www.samoset.cz",
+        email="admin@samoset.cz",
         phone_number="45245235",
     )
     # contract type
