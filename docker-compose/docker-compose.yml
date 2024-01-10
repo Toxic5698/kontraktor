@@ -10,15 +10,13 @@ services:
           cpus: "${DOCKER_WEB_CPUS:-0}"
           memory: "${DOCKER_WEB_MEMORY:-0}"
     expose:
-      - "${PORT:-8000}"
+      - "${PORT1:-8000}"
     links:
-      - postgres:postgres
-    volumes:
-      - web-static:/static
+      - postgres1:postgres1
     env_file: .env.demo1
     stop_grace_period: "3s"
     depends_on:
-      - postgres
+      - postgres1
     entrypoint: ["gunicorn", "-c", "python:config.gunicorn", "config.wsgi"]
 
   web2:
@@ -31,15 +29,13 @@ services:
           cpus: "${DOCKER_WEB_CPUS:-0}"
           memory: "${DOCKER_WEB_MEMORY:-0}"
     expose:
-      - "${PORT:-8000}"
+      - "${PORT2:-8000}"
     links:
-      - postgres:postgres
-    volumes:
-      - web-static:/static
+      - postgres2:postgres2
     env_file: .env.demo2
     stop_grace_period: "3s"
     depends_on:
-      - postgres
+      - postgres2
     entrypoint: [ "gunicorn", "-c", "python:config.gunicorn", "config.wsgi" ]
 
   nginx:
@@ -48,16 +44,15 @@ services:
     image: cechpetr/shi-server:latest
     ports:
       - "80:80"
-    volumes:
-      - web-static:/static
     links:
-      - web:web
+      - web1:web1
+      - web2:web2
     depends_on:
-      - web
+      - web1
+      - web2
 
   postgres1:
-    container_name: demo1-postgres
-    env_file: .env.demo1
+    container_name: demo1-psql
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     image: postgres:16-bookworm
     deploy:
@@ -66,19 +61,17 @@ services:
           cpus: "${DOCKER_POSTGRES_CPUS:-0}"
           memory: "${DOCKER_POSTGRES_MEMORY:-0}"
     ports:
-      - "${POSTGRES_PORT:-5432}"
+      - "${POSTGRES_PORT1:-5432}"
     stop_grace_period: "3s"
     volumes:
-      - pgdata:/var/lib/postgresql/data/
+      - pgdata1:/var/lib/postgresql/data/
     environment:
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_DB: "${POSTGRES_DB}"
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_USER: "${POSTGRES_USER1}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD1}"
+      POSTGRES_DB: "${POSTGRES_DB1}"
 
   postgres2:
-    container_name: demo2-postgres
-    env_file: .env.demo2
+    container_name: demo2-psql
     restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
     image: postgres:16-bookworm
     deploy:
@@ -87,17 +80,17 @@ services:
           cpus: "${DOCKER_POSTGRES_CPUS:-0}"
           memory: "${DOCKER_POSTGRES_MEMORY:-0}"
     ports:
-      - "${POSTGRES_PORT:-5432}"
+      - "${POSTGRES_PORT2:-5432}"
     stop_grace_period: "3s"
     volumes:
-      - pgdata:/var/lib/postgresql/data/
+      - pgdata2:/var/lib/postgresql/data/
     environment:
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_DB: "${POSTGRES_DB}"
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_USER: "${POSTGRES_USER2}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD2}"
+      POSTGRES_DB: "${POSTGRES_DB2}"
 
 volumes:
-  web-static:
-  pgdata:
+  pgdata1:
+    driver: local
+  pgdata2:
     driver: local
