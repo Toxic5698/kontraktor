@@ -25,9 +25,8 @@ jobs:
             docker compose up -d
             web_numbers=$(docker compose ps | grep -oP '(?<=web)\d+')
             for number in $web_numbers; do
-            echo "----------------- Arranging stuff for web service number $number -----------------"
-            docker compose exec web$number python manage.py migrate --noinput
-            docker compose exec web$number python manage.py collectstatic --noinput
-            docker compose exec web$number python manage.py createsuperuser --noinput --username=petr  --email=petr@cechpetr.cz
+              echo "----------------- Arranging stuff for web service number $number -----------------"
+              docker compose exec web$number python manage.py migrate --noinput
+              docker compose exec web$number python manage.py collectstatic --noinput
+              docker compose exec web$number python manage.py createsuperuser --noinput --username=petr  --email=petr@cechpetr.cz
             done
-#            docker compose exec web python manage.py compilemessages --noinput
