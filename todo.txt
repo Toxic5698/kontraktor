@@ -3,6 +3,10 @@
 - sledovaní stavu smluvy (zobrazení, podepsaní, dis) pro obsluhu
 - šifrování osobních dat
 -
-
+- podpis smlouvy u klienta na demo.samoset.cz
+- info modal po create-demo
+- pip-tools https://pythonspeed.com/articles/pipenv-docker/#pip-tools
+- v přehledu e-mailu uložit adresu, na kterou to bylo odesláno - nyní zobrazuje klientovu adresu
+-
 
 
