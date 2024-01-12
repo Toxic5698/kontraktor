@@ -1,12 +1,8 @@
-name: Deploy to server
+name: 🚀 Deploy on shi
 
 on:
   workflow_dispatch:
-    inputs:
-      web_id:
-        description: Number of desired CI pipeline
-        default: "latest"
-        type: string
+
 
 jobs:
   deploy-on-shi:
@@ -25,7 +21,6 @@ jobs:
           script: |
             cd kontraktor/
             docker compose down
-#            sed -i 's/\(export WEB_ID=\).*/\1${{ inputs.web_id }}/' .env
             docker compose pull
             docker compose up -d
             web_numbers=$(docker compose ps | grep -oP '(?<=web)\d+')
@@ -35,4 +30,3 @@ jobs:
               docker compose exec web$number python manage.py collectstatic --noinput
               docker compose exec web$number python manage.py createsuperuser --noinput --username=petr  --email=petr@cechpetr.cz
             done
-#            docker compose exec web python manage.py compilemessages --noinput
