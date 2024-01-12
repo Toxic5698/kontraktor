@@ -21,7 +21,6 @@ jobs:
           script: |
             cd kontraktor/
             docker compose down
-#            sed -i 's/\(export WEB_ID=\).*/\1${{ inputs.web_id }}/' .env
             docker compose pull
             docker compose up -d
             web_numbers=$(docker compose ps | grep -oP '(?<=web)\d+')
