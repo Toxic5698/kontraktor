@@ -13,7 +13,7 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, ["127.0.0.1"]),
     DBBACKUP_STORAGE_OPTIONS=(dict, {'location': 'backup/'}),
     SECRET_KEY=(str, "kjfdlskfjadsklůfhoajfkl55Z656W554534534dkfjdsklf"),
-    CSRF_TRUSTED_ORIGINS=(list, ['https://*.cechpetr.cz', 'http://*.cechpetr.cz',]),
+    CSRF_TRUSTED_ORIGINS=(list, ['https://*.cechpetr.cz', 'http://*.cechpetr.cz', ]),
     ENVIRONMENT=(str, "localhost"),
     EMAIL_HOST=(str, 'EMAIL_HOST'),
     EMAIL_PORT=(str, '587'),
@@ -33,11 +33,11 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 DBBACKUP_STORAGE_OPTIONS = env.dict("DBBACKUP_STORAGE_OPTIONS")
 DATABASES = {
-        'default': env.db_url(
-            'DATABASE_URL',
-            default='postgres://postgres:postgres@127.0.0.1:5432/kontraktor',
-        )
-    }
+    'default': env.db_url(
+        'DATABASE_URL',
+        default='postgres://postgres:postgres@127.0.0.1:5432/kontraktor',
+    )
+}
 # CACHES = {
 #     'redis': env.cache_url('REDIS_URL')
 # }
@@ -121,7 +121,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -136,7 +135,6 @@ USE_L10N = True
 USE_TZ = False
 
 USE_THOUSAND_SEPARATOR = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -163,25 +161,24 @@ if USE_S3:
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
     AWS_DEFAULT_ACL = None
-    AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', '.s3.amazonaws.com')
-    AWS_S3_FULL_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}{AWS_S3_CUSTOM_DOMAIN}"
+    AWS_S3_CUSTOM_DOMAIN = os.getenv('ASW_S3_CUSTOM_DOMAIN')
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME')
+    AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
     # s3 static settings
     STATIC_LOCATION = 'static'
-    STATIC_URL = f'https://{AWS_S3_FULL_DOMAIN}/{STATIC_LOCATION}/'
-    STATIC_ROOT = f'https://{AWS_S3_FULL_DOMAIN}/{STATIC_LOCATION}/'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+    STATIC_ROOT = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
     STATICFILES_STORAGE = 'config.storage_backends.StaticStorage'
     # s3 public media settings
     PUBLIC_MEDIA_LOCATION = 'media'
-    MEDIA_URL = f'https://{AWS_S3_FULL_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
-    MEDIA_ROOT = f'https://{AWS_S3_FULL_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+    MEDIA_ROOT = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
     DEFAULT_FILE_STORAGE = 'config.storage_backends.PublicMediaStorage'
     # s3 private media settings
     PRIVATE_MEDIA_LOCATION = 'private'
     PRIVATE_FILE_STORAGE = 'config.storage_backends.PrivateMediaStorage'
 else:
-    STATIC_URL = '/staticfiles/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_URL = '/mediafiles/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 

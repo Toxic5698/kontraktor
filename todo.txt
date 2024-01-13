@@ -6,7 +6,6 @@
 - podpis smlouvy u klienta na demo.samoset.cz
 - info modal po create-demo
 - pip-tools https://pythonspeed.com/articles/pipenv-docker/#pip-tools
-- v přehledu e-mailu uložit adresu, na kterou to bylo odesláno - nyní zobrazuje klientovu adresu
 - nastavit e-maily na samoset.cz
 - změnit e-mail host na demo.samoset.cz
 - certifikáty ze složky archive v docker-compose a s číslenou koncovkou jsou ok? Co když dojde k obnově?
