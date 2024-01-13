@@ -102,7 +102,7 @@ services:
     ports:
       - "${POSTGRES_PORT3:-5432}"
     volumes:
-      - pgdata2:/var/lib/postgresql/data/
+      - pgdata3:/var/lib/postgresql/data/
     environment:
       POSTGRES_USER: "${POSTGRES_USER3}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD3}"
