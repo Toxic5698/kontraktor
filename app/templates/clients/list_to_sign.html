@@ -1,53 +1,57 @@
 {% extends "main.html" %}
 {% block content %}
-<div class="p-3 pb-md-4 mx-auto text-center">
-    <h1 class="fw-normal" id="client-tag">Dostupné dokumenty pro klienta: {{ client.name }}</h1>
-    <p class="fs-5 text-muted">Níže je přehled dokumentů, které si můžete zobrazit a online potvrdit.</p>
-</div>
-<div class="row row-cols-1 row-cols-md-3 mb-3 text-center justify-content-center">
-    {% for document in documents %}
-        <div class="col">
-            <div class="card mb-4 rounded-3 shadow-sm">
-                <div class="card-header py-3">
-                    <h3 class="my-0 fw-normal">{{ document.title }}</h3>
-                </div>
-                <div class="card-body">
-                {% if document.price %}
-                    <h4 class="card-title pricing-card-title">Celková hodnota: {{ document.price }} Kč</h4>
-                {% endif %}
-                    <ul class="list-unstyled mt-3 mb-4">
-                        <li>Poslední úprava: {{ document.last_update }}</li>
-                    {% if document.items_count %}
-                        <li>Počet položek: {{ document.items_count }}</li>
-                    {% endif %}
-                        <li>Počet příloh: {{ document.attachments_count }}</li>
-                        {% if document.signed %}
-                        <li class="fw-bold">Potvrzeno dne : {{ document.signed_at }}</li>
+    <div class="p-3 pb-md-4 mx-auto text-center">
+        <h1 class="fw-normal" id="client-tag">Dostupné dokumenty pro klienta: {{ client.name }}</h1>
+        <p class="fs-5 text-muted">
+            Níže je přehled dokumentů, které si můžete zobrazit a online potvrdit
+            <i class="bi bi-info-square" data-bs-toggle="tooltip"
+               data-bs-title="Každá karta zobrazuje základní informace o jednom dokumentu. Ve vrchní části je uveden název dokumentu a jeho číslo. V prostřední části jsou uvedeny informace zejména o celkové hodnotě položek, počet položek, počet příloh a datum poslední úpravy. Kliknutím na tlačítko Zobrazit se zobrazí pdf verze dokumentu. Pokud dokument ještě není potvrzen, lze jej potvrdit stisknutím tlačítka Potvrdit. Objeví se podpisové pole, v němž lze myší nebo pohybem po dotykové obrazovce provést podpis. Ve spodní části karty se zobrazují přílohy dokumentu, pokud nějaké má. Kliknutím na jejich název je lze zobrazit."></i>
+        </p>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center justify-content-center">
+        {% for document in documents %}
+            <div class="col">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <h3 class="my-0 fw-normal">{{ document.title }}</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if document.price %}
+                            <h4 class="card-title pricing-card-title">Celková hodnota: {{ document.price }} Kč</h4>
                         {% endif %}
-                    </ul>
-                    <a type="button" class="w-100 btn btn-lg btn-outline-primary"
-                       href="{% url "print-document" client.sign_code document.type document.id %}">
-                        Zobrazit
-                    </a>
-                {% if not document.signed %}
-                    <a type="button" class="w-100 btn btn-lg btn-outline-success mt-2"
-                       href="{% url "signing-document" client.sign_code document.id document.type %}">
-                        Potvrdit
-                    </a>
-                {% endif %}
+                        <ul class="list-unstyled mt-3 mb-4">
+                            <li>Poslední úprava: {{ document.last_update }}</li>
+                            {% if document.items_count %}
+                                <li>Počet položek: {{ document.items_count }}</li>
+                            {% endif %}
+                            <li>Počet příloh: {{ document.attachments_count }}</li>
+                            {% if document.signed %}
+                                <li class="fw-bold">Potvrzeno dne : {{ document.signed_at }}</li>
+                            {% endif %}
+                        </ul>
+                        <a type="button" class="w-100 btn btn-lg btn-outline-primary"
+                           href="{% url "print-document" client.sign_code document.type document.id %}">
+                            Zobrazit
+                        </a>
+                        {% if not document.signed %}
+                            <a type="button" class="w-100 btn btn-lg btn-outline-success mt-2"
+                               href="{% url "signing-document" client.sign_code document.id document.type %}">
+                                Potvrdit
+                            </a>
+                        {% endif %}
+                    </div>
+                    {% if document.attachments %}
+                        <div class="card-footer">
+                            <p>Přílohy:</p>
+                            {% for attachment in document.attachments %}
+                                <p><a href="{{ attachment.file_url }}">{{ attachment.tag }}</a></p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
-            {% if document.attachments %}
-                <div class="card-footer">
-                    <p>Přílohy:</p>
-                    {% for attachment in document.attachments %}
-                        <p><a href="{{ attachment.file_url }}">{{ attachment.tag }}</a></p>
-                    {% endfor %}
-                </div>
-            {% endif %}
             </div>
-        </div>
-    {% endfor %}
-</div>
+        {% endfor %}
+    </div>
 
 
 {% endblock %}
