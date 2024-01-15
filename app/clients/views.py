@@ -247,5 +247,5 @@ def get_document_model(doc_type):
 class CreateDemoClient(View):
 
     def get(self, request, *args, **kwargs):
-        sign_code =  create_demo_client()
+        sign_code = create_demo_client()
         return redirect("document-to-sign", sign_code)
