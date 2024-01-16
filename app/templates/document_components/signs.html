@@ -1,5 +1,13 @@
 {% load static %}
 
+<div style="text-align: left;">V Brně dne</div>
+<div style="display: inline-block; margin-right: 10px;">
+    <img src="{% static 'img/podpis.png' %}" alt="podpis operátora">
+</div>
+<div style="display: inline-block; margin-right: 10px;">
+    <img src="{{ signature.file.url }}" alt="podpis klienta">
+</div>
+
 <table class="data-table">
     <tr>
         {% if contract %}
@@ -13,9 +21,9 @@
             <img src="{% static 'img/podpis.png' %}" width="40mm">
         </td>
         <td style="width: 50%;" class="text-center">
-{#            {% if signature %}#}
-            <img src="{{ signature.file.url }}">
-{#            {% endif %}#}
+            {% if signature %}
+                <img src="{{ signature.file.url }}">
+            {% endif %}
         </td>
     </tr>
     <tr>
@@ -39,8 +47,3 @@
         </td>
     </tr>
 </table>
-{{ signature.file.url }}
-
-
-
-<img src="{{ signature.file.url }}">
