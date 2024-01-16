@@ -249,3 +249,12 @@ class CreateDemoClient(View):
     def get(self, request, *args, **kwargs):
         sign_code = create_demo_client()
         return redirect("document-to-sign", sign_code)
+
+
+class SignTestView(View):
+
+    def get(self, request, pk, *args, **kwargs):
+        context = {
+            "signature": Signature.objects.get(id=pk)
+        }
+        return TemplateResponse(request, "document_components/signs.html", context)
