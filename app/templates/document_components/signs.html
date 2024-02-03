@@ -1,13 +1,5 @@
 {% load static %}
 
-<div style="text-align: left;">V Brně dne</div>
-<div style="display: inline-block; margin-right: 10px;">
-    <img src="{% static 'img/podpis.png' %}" alt="podpis operátora">
-</div>
-<div style="display: inline-block; margin-right: 10px;">
-    <img src="{{ signature.file.url }}" alt="podpis klienta">
-</div>
-
 <table class="data-table">
     <tr>
         {% if contract %}

@@ -8,7 +8,8 @@ django-tables2==2.7.0
 crispy-bootstrap5==2023.10
 django-crispy-forms==2.1
 django-dbbackup==4.0.2
-django-easy-pdf3 @ git+https://github.com/Toxic5698/django-easy-pdf3@c79a945ab7bb1003bfefa246089654b0cbdc59ce
+# django-easy-pdf3 @ git+https://github.com/Toxic5698/django-easy-pdf3@c79a945ab7bb1003bfefa246089654b0cbdc59ce
+django-weasyprint==2.2.2
 boto3==1.34.1
 botocore==1.34.1
 django-environ==0.11.2
