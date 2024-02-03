@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "dbbackup",
-    "easy_pdf",
 
     "authentication",
     "attachments",
