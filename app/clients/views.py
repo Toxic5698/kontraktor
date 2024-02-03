@@ -1,9 +1,6 @@
-import base64
-import io
 from datetime import timedelta
 
 from django.apps import apps
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponse
@@ -12,10 +9,9 @@ from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import UpdateView, DeleteView, CreateView
+from django.views.generic import UpdateView, DeleteView, CreateView, DetailView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
-from easy_pdf.views import PDFTemplateView
 from ipware import get_client_ip
 
 from attachments.serializers import attachments_serializer
@@ -180,7 +176,7 @@ class SigningDocument(View):
         return HttpResponse("OK", status=200)
 
 
-class DocumentView(PDFTemplateView):
+class DocumentView(DetailView):
 
     def get_queryset(self):
         model = get_document_model(self.kwargs["type"])
@@ -249,12 +245,3 @@ class CreateDemoClient(View):
     def get(self, request, *args, **kwargs):
         sign_code = create_demo_client()
         return redirect("document-to-sign", sign_code)
-
-
-class SignTestView(View):
-
-    def get(self, request, pk, *args, **kwargs):
-        context = {
-            "signature": Signature.objects.get(id=pk)
-        }
-        return TemplateResponse(request, "document_components/signs.html", context)
