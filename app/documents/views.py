@@ -11,7 +11,6 @@ from django_weasyprint.views import WeasyTemplateResponse
 from django_weasyprint.utils import django_url_fetcher
 
 from clients.views import DocumentView
-from documents.models import Document
 from proposals.models import Proposal
 
 
