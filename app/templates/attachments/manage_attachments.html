@@ -45,7 +45,7 @@
         <tbody>
         {% for protocol in protocols %}
             <tr>
-                <td><a href="{% url "print-document" client.sign_code "protocol" protocol.id %}">Předávací protokol ze
+                <td><a href="{% url "print-document" client.sign_code "protocol" protocol.id %}" onclick="runButtonLoader(event)">Předávací protokol ze
                     dne {{ protocol.created_at }}</a></td>
                 <td><a href="{% url "edit-contract" protocol.contract.id %}">{{ protocol.contract }}</a></td>
                 <td>{% if protocol.signed_at %}potvrzen dne {{ protocol.signed_at }}{% else %}

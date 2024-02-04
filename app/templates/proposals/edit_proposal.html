@@ -8,8 +8,8 @@
             </li>
             <li><a href="{% url "edit-items" proposal.id %}" class="btn btn-outline-secondary mx-2" id="items-button">Upravit položky</a>
             </li>
-            <li><a href="{% url "print-document" proposal.client.sign_code 'proposal' proposal.id %}"
-                   class="btn btn-outline-info mx-2" id="show-proposal-button">Náhled nabídky</a></li>
+            <li><a href="{% url "print-document" proposal.client.sign_code 'proposal' proposal.id %}" onclick="runButtonLoader(event)"
+                   class="btn btn-outline-info mx-2">Náhled nabídky</a></li>
             <li>
                 <form method="post" action="{% url "send-proposal" proposal.id %}">
                     {% csrf_token %}

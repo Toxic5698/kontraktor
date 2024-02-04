@@ -29,7 +29,7 @@
                                 <li class="fw-bold">Potvrzeno dne : {{ document.signed_at }}</li>
                             {% endif %}
                         </ul>
-                        <a type="button" class="w-100 btn btn-lg btn-outline-primary"
+                        <a type="button" class="w-100 btn btn-lg btn-outline-primary" onclick="runButtonLoader(event)"
                            href="{% url "print-document" client.sign_code document.type document.id %}">
                             Zobrazit
                         </a>

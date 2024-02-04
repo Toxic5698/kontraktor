@@ -216,3 +216,5 @@ EMAIL_PORT = env('EMAIL_PORT', default=587)
 EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+
+PDF_STYLE = os.getenv("PDF_STYLE", "https://kontraktor.s3.eu-north-1.amazonaws.com/static/css/styles.css")

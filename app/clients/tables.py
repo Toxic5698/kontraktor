@@ -33,7 +33,7 @@ class ClientTable(Table):
         if record.proposals.all():
             for proposal in record.proposals.all():
                 if proposal.signed_at:
-                    proposals += f'<a class="btn btn-success me-1" href="{host}/clients/{proposal.client.sign_code}/proposal/{proposal.id}"><i class="bi bi-file-ruled"></i></a>'
+                    proposals += f'<a class="btn btn-success me-1" href="{host}/documents/print/{proposal.client.sign_code}/proposal/{proposal.id}" onclick="runButtonLoader(event)"><i class="bi bi-file-ruled"></i></a>'
                 else:
                     proposals += f'<a class="btn btn-primary me-1" href="{host}/proposals/edit/{proposal.id}"><i class="bi bi-file-ruled"></i></a>'
         else:
@@ -42,7 +42,7 @@ class ClientTable(Table):
         if record.contracts.all():
             for contract in record.contracts.all():
                 if contract.signed_at:
-                    contracts += f'<a class="btn btn-success me-1" href="{host}/clients/{contract.client.sign_code}/contract/{contract.id}"><i class="bi bi-file-text"></i></a>'
+                    contracts += f'<a class="btn btn-success me-1" href="{host}/documents/print/{contract.client.sign_code}/contract/{contract.id}" onclick="runButtonLoader(event)"><i class="bi bi-file-text"></i></a>'
                 else:
                     contracts += f'<a class="btn btn-primary me-1" href="{host}/contracts/edit/{contract.id}"><i class="bi bi-file-text"></i></a>'
         else:
@@ -51,7 +51,7 @@ class ClientTable(Table):
         if record.protocols.all():
             for protocol in record.protocols.all():
                 if protocol.signed_at:
-                    protocols += f'<a class="btn btn-success me-1" href="{host}/clients/{protocol.client.sign_code}/protocol/{protocol.id}"><i class="bi bi-list-check"></i></a>'
+                    protocols += f'<a class="btn btn-success me-1" href="{host}/documents/print/{protocol.client.sign_code}/protocol/{protocol.id}" onclick="runButtonLoader(event)"><i class="bi bi-list-check"></i></a>'
                 else:
                     protocols += f'<a class="btn btn-primary me-1" href="{host}/contracts/edit-protocol/{protocol.id}"><i class="bi bi-list-check"></i></a>'
         else:

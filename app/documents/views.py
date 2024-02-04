@@ -1,56 +1,89 @@
-# views.py
-import functools
-import ssl
+from datetime import timedelta
 
+from django.apps import apps
 from django.conf import settings
+from django.db.models import Q
 from django.utils import timezone
 from django.views.generic import DetailView
 
 from django_weasyprint import WeasyTemplateResponseMixin
 from django_weasyprint.views import WeasyTemplateResponse
-from django_weasyprint.utils import django_url_fetcher
 
-from clients.views import DocumentView
-from proposals.models import Proposal
-
-
-def custom_url_fetcher(url, *args, **kwargs):
-    # rewrite requests for CDN URLs to file path in STATIC_ROOT to use local file
-    cloud_storage_url = 'https://kontraktor.s3.amazonaws.com/static/'
-    if not url.startswith(cloud_storage_url):
-        url = 'file://' + url.replace(cloud_storage_url, settings.STATIC_URL)
-    return django_url_fetcher(url, *args, **kwargs)
+from attachments.serializers import attachments_serializer
+from contracts.models import ContractSection
+from operators.models import Operator
 
 
-class CustomWeasyTemplateResponse(WeasyTemplateResponse):
-    # customized response class to pass a kwarg to URL fetcher
-    def get_url_fetcher(self):
-        # disable host and certificate check
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-        return functools.partial(custom_url_fetcher, ssl_context=context)
+class DocumentView(DetailView):
+
+    def get_queryset(self):
+        model = get_document_model(self.kwargs["type"])
+        queryset = model.objects.filter(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
+        return queryset
+
+    def get_template_names(self):
+        template = f"{self.kwargs['type'] + 's'}/{self.kwargs['type']}_mustr.html"
+        return [template, ]
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "operator": Operator.objects.get(),
+        }
+        if self.kwargs["type"] == "contract":
+            contract = self.get_queryset().get()
+            context["contract"] = contract
+            context["proposal"] = contract.proposal
+            context["attachments"] = attachments_serializer(
+                contract.client.attachments.filter_contracts()) + attachments_serializer(
+                contract.client.default_attachments.filter_contracts())
+            cores = contract.contract_cores.filter(Q(subject__isnull=True) | Q(subject=contract.proposal.subject))
+
+            sections = {}
+            for section in ContractSection.objects.filter(contract_cores__in=cores).distinct().order_by('priority'):
+                sections[section.name] = cores.filter(contract_section=section).values_list("text", flat=True)
+            context["sections"] = sections
+
+            if contract.client.signatures.exists() and contract.signed_at:
+                context["signature"] = contract.client.signatures.filter(contract=contract).last()
+
+        if self.kwargs["type"] == "proposal":
+            proposal = self.get_queryset().get()
+            context["proposal"] = proposal
+            context["proposal_validity"] = proposal.edited_at + timedelta(days=14)
+            context["production_data"] = proposal.items.filter(production_data__isnull=False)
+            context["attachments"] = attachments_serializer(
+                proposal.client.attachments.filter_proposals()) + attachments_serializer(
+                proposal.client.default_attachments.filter_contracts())
+
+        if self.kwargs["type"] == "protocol":
+            protocol = self.get_queryset().get()
+            context["protocol"] = protocol
+            context["proposal"] = protocol.contract.proposal
+            context["attachments"] = attachments_serializer(
+                protocol.client.attachments.filter_protocols()) + attachments_serializer(
+                protocol.client.default_attachments.filter_protocols())
+
+            if protocol.client.signatures.exists() and protocol.signed_at:
+                context["signature"] = protocol.client.signatures.filter(protocol=protocol).last()
+
+        return context
+
+
+def get_document_model(doc_type):
+    if doc_type == "proposal":
+        app_label = "proposals"
+    else:
+        app_label = "contracts"
+    model = apps.get_model(model_name=doc_type, app_label=app_label)
+    return model
 
 
 class PrintView(WeasyTemplateResponseMixin, DocumentView):
-    # output of MyDetailView rendered as PDF with hardcoded CSS
-    pdf_stylesheets = [
-        "https://kontraktor.s3.eu-north-1.amazonaws.com/static/css/styles.css",
-    ]
-    # show pdf in-line (default: True, show download dialog)
+    pdf_stylesheets = [settings.PDF_STYLE,]
     pdf_attachment = True
-    # custom response class to configure url-fetcher
     response_class = WeasyTemplateResponse
 
 
 class DownloadView(WeasyTemplateResponseMixin, DocumentView):
-    # suggested filename (is required for attachment/download!)
-    pdf_filename = 'foo.pdf'
+    pdf_filename = f'Dokument ze SAMOSETu {timezone.now().strftime("%d.%m.%Y")}.pdf'
 
-
-# class DynamicNameView(WeasyTemplateResponseMixin, MyDetailView):
-#     # dynamically generate filename
-#     def get_pdf_filename(self):
-#         return 'foo-{at}.pdf'.format(
-#             at=timezone.now().strftime('%Y%m%d-%H%M'),
-#         )
