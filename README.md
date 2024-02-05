@@ -7,3 +7,5 @@ Functions:
 - generating documents in pdf
 - signing documents with pad in browser
 - parsing uploaded proposal to get items in own proposal
+
+Preview on https://demo.samoset.cz.

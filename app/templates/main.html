@@ -89,7 +89,7 @@
     {% endif %}
     <p class="text-center text-muted">&copy
         <script>document.write(new Date().getFullYear());</script>
-        <a class="text-muted" href="https://cechpetr.cz/programator.html">Petr Čech</a>
+        <a class="text-muted" href="https://cechpetr.cz">Petr Čech</a>
     </p>
 </footer>
 
@@ -108,5 +108,12 @@
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </script>
+<script>
+        function runButtonLoader(event) {
+            var button = event.target;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Načítání...';
+            button.disabled = true;
+        }
+    </script>
 </body>
 </html>

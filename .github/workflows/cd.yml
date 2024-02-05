@@ -27,6 +27,6 @@ jobs:
             for number in $web_numbers; do
               echo "----------------- Arranging stuff for web service number $number -----------------"
               docker compose exec web$number python manage.py migrate --noinput
-              docker compose exec web$number python manage.py collectstatic --noinput
+#              docker compose exec web$number python manage.py collectstatic --noinput
               docker compose exec web$number python manage.py createsuperuser --noinput --username=petr  --email=petr@cechpetr.cz
             done

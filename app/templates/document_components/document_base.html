@@ -95,7 +95,7 @@
                 {% if contract %}
                     Smlouva č. {{ contract.contract_number }}
                 {% elif protocol %}
-                    Protokol ke smlouvě č. {{ contract.contract_number }}
+                    Protokol ke smlouvě č. {{ protocol.contract.contract_number }}
                 {% elif proposal %}
                     Nabídka č. {{ proposal.proposal_number }}
                 {% endif %}
