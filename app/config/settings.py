@@ -217,4 +217,5 @@ EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
-PDF_STYLE = os.getenv("PDF_STYLE", "https://kontraktor.s3.eu-north-1.amazonaws.com/static/css/styles.css")
+PDF_STYLE = os.getenv("PDF_STYLE", "https://kontraktor.s3.eu-north-1.amazonaws.com/static/css/demo-style.css")
+PDF_FONT = os.getenv("PDF_FONT", "https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap")

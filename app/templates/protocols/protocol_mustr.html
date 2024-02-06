@@ -2,9 +2,8 @@
 
 {% block content %}
     <h1>Předávací protokol ke smlouvě č. {{ protocol.contract.contract_number }}</h1>
-    <h2>ze dne {{ protocol.created_at }}</h2>
-    {% include "document_components/company_info.html" %}
-    {% include "document_components/subject_info.html" %}
+    <h2 class="text-center">ze dne {{ protocol.created_at }}</h2>
+    {% include "document_components/subjects.html" %}
     <br>
     {% if protocol.note %}
         <h2> Poznámky k předávacímu protokolu</h2>
@@ -26,18 +25,18 @@
                 <td>{{ item.item.id }} - {{ item.item.title }}</td>
                 <td>{% if item.description %}{{ item.description }}{% else %}-{% endif %}</td>
                 <td>{% if item.status == "yes" %} Předáno dne {{ item.created_at }}
-                    {% elif item.status == "with_note" %} Předáno s výhradou dne {{ item.created_at }}
-                    {% elif item.status == "no" %} Nepředáno
-                    {% endif %}
+                {% elif item.status == "with_note" %} Předáno s výhradou dne {{ item.created_at }}
+                {% elif item.status == "no" %} Nepředáno
+                {% endif %}
                 </td>
                 <td>{% if item.note %}{{ item.note }}{% else %}-{% endif %}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-
+    <br>
     <h4>Protokol vytvořil: {{ protocol.created_by }}</h4>
-
+    <br>
     {% if attachments %}
         <h2>Přílohy protokolu</h2>
         <ol>

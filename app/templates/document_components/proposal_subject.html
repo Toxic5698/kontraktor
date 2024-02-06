@@ -1,0 +1,19 @@
+{% if proposal.subject.name == "pouze dveře" and proposal.contract_type.type == "KOUPE" %}
+dodávka dveřních kompletů dle položkového seznamu {%if contract %} z cenové nabídky č. {{proposal.proposal_number}}{% endif %}
+{% elif proposal.subject.name == "pouze dveře" and proposal.contract_type.type == "DILO" %}
+dodávka a montáž dveřních kompletů dle položkového seznamu {%if contract %} z cenové nabídky č. {{proposal.proposal_number}}{% endif %}
+{% elif proposal.subject.name == "pouze podlaha" and proposal.contract_type.type == "KOUPE" %}
+dodávka prodlahové krytiny dle položkového seznamu {%if contract %} z cenové nabídky č. {{proposal.proposal_number}}{% endif %}
+{% elif proposal.subject.name == "pouze podlaha" and proposal.contract_type.type == "DILO" %}
+dodávka a montáž podlahové krytiny dle položkového seznamu {%if contract %} z cenové nabídky č. {{proposal.proposal_number}}{% endif %}
+{% elif proposal.subject.name == "dveře i podlaha" and proposal.contract_type.type == "DILO" %}
+dodávka a montáž dveřních kompletů a podlahové krytiny dle položkového seznamu {%if contract %} z cenové nabídky č. {{proposal.proposal_number}}{% endif %}
+{% elif proposal.subject.name == "dveře i podlaha" and proposal.contract_type.type == "KOUPE" %}
+dodávka dveřních kompletů a podlahové krytiny dle položkového seznamu {%if contract %} z cenové nabídky č. {{proposal.proposal_number}}{% endif %}
+{% elif proposal.subject.name == "zboží" and proposal.contract_type.type == "DILO" %}
+dodávka a montáž zboží dle položkového seznamu {%if contract %} z cenové nabídky č. {{proposal.proposal_number}}{% endif %}
+{% elif proposal.subject.name == "zboží" and proposal.contract_type.type == "KOUPE" %}
+dodávka a montáž zboží dle položkového seznamu {%if contract %} z cenové nabídky č. {{proposal.proposal_number}}{% endif %}
+{% elif proposal.subject.name == "stavba" and proposal.contract_type.type == "DILO" %}
+dodávka stavebních prací dle položkového seznamu {%if contract %} z cenové nabídky č. {{proposal.proposal_number}}{% endif %}
+{% endif %}

@@ -1,0 +1,6 @@
+<h2>Platební podmínky</h2>
+<ol>
+    {% for payment in proposal.payments.filter_not_null %}
+        <li>část ve výši {{ payment.amount }} Kč se splatností {{ payment.get_due_display }}</li>
+    {% endfor %}
+</ol>
