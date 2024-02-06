@@ -79,7 +79,10 @@ def get_document_model(doc_type):
 
 
 class PrintView(WeasyTemplateResponseMixin, DocumentView):
-    pdf_stylesheets = [settings.PDF_STYLE,]
+    pdf_stylesheets = [
+        settings.PDF_STYLE,
+        settings.PDF_FONT,
+    ]
     pdf_attachment = True
     response_class = WeasyTemplateResponse
 

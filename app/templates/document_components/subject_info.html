@@ -2,7 +2,7 @@
     <tbody>
     <tr>
         <td colspan="2" style="padding-bottom: 1mm;">
-            <span style="font-size: 11pt;" class="primary-color-text"><em>{{ proposal.client.name }}</em></span>
+            <h4>{{ proposal.client.name }}</h4>
         </td>
     </tr>
     {% if proposal.client.consumer %}
@@ -40,7 +40,7 @@
 
     <tr>
         <td colspan="2" style="padding-top: 1mm;">
-            na straně druhé (dále jen "
+            na straně druhé (dále jen též "
             <em class="extra-bold primary-color-text">
                 {% if proposal.contract_type.type == "KOUPE" %}
                     kupující

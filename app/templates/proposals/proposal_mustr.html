@@ -7,62 +7,17 @@
         <h1>Nabídka č. {{ proposal.proposal_number }} na uzavření kupní smlouvy </h1>
     {% endif %}
 
-    {% include "document_components/company_info.html" %}
-    {% include "document_components/subject_info.html" %}
+    {% include "document_components/subjects.html" %}
     <br>
+    <h2>Hlavní údaje nabídky</h2>
     <table>
-        <tr>
-            <td><h2>Hlavní údaje nabídky</h2></td>
-        </tr>
         {% if proposal.subject %}
             <tr>
                 <td style="font-weight: bold;">předmět nabídky:</td>
-                {% if proposal.subject.name == "pouze dveře" and proposal.contract_type.type == "KOUPE" %}
-                    <td>dodávka dveřních kompletů dle položkového seznamu</td>
-                {% elif proposal.subject.name == "pouze dveře" and proposal.contract_type.type == "DILO" %}
-                    <td>dodávka a montáž dveřních kompletů dle položkového seznamu</td>
-                {% elif proposal.subject.name == "pouze podlaha" and proposal.contract_type.type == "KOUPE" %}
-                    <td>dodávka prodlahové krytiny dle položkového seznamu</td>
-                {% elif proposal.subject.name == "pouze podlaha" and proposal.contract_type.type == "DILO" %}
-                    <td>dodávka a montáž podlahové krytiny dle položkového seznamu</td>
-                {% elif proposal.subject.name == "dveře i podlaha" and proposal.contract_type.type == "DILO" %}
-                    <td>dodávka a montáž dveřních kompletů a podlahové krytiny dle položkového seznamu</td>
-                {% elif proposal.subject.name == "dveře i podlaha" and proposal.contract_type.type == "KOUPE" %}
-                    <td>dodávka dveřních kompletů a podlahové krytiny dle položkového seznamu</td>
-                {% elif proposal.subject.name == "zboží" and proposal.contract_type.type == "DILO" %}
-                    <td>dodávka a montáž zboží dle položkového seznamu</td>
-                {% elif proposal.subject.name == "zboží" and proposal.contract_type.type == "KOUPE" %}
-                    <td>dodávka a montáž zboží dle položkového seznamu</td>
-                {% elif proposal.subject.name == "stavba" and proposal.contract_type.type == "DILO" %}
-                    <td>dodávka stavebních prací dle položkového seznamu</td>
-
-                {% endif %}
+                <td>{% include "document_components/proposal_subject.html" %}</td>
             </tr>
         {% endif %}
-        {% if proposal.fulfillment_place %}
-            <tr>
-                <td style="font-weight: bold;">místo plnění:</td>
-                <td>{{ proposal.fulfillment_place }}</td>
-            </tr>
-        {% endif %}
-        {% if proposal.fulfillment_at %}
-            <tr>
-                <td style="font-weight: bold;">termín plnění:</td>
-                <td>{{ proposal.fulfillment_at }}</td>
-            </tr>
-        {% endif %}
-        {% if proposal.price_netto %}
-            <tr>
-                <td style="font-weight: bold;">celková cena bez DPH:</td>
-                <td>{{ proposal.price_netto }} Kč</td>
-            </tr>
-        {% endif %}
-        {% if proposal.price_brutto %}
-            <tr>
-                <td style="font-weight: bold;">celková cena s DPH ({{ proposal.contract_type.vat }} %):</td>
-                <td>{{ proposal.price_brutto }} Kč</td>
-            </tr>
-        {% endif %}
+        {% include "document_components/other_essentials.html" %}
     </table>
     <br>
     <h2>Položkový seznam nabídky</h2>
@@ -88,19 +43,10 @@
     </table>
     <br>
 
-    <h2>Platební podmínky</h2>
-    <ol>
-        {% for payment in proposal.payments.filter_not_null %}
-            <li>část ve výši {{ payment.amount }} Kč se splatností {{ payment.get_due_display }}</li>
-        {% endfor %}
-    </ol>
+    {% include "document_components/payments.html" %}
     {% if attachments %}
         <h2>Přílohy nabídky</h2>
-        <ol>
-            {% for attachment in attachments %}
-                <li>{{ attachment.tag }} - {{ attachment.file_name }}</li>
-            {% endfor %}
-        </ol>
+       {% include "document_components/attachments.html" %}
         <br>
     {% endif %}
 

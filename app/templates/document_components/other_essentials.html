@@ -1,0 +1,24 @@
+{% if proposal.fulfillment_place %}
+    <tr>
+        <td style="font-weight: bold;">místo plnění:</td>
+        <td>{{ proposal.fulfillment_place }}</td>
+    </tr>
+{% endif %}
+{% if proposal.fulfillment_at %}
+    <tr>
+        <td style="font-weight: bold;">termín plnění:</td>
+        <td>{{ proposal.fulfillment_at }}</td>
+    </tr>
+{% endif %}
+{% if proposal.price_netto %}
+    <tr>
+        <td style="font-weight: bold;">celková cena bez DPH:</td>
+        <td>{{ proposal.price_netto }} Kč</td>
+    </tr>
+{% endif %}
+{% if proposal.price_brutto %}
+    <tr>
+        <td style="font-weight: bold;">celková cena s DPH ({{ proposal.contract_type.vat }} %):</td>
+        <td>{{ proposal.price_brutto }} Kč</td>
+    </tr>
+{% endif %}
