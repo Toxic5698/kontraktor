@@ -11,10 +11,7 @@
             <li><a href="{% url "print-document" proposal.client.sign_code 'proposal' proposal.id %}" onclick="runButtonLoader(event)"
                    class="btn btn-outline-info mx-2">Náhled nabídky</a></li>
             <li>
-                <form method="post" action="{% url "send-proposal" proposal.id %}">
-                    {% csrf_token %}
-                    <button class="btn btn-outline-dark mx-2" type="submit" id="send-proposal-button">Odeslat klientovi</button>
-                </form>
+                <a class="btn btn-outline-dark mx-2" id="send-proposal-button" href="{% url 'create-mail' proposal.client.id %}">Připravit e-mail klientovi</a>
             </li>
             <li>{% if proposal.contract %}
                 <a class="btn btn-outline-primary mx-2" href="{% url "edit-contract" proposal.contract.id %}" id="edit-contract-button">Upravit

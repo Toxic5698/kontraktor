@@ -10,5 +10,4 @@ urlpatterns = [
     path("edit/payments/<int:proposal_id>", PaymentsEditView.as_view(), name="edit-payments"),
     path("delete/<int:pk>", ProposalDeleteView.as_view(), name="delete-proposal"),
     path("items/<int:pk>", ProposalItemsView.as_view(), name="edit-items"),
-    path("send/<int:pk>", ProposalSendView.as_view(), name="send-proposal"),
 ]

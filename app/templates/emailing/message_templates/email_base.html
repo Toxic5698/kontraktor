@@ -5,9 +5,9 @@
     <title>
         Zpráva ze Samosetu
     </title>
-    <link rel="icon" href="{% static "icons/icon.png" %}" type="image/png">
-    <link rel="shortcut icon" href="{% static "icons/icon.png" %}" type="image/png">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{#    <link rel="icon" href="{% static "icons/icon.png" %}" type="image/png">#}
+{#    <link rel="shortcut icon" href="{% static "icons/icon.png" %}" type="image/png">#}
+{#    <link rel="stylesheet" href="{% static css %}">#}
 
     <style>
 
@@ -17,7 +17,7 @@
 <body>
 
 
-<img src="{% static main_logo %}" width="20mm" height="20mm"></img>
+<img src="{% static main_logo %}" width="20mm" height="20mm">
 
 {% block content %}{% endblock %}
 {% include "emailing/message_templates/email_footer.html" %}

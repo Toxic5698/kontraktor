@@ -1,25 +1,31 @@
 {% extends "main.html" %}
 {% block content %}
-    <a class="btn btn-warning m-2" href="{% url 'edit-client' client.id %}">Zpět</a>
+    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="{% url "edit-client" client.id %}" class="btn btn-outline-warning mx-2" id="client-button">Klient</a>
+        </li>
+        <li><a href="{% url "create-mail" client.id %}"
+               class="btn btn-outline-success mx-2" id="create-mail-button">Vytvořit nový e-mail</a></li>
+    </ul>
     <h4 class="m-2">Přehled e-mailů evidovaných ke klientovi {{ client }}</h4>
     <table class="table m-2">
         <thead>
         <tr>
-            <td>Odeslán</td>
+            <td>Stav</td>
             <td>Datum</td>
             <td>Příjemci</td>
             <td>Předmět</td>
-            <td>Text</td>
+            <td>Akce</td>
         </tr>
         </thead>
         <tbody>
         {% for mail in mails %}
             <tr>
-                <td>{{ mail.sent }}</td>
+                <td>{{ mail.status }}</td>
                 <td>{{ mail.created_at }}</td>
                 <td>{{ mail.receiver }}</td>
                 <td>{{ mail.subject }}</td>
-                <td>{{ mail.message }}</td>
+                <td>{% if mail.status != "odeslán" %}<a href="{% url 'edit-mail' mail.id %}" class="btn btn-sm btn-outline-primary">Upravit</a>
+                <a href="{% url 'delete-mail' mail.id %}" class="btn btn-sm btn-danger">Smazat</a>{% else %}-{% endif %}</td>
             </tr>
         {% endfor %}
         </tbody>

@@ -36,6 +36,9 @@ class Contract(Model):
             cores = ContractCore.objects.filter(default=True, contract_type=self.proposal.contract_type)
             self.contract_cores.set(cores)
 
+    def get_name(self):
+        return f"Smlouva č. {self.contract_number}"
+
 
 class ContractSection(Model):
     priority = IntegerField(verbose_name="Číslo oddílu")
@@ -103,6 +106,10 @@ class Protocol(Model):
 
     def __str__(self):
         return f"{self.contract}"
+
+    def get_name(self):
+        date = self.signed_at if self.signed_at else self.edited_at
+        return f"Předávací protokol ke smlouvě č. {self.contract.contract_number} ze dne {date if date else self.created_at}"
 
 
 class ProtocolItem(Model):
