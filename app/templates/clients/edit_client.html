@@ -2,16 +2,21 @@
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-        <li>{% if client.id %}
-            <a class="btn btn-outline-info m-2" href="{% url "client-mail-list" client.id %}" id="emails-overview-button">Přehled
-                e-mailů</a>
-        {% endif %}</li>
-    <li><a class="btn btn-outline-secondary m-2" href="{% url "manage-attachments" client.id %}" id="manage-attachments-button">Spravovat
-                    přílohy</a></li>
-    <li><a class="btn btn-outline-success m-2" href="{% url "create-proposal" client.id %}" id="create-proposal-button">Vytvořit
-                        nabídku</a></li>
-    </ul>
+    {% if client.id %}
+        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+            <li>
+                <a class="btn btn-outline-info m-2" href="{% url "client-mail-list" client.id %}"
+                   id="emails-overview-button">Přehled
+                    e-mailů</a>
+            </li>
+            <li><a class="btn btn-outline-secondary m-2" href="{% url "manage-attachments" client.id %}"
+                   id="manage-attachments-button">Spravovat
+                přílohy</a></li>
+            <li><a class="btn btn-outline-success m-2" href="{% url "create-proposal" client.id %}"
+                   id="create-proposal-button">Vytvořit
+                nabídku</a></li>
+        </ul>
+    {% endif %}
     <div class="d-flex row">
         <div class="col-md">
             <form action="" method="POST" class="ms-2">

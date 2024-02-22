@@ -1,0 +1,40 @@
+{% extends "main.html" %}
+
+{% block content %}
+    <div class="container">
+        <h3>Základní údaje</h3>
+        <ul>
+            <li>Počet klientů: {{ clients }}</li>
+            <li>Počet uzavřených nabídek: {{ closed_proposals }}</li>
+            <li>Počet uzavřených smluv: {{ closed_contracts }}</li>
+            <li>Celková hodnota uzavřených smluv: {{ total_closed_contracts }} Kč</li>
+            <li>Průměrný počet předávacích protokolů na smlouvu: {{ average_protocols_on_contract|floatformat:2 }}</li>
+            <li>Průměrná doba mezi vytvořením nabídky a uzavřením smlouvy: {{ average_closing_time }}</li>
+            <li>Průměrný počet nabídek za den: {{ average_proposals_per_day|floatformat:2 }}</li>
+            <li>Top uživatelé s nejvíce vytvořenými nabídkami:
+                <ol>
+                    {% for data in top_users_proposals %}
+                        <li>{{ data.username }}: {{ data.total_proposals }}</li>
+                    {% endfor %}
+                </ol>
+            </li>
+            <li>Top uživatelé s nejvíce uzavřenými smlouvami:
+                <ol>
+                    {% for data in top_users_closed_contracts %}
+                        <li>{{ data.username }}: {{ data.num_contracts }}</li>
+                    {% endfor %}
+                </ol>
+            </li>
+            <li>Top uživatelé s nejvíce předávacími protokoly:
+                <ol>
+                    {% for data in top_users_protocols %}
+                        <li>{{ data.username }}: {{ data.total_protocols }}</li>
+                    {% endfor %}
+                </ol>
+            </li>
+
+        </ul>
+
+    </div>
+
+{% endblock %}

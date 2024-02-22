@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "operators",
     "proposals",
     "documents",
+    "reports",
 
 ]
 
