@@ -122,7 +122,8 @@ class ContractCoresEditView(LoginRequiredMixin, View):
                                 parent_id=old_core.id,
                                 default=False,
                             )
-                            new_core.contract_type.add(old_core.contract_type.get())  # how to add in create method?
+                            if old_core.contract_type.all().exists():
+                                new_core.contract_type.add(old_core.contract_type.all())  # how to add in create method?
                             contract.contract_cores.add(new_core)
                             contract.contract_cores.remove(old_core)
         elif "save_new" in data.keys():

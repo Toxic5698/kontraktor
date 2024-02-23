@@ -76,8 +76,8 @@ class ProposalEditView(LoginRequiredMixin, View):
                 )
 
             if Proposal.objects.filter(proposal_number=data["proposal_number"]).count() > 0:
-                messages.warning(request, "Nabídka s tímto číslem již existuje!")
-                return redirect("edit-proposal")
+                messages.warning(request, f"Nabídka s číslem {data['proposal_number']} již existuje!")
+                return redirect(request.META['HTTP_REFERER'], status=302)
             proposal = Proposal.objects.create(
                 client=client,
                 proposal_number=data["proposal_number"],
