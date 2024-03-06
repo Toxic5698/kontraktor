@@ -11,7 +11,7 @@ from django_tables2 import SingleTableMixin
 from attachments.models import DefaultAttachment
 from clients.forms import ClientForm
 from clients.models import Client
-from emailing.services import send_email_service
+from operators.models import Operator
 from proposals.enums import UnitOptions
 from proposals.forms import ProposalUploadForm, ProposalEditForm
 from proposals.models import Proposal, UploadedProposal, Item, check_payments, ContractSubject, DefaultItem, \
@@ -76,8 +76,8 @@ class ProposalEditView(LoginRequiredMixin, View):
                 )
 
             if Proposal.objects.filter(proposal_number=data["proposal_number"]).count() > 0:
-                messages.warning(request, "Nabídka s tímto číslem již existuje!")
-                return redirect("edit-proposal")
+                messages.warning(request, f"Nabídka s číslem {data['proposal_number']} již existuje!")
+                return redirect(request.META['HTTP_REFERER'], status=302)
             proposal = Proposal.objects.create(
                 client=client,
                 proposal_number=data["proposal_number"],
@@ -156,20 +156,6 @@ class ProposalItemsView(LoginRequiredMixin, View):
                 item.save(**data)
 
         return redirect('edit-items', proposal.id)
-
-
-class ProposalSendView(LoginRequiredMixin, View):
-    def post(self, request, pk=None, *args, **kwargs):
-        proposal = Proposal.objects.get(pk=pk)
-        send_email_service(
-            subject=f"new_proposal {proposal.proposal_number}",
-            sender=request.user,
-            client=proposal.client,
-            link=request.META['HTTP_HOST']
-        )
-        messages.warning(request, "E-mail byl vytvořen, odeslání zkontrolujte v seznamu zpráv.")
-
-        return redirect("edit-proposal", proposal.id)
 
 
 class PaymentsEditView(LoginRequiredMixin, View):

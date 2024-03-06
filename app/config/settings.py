@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "operators",
     "proposals",
     "documents",
+    "reports",
 
 ]
 
@@ -80,6 +81,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'config.error_handlers.CustomExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

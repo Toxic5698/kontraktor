@@ -9,22 +9,53 @@ from emailing.models import Mail
 from operators.models import Operator
 
 
-def send_email_service(subject, client, link, sender=None):
-    subject_for_client, message = get_subject_and_message(subject=subject, sender=sender, client=client, link=link)
+def send_email_service(context=None, document=None, link=None, client=None):
+    # odeslání přes formulář
+    if context:
+        message = render_to_string(template_name="emailing/message_templates/new_document.html", context=context)
+        mail = context["mail"]
+    # odeslání automaticky po podpisu
+    elif document and link:
+        mail = Mail.objects.create(
+            client=document.client,
+            subject=f"Podepsaný dokument ze služby SAMOSET",
+            receiver=document.client.email,
+            )
+        context = {
+            "operator": Operator.objects.get(),
+            "document_name": document.get_name(),
+            "link": link,
+        }
+        message = render_to_string(template_name="emailing/message_templates/signed_document.html", context=context)
+    # odeslání automaticky po zadání e-mailu
+    elif link and client:
+        mail = Mail.objects.create(
+            client=client,
+            subject=f"Dokumenty ze služby SAMOSET",
+            receiver=client.email,
+        )
+        context = {
+            "operator": Operator.objects.get(),
+            "client": client,
+            "link": link,
+        }
+        message = render_to_string(template_name="emailing/message_templates/resend.html", context=context)
+
     try:
-        send_mail(subject=subject_for_client, message=strip_tags(message), recipient_list=get_recipient_list(client),
-                  from_email=settings.EMAIL_HOST_USER, html_message=message)
-        sent = True
+        send_mail(from_email=settings.EMAIL_HOST_USER,
+                  recipient_list=mail.receiver.split(","),
+                  subject=mail.subject,
+                  message=strip_tags(message),
+                  html_message=message
+                  )
     except:
-        sentry_sdk.capture_message(f"E-mail sending was unsuccessfully {client} - {subject}")
-        sent = False
-    Mail.objects.create(
-        client=client,
-        subject=subject,
-        sender=sender,
-        message=strip_tags(message),
-        sent=sent,
-    )
+        sentry_sdk.capture_message(f"E-mail sending was unsuccessfully {mail}")
+        mail.status = "nepodařilo se odeslat"
+        mail.save()
+        return mail
+    mail.status = "odeslán"
+    mail.save()
+    return mail
 
 
 def get_recipient_list(client):

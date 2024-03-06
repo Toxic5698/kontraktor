@@ -66,6 +66,9 @@ class Proposal(Model):
         self.edited_at = timezone.now()
         super(Proposal, self).save(*args, **kwargs)
 
+    def get_name(self):
+        return f"Nabídka č. {self.proposal_number}"
+
 
 def uploaded_proposal_directory_path(instance, file):
     return f"{instance.proposal.client.sign_code}/uploaded/{file}"

@@ -80,7 +80,7 @@ class DocumentsToSignView(View):
             document = {
                 "id": proposal.id,
                 "type": "proposal",
-                "title": f"Nabídka č. {proposal.proposal_number}",
+                "title": proposal.get_name(),
                 "price": proposal.price_brutto,
                 "attachments": all_proposal_attachments,
                 "attachments_count": len(all_proposal_attachments),
@@ -159,19 +159,8 @@ class SigningDocument(View):
         document.signed_at = timezone.now()
         document.save()
 
-        document_type = model.__name__.lower()
-        if document_type == "proposal":
-            number = document.proposal_number
-        elif document_type == "contract":
-            number = document.contract_number
-        else:
-            number = document.contract.contract_number
-
-        send_email_service(
-            subject=f"signed_{document_type} {number}",
-            client=document.client,
-            link=request.META['HTTP_HOST']
-        )
+        link = "http://" + request.META['HTTP_HOST'] + "/clients/" + str(document.client.sign_code)
+        send_email_service(document=document, link=link)
 
         return HttpResponse("OK", status=200)
 

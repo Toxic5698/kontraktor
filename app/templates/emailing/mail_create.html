@@ -1,0 +1,88 @@
+{% extends "main.html" %}
+{% block content %}
+    
+    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="{% url "client-mail-list" client.id %}" class="btn btn-outline-warning mx-4"
+               id="client-button">Zpět na přehled e-mailů</a>
+        </li>
+        <li>
+            <a href="{% url "send-mail" mail.id %}"
+               class="btn btn-success mx-4" id="send-mail-button">Odeslat e-mail</a>
+        </li>
+    </ul>
+    <br>
+    <div class="container">
+        <h3>Zahrnout dokumenty </h3>
+        <form id="add-documents">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+
+                <br>
+                {% for document in available_documents %}
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0" type="checkbox" value="add"
+                               aria-label="Checkbox for documents"
+                               hx-post="{% url 'add-mail-document' mail.id %}"
+                               {% if document.name in chosen_documents %}checked{% endif %}
+                               id="addDocument" name="{{ document.type }}{{ document.id }}"
+                        >
+                    </div>
+                    <input type="text" class="form-control" aria-label="Text input with checkbox"
+                           value="{{ document.name }}" disabled>
+                {% endfor %}
+            </div>
+        </form>
+        <br>
+        <h3>Adresa příjemce</h3>
+        <form id="recevier">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">@</span>
+                <input type="text" class="form-control" placeholder="E-mail příjemce" aria-label="E-mail"
+                       aria-describedby="basic-addon1" name="receiver"
+                       hx-post="{% url 'change-receiver' mail.id %}"
+                       hx-trigger="keyup changed delay:1s"
+                       name="receiver" id="mail-receiver" {% if mail.receiver %}value="{{ mail.receiver }}"
+                       {% else %}value="{{ mail.client.email }}"{% endif %}>
+            </div>
+        </form>
+        <h3>Předmět e-mailové zprávy</h3>
+        <form id="mail-subject">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon2">Předmět</span>
+                <input type="text" class="form-control" placeholder="Nové dokumenty ve službě SAMOSET"
+                       aria-label="Subject of message"
+                       hx-post="{% url 'change-subject' mail.id %}"
+                       hx-trigger="keyup changed delay:1s"
+                       name="subject" id="mail-subject" {% if mail.subject %}value="{{ mail.subject }}"
+                       {% else %}value="Nový dokument ve službě SAMOSET"{% endif %}>
+
+            </div>
+        </form>
+        <h3>Poznámka v e-mailové zprávě</h3>
+        <form id="add-note">
+            {% csrf_token %}
+            <div class="input-group">
+                <span class="input-group-text">Poznámka ve zprávě</span>
+                <input class="form-control" aria-label="Text"
+                       hx-post="{% url 'add-mail-note' mail.id %}"
+                       hx-trigger="keyup changed delay:1s"
+                       name="note" id="note" {% if mail.note %}value="{{ mail.note }}"{% endif %} type="text">
+            </div>
+        </form>
+        <br>
+
+        <h3>Náhled e-mailové zprávy</h3>
+        <figure class="figure border rounded"
+                hx-get="{% url 'preview-mail' mail.id %}"
+                hx-trigger="load delay:10ms, change from:#add-documents delay:1s, keyup change from:#add-note delay:1s"
+                hx-target="#mail-preview"
+                id="mail-preview">
+
+
+        </figure>
+    </div>
+
+
+{% endblock %}

@@ -45,10 +45,10 @@ class WelcomePageView(View):
                 messages.warning(
                     request, f'Odesílám e-mail s kódem na zadanou adresu, zkontrolujte svou e-mailovou schránku.'
                 )
+                link = "http://" + request.META['HTTP_HOST'] + "/clients/" + str(client.sign_code)
                 send_email_service(
-                    subject=f"resend {client}",
                     client=client,
-                    link=request.META['HTTP_HOST']
+                    link=link
                 )
             else:
                 messages.warning(

@@ -1,0 +1,23 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-body m-2">
+            <p>Opravdu smazat mail {{mail}}?</p>
+
+
+            <form action="{% url 'delete-mail' mail.id %}" method="POST">
+            {% csrf_token%}
+
+            
+            <input class="btn btn-danger" type="submit" name="Submit" value="Smazat">
+
+            </form>
+          
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

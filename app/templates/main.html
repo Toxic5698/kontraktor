@@ -44,6 +44,9 @@
             <li><a href="{% url "contracts" %}"
                    {% if "/contracts/" in request.path %}class="btn btn-outline-primary px-2"
                    {% else %}class="nav-link px-2 link-dark"{% endif %}>Smlouvy</a></li>
+            <li><a href="{% url "reports" %}"
+                   {% if "/reports/" in request.path %}class="btn btn-outline-primary px-2"
+                   {% else %}class="nav-link px-2 link-dark"{% endif %}>Reporty</a></li>
             <li><a href="{% url "create-proposal" %}" id="create-client-and-proposal"
                    {% if "proposals/create" in request.path %}class="btn btn-outline-success px-2 ms-4"
                    {% else %}class="nav-link px-2 link-success ms-4"{% endif %}>Vytvořit klienta a nabídku</a></li>
@@ -78,18 +81,9 @@
     {% endblock %}
 </main>
 <footer class="footer border-top mt-auto mb-0 bg-dark">
-    {% if user.is_authenticated %}
-        <ul class="nav justify-content-center border-bottom pb-1 mb-1">
-            <li><a href="{% url "clients" %}" class="nav-link px-2 link-light">Klienti</a></li>
-            <li><a href="{% url "proposals" %}" class="nav-link px-2 link-light">Nabídky</a></li>
-            <li><a href="{% url "contracts" %}" class="nav-link px-2 link-light">Smlouvy</a></li>
-            <li><a href="{% url "create-proposal" %}" class="nav-link px-2 link-success ms-4">Vytvořit klienta a
-                nabídku</a></li>
-        </ul>
-    {% endif %}
     <p class="text-center text-muted">&copy
         <script>document.write(new Date().getFullYear());</script>
-        <a class="text-muted" href="https://cechpetr.cz">Petr Čech</a>
+        <a class="text-muted" href="https://www.samoset.cz">SAMOSET</a>
     </p>
 </footer>
 
@@ -109,11 +103,11 @@
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </script>
 <script>
-        function runButtonLoader(event) {
-            var button = event.target;
-            button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Načítání...';
-            button.disabled = true;
-        }
-    </script>
+    function runButtonLoader(event) {
+        var button = event.target;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Načítání...';
+        button.disabled = true;
+    }
+</script>
 </body>
 </html>

@@ -12,7 +12,6 @@ from django_tables2 import SingleTableMixin
 from attachments.forms import AttachmentUploadForm
 from base.methods import get_data_in_dict
 from clients.models import Client
-from emailing.services import send_email_service
 from operators.models import Operator
 from proposals.forms import ProposalEditForm
 from proposals.models import Proposal, Item
@@ -123,7 +122,8 @@ class ContractCoresEditView(LoginRequiredMixin, View):
                                 parent_id=old_core.id,
                                 default=False,
                             )
-                            new_core.contract_type.add(old_core.contract_type.get())  # how to add in create method?
+                            if old_core.contract_type.all().exists():
+                                new_core.contract_type.add(old_core.contract_type.all())  # how to add in create method?
                             contract.contract_cores.add(new_core)
                             contract.contract_cores.remove(old_core)
         elif "save_new" in data.keys():
@@ -142,20 +142,6 @@ class ContractCoresEditView(LoginRequiredMixin, View):
             contract.contract_cores.remove(core)
 
         return redirect('edit-cores', contract.id)
-
-
-class ContractSendView(LoginRequiredMixin, View):
-    def post(self, request, pk=None, *args, **kwargs):
-        contract = Contract.objects.get(pk=pk)
-        send_email_service(
-            subject=f"new_contract {contract.contract_number}",
-            client=contract.client,
-            sender = request.user,
-            link = request.META['HTTP_HOST']
-        )
-        messages.warning(request, "Smlouva byla klientovi odeslána.")
-
-        return redirect("edit-contract", contract.id)
 
 
 class ProtocolCreateView(LoginRequiredMixin, View):
