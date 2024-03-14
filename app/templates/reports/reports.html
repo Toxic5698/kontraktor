@@ -2,38 +2,90 @@
 
 {% block content %}
     <div class="container">
-        <h3>Základní údaje</h3>
-        <ul>
-            <li>Počet klientů: {{ clients }}</li>
-            <li>Počet uzavřených nabídek: {{ closed_proposals }}</li>
-            <li>Počet uzavřených smluv: {{ closed_contracts }}</li>
-            <li>Celková hodnota uzavřených smluv: {{ total_closed_contracts }} Kč</li>
-            <li>Průměrný počet předávacích protokolů na smlouvu: {{ average_protocols_on_contract|floatformat:2 }}</li>
-            <li>Průměrná doba mezi vytvořením nabídky a uzavřením smlouvy: {{ average_closing_time }}</li>
-            <li>Průměrný počet nabídek za den: {{ average_proposals_per_day|floatformat:2 }}</li>
-            <li>Top uživatelé s nejvíce vytvořenými nabídkami:
-                <ol>
-                    {% for data in top_users_proposals %}
-                        <li>{{ data.username }}: {{ data.total_proposals }}</li>
-                    {% endfor %}
-                </ol>
-            </li>
-            <li>Top uživatelé s nejvíce uzavřenými smlouvami:
-                <ol>
-                    {% for data in top_users_closed_contracts %}
-                        <li>{{ data.username }}: {{ data.num_contracts }}</li>
-                    {% endfor %}
-                </ol>
-            </li>
-            <li>Top uživatelé s nejvíce předávacími protokoly:
-                <ol>
-                    {% for data in top_users_protocols %}
-                        <li>{{ data.username }}: {{ data.total_protocols }}</li>
-                    {% endfor %}
-                </ol>
-            </li>
+        <h3>Celkové údaje</h3>
+        <table class="table table-hover">
+            <tbody>
+            <tr>
+                <td>Počet klientů</td>
+                <td>{{ clients }}</td>
+            </tr>
+            <tr>
+                <td>Počet potvrzených nabídek</td>
+                <td>{{ closed_proposals }}</td>
+            </tr>
+            <tr>
+                <td>Počet uzavřených smluv</td>
+                <td>{{ closed_contracts }}</td>
+            </tr>
+            <tr>
+                <td>Celková hodnota všech uzavřených smluv</td>
+                <td>{{ total_closed_contracts }} Kč</td>
+            </tr>
+            <tr>
+                <td>Celková hodnota všech kompletně předaných zakázek</td>
+                <td>{{ total_completed_contracts }} Kč</td>
+            </tr>
+            <tr>
+                <td>Průměrný počet předávacích protokolů na smlouvu</td>
+                <td>{{ average_protocols_on_contract|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Průměrná doba mezi vytvořením nabídky a uzavřením smlouvy</td>
+                <td>{{ average_closing_time }} dní</td>
+            </tr>
+            <tr>
+                <td>Průměrný počet nabídek za den</td>
+                <td>{{ average_proposals_per_day|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Top uživatelé s nejvíce vytvořenými nabídkami</td>
+                <td>
+                    <table>
+                        {% for data in top_users_proposals %}
+                            <tr>
+                                <td>{{ data.username }}: {{ data.total_proposals }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>Top uživatelé s nejvíce uzavřenými smlouvami</td>
+                <td>
+                    <table>
+                        {% for data in top_users_closed_contracts %}
+                            <tr>
+                                <td>{{ data.username }}: {{ data.num_contracts }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>Top uživatelé s nejvíce předávacími protokoly</td>
+                <td>
+                    <table>
+                        {% for data in top_users_protocols %}
+                            <tr>
+                                <td>{{ data.username }}: {{ data.total_protocols }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
 
-        </ul>
+        <h3>Údaje po měsících v roce {{ current_year|floatformat:"-g" }}</h3>
+        {% for month in months %}
+            <h4>{{ month }}</h4>
+            <p>Data v přípravě</p>
+        {% endfor %}
+
+        <br>
+        <h3>Údaje po rocích</h3>
+        <p>Data v přípravě</p>
 
     </div>
 
