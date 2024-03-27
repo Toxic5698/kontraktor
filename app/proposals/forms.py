@@ -1,5 +1,6 @@
 from betterforms.forms import BetterModelForm
 from django import forms
+
 from clients.models import Client
 from proposals.models import Proposal, UploadedProposal
 
@@ -16,10 +17,10 @@ class ProposalEditForm(BetterModelForm):
     fulfillment_at = forms.DateField(required=True, label="Termín plnění",
                                      widget=forms.TextInput(attrs={'type': "date"}))
     signed_at = forms.DateField(required=False, label="Potvrzena dne", widget=forms.TextInput(attrs={'type': "date"}))
-    client = forms.ModelChoiceField(label="Klient", queryset=Client.objects.all(), widget=forms.Select(attrs={"readonly": True}))
+    # client = forms.ModelChoiceField(label="Klient", queryset=Client.objects.all(), widget=forms.Select(attrs={"readonly": True}))
 
     class Meta:
         model = Proposal
-        fields = ["proposal_number", "signed_at", "contract_type",
-                  "contract_type", "subject", "client",
+        fields = ["document_number", "signed_at",
+                  "contract_type", "contract_subject",
                   "fulfillment_at", "fulfillment_place"]

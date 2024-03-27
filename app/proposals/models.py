@@ -1,61 +1,31 @@
 from django.contrib.auth.models import User
-from django.db.models import Model, DateTimeField, ForeignKey, CharField, SET_NULL, \
+from django.db.models import Model, ForeignKey, CharField, \
     IntegerField, DateField, FileField, DecimalField, CASCADE, BooleanField, Sum, TextField
-from django.utils import timezone
 
+from base.models import DateBaseModel, UserBaseModel, ContractTypeAndSubjectMixin
 from clients.models import Client
 from decimal import Decimal
 
+from documents.models import Document
 from proposals.enums import UnitOptions, DueOptions
 from proposals.managers import PaymentManager
 
 
-class ContractType(Model):
-    type = CharField(max_length=255, blank=False, null=False)
-    name = CharField(max_length=255, blank=False, null=True)
-    vat = IntegerField(default=21)
-
-    def __str__(self):
-        return self.name
-
-
-class ContractSubject(Model):
-    code = CharField(max_length=255, blank=False, null=False)
-    name = CharField(max_length=255, blank=False, null=True)
-
-    def __str__(self):
-        return self.name
-
-
-class Proposal(Model):
-    proposal_number = CharField(max_length=20, unique=True, blank=True, null=True, verbose_name="Číslo nabídky")
-    created_at = DateTimeField(auto_now_add=True, blank=False, null=False, verbose_name="Vytvořena dne")
-    created_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="proposal_created_by",
-                            verbose_name="Vytvořil")
-    edited_at = DateTimeField(blank=True, null=True, verbose_name="Upravena dne")
-    edited_by = ForeignKey(User, blank=True, null=True, on_delete=SET_NULL, related_name="proposal_edited_by",
-                           verbose_name="Upravil")
-    signed_at = DateField(blank=True, null=True, verbose_name="Potvrzena dne")
-    contract_type = ForeignKey(ContractType, related_name="proposals", on_delete=SET_NULL, verbose_name="Typ smlouvy",
-                               null=True)
-    subject = ForeignKey(ContractSubject, related_name="proposals", on_delete=SET_NULL, verbose_name="Předmět nabídky",
-                         null=True)
+class Proposal(Document):
     price_netto = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena bez DPH", blank=True, null=True)
     price_brutto = DecimalField(max_digits=20, decimal_places=2, verbose_name="Cena s DPH", blank=True, null=True)
     fulfillment_at = DateField(null=True, blank=True, verbose_name="Termín plnění")
     fulfillment_place = CharField(max_length=1000, verbose_name="Místo plnění", null=True, blank=True)
-    client = ForeignKey(Client, related_name="proposals", on_delete=CASCADE, verbose_name="klient", null=True,
-                        blank=True)
 
     class Meta:
         verbose_name = "Proposal"
         verbose_name_plural = "Proposals"
 
     def __str__(self):
-        if self.proposal_number:
-            return self.proposal_number
+        if self.document_number:
+            return self.get_name()
         else:
-            return f"Objednávka ID {self.id} bez čísla"
+            return f"Nabídka ID {self.id} bez čísla"
 
     def save(self, *args, **kwargs):
         if self.id:
@@ -63,35 +33,30 @@ class Proposal(Model):
                 self.price_netto = self.items.all().aggregate(Sum("total_price"))["total_price__sum"]
                 self.price_brutto = self.price_netto * Decimal((100 + self.contract_type.vat) / 100)
                 check_payments(self)
-        self.edited_at = timezone.now()
         super(Proposal, self).save(*args, **kwargs)
-
-    def get_name(self):
-        return f"Nabídka č. {self.proposal_number}"
 
 
 def uploaded_proposal_directory_path(instance, file):
     return f"{instance.proposal.client.sign_code}/uploaded/{file}"
 
 
-class UploadedProposal(Model):
+class UploadedProposal(DateBaseModel, UserBaseModel):
     priority = CharField(max_length=3, null=True, blank=True, verbose_name="pořadí")
     file = FileField(upload_to=uploaded_proposal_directory_path, null=True, blank=True,
                      verbose_name="Podkladová nabídka")
     file_name = CharField(max_length=200, null=True, blank=True, verbose_name="název souboru")
     proposal = ForeignKey(Proposal, on_delete=CASCADE, blank=True, verbose_name="nabídka", related_name="uploaded")
-    uploaded_at = DateTimeField(auto_now_add=True, blank=True, verbose_name="Nahráno dne", null=True)
 
     class Meta:
         verbose_name = "UploadedProposal"
         verbose_name_plural = "UploadedProposals"
-        ordering = ['uploaded_at']
+        ordering = ['created_at']
 
     def __str__(self):
         return self.file_name
 
 
-class AbstractItem(Model):
+class AbstractItem(UserBaseModel, DateBaseModel):
     title = CharField(max_length=200, blank=True, null=True, verbose_name="název")
     description = CharField(max_length=1000, blank=True, null=True, verbose_name="popis")
     production_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="nákladová cena za jednotku",
@@ -130,7 +95,7 @@ class Item(AbstractItem):
 
     def clean(self, **kwargs):
         self.priority = self.get_priority() if not self.priority else self.priority
-        if "price_per_unit" in kwargs.keys(): # data from edit form
+        if "price_per_unit" in kwargs.keys():  # data from edit form
             for key in kwargs.keys():
                 if key in ["production_price", "price_per_unit"]:
                     setattr(self, key, self.price_format(kwargs[key]))
@@ -138,7 +103,7 @@ class Item(AbstractItem):
                     setattr(self, key, self.number_format(kwargs[key]))
                 else:
                     setattr(self, key, kwargs[key])
-        else: # data from create form and upload
+        else:  # data from create form and upload
             self.production_price = Decimal(self.production_price) if self.production_price else 0
             self.price_per_unit = Decimal(self.price_per_unit) if self.price_per_unit else 0
             self.sale_discount = int(self.sale_discount) if self.sale_discount else 0
@@ -163,7 +128,7 @@ class Item(AbstractItem):
         return 1
 
     def price_format(self, data=None):
-        if data is None or type(data) == Decimal:
+        if data is None or isinstance(data, (Decimal, )):
             return data
         if data == "":
             data = 0
@@ -190,17 +155,14 @@ class Item(AbstractItem):
         return Decimal(revenue)
 
 
-class DefaultItem(AbstractItem):
-    subject = ForeignKey(ContractSubject, related_name="default_item", on_delete=CASCADE,
-                         verbose_name="předmět smlouvy")
-    contract_type = ForeignKey(ContractType, related_name="default_item", on_delete=CASCADE, verbose_name="typ smlouvy")
+class DefaultItem(AbstractItem, ContractTypeAndSubjectMixin):
 
     class Meta:
         verbose_name = "Default Item"
         verbose_name_plural = "Default Items"
 
     def __str__(self):
-        return f"{self.contract_type} - {self.subject} - {self.title}"
+        return f"{self.contract_type} - {self.contract_subject} - {self.title}"
 
 
 class Payment(Model):

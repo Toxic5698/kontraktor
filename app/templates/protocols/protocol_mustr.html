@@ -1,7 +1,7 @@
 {% extends "document_components/document_base.html" %}
 
 {% block content %}
-    <h1>Předávací protokol ke smlouvě č. {{ protocol.contract.contract_number }}</h1>
+    <h1>Předávací protokol ke smlouvě č. {{ protocol.contract.document_number }}</h1>
     <h2 class="text-center">ze dne {{ protocol.created_at }}</h2>
     {% include "document_components/subjects.html" %}
     <br>

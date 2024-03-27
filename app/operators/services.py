@@ -1,7 +1,9 @@
+from django.contrib.auth.models import User
+
 from attachments.models import DefaultAttachment
-from contracts.models import ContractSection, ContractCore
 from operators.models import Operator
-from proposals.models import ContractType, ContractSubject
+from documents.models import DocumentSection, DocumentParagraph
+from base.models import ContractType, ContractSubject
 
 
 def initial_creation():
@@ -15,6 +17,11 @@ def initial_creation():
         web="http://www.samoset.cz",
         email="admin@samoset.cz",
         phone_number="45245235",
+    )
+
+    user = User.objects.create(
+        username="Aneta Demová",
+        email="demo@samoset.cz",
     )
     # contract type
     dilo = ContractType.objects.create(
@@ -33,7 +40,7 @@ def initial_creation():
     for code, name in subjects.items():
         ContractSubject.objects.create(code=code, name=name)
 
-    # contact sections dílo
+    # contract sections dílo
     sections = {
         "I": "Základní ustanovení",
         "II": "Záruka za jakost a vady díla",
@@ -42,13 +49,13 @@ def initial_creation():
         "V": "Závěrečná jednání",
     }
     for num, text in enumerate(sections.values(), 1):
-        ContractSection.objects.create(
+        DocumentSection.objects.create(
             priority=num,
             name=text,
             contract_type=dilo
         )
 
-    # contract cores dílo
+    # contract paragraphs dílo
     cores = {
         "11": "Zhotovitel se touto smlouvou zavazuje provést na svůj náklad a nebezpečí pro objednatele dílo spočívající v dodávce a montáži předmětu smlouvy v místě plnění a nejpozději v den termínu plnění. Objednatel se touto smlouvou zavazuje poskytnout zhotoviteli potřebnou součinnost a provedené dílo převzít a zaplatit jeho cenu.",
         "12": "Cena díla je smluvní a objednatel se ji zavazuje uhradit dle sjednaných platebních podmínek.",
@@ -115,11 +122,13 @@ def initial_creation():
     }
 
     for num, text in cores.items():
-        cc = ContractCore.objects.create(
+        cc = DocumentParagraph.objects.create(
             priority=num[1],
-            contract_section=ContractSection.objects.get(priority=num[0], contract_type=dilo),
+            document_section=DocumentSection.objects.get(priority=num[0], contract_type=dilo),
             text=text,
-            contract_type=dilo
+            contract_type=dilo,
+            document_type="contract",
+            created_by=user,
         )
 
     # contact sections koupě
@@ -131,10 +140,11 @@ def initial_creation():
         "V": "Závěrečná jednání",
     }
     for num, text in enumerate(sections.values(), 1):
-        ContractSection.objects.create(
+        DocumentSection.objects.create(
             priority=num,
             name=text,
-            contract_type=koupe
+            contract_type=koupe,
+            created_by=user,
         )
 
     # contract cores koupě
@@ -173,14 +183,51 @@ def initial_creation():
         "54": "Smluvní strany prohlašují, že tato smlouva byla sepsána podle jejich pravé, svobodné a vážné vůle, a že souhlasí s jejím obsahem a zněním."
     }
     for num, text in cores.items():
-        cc = ContractCore.objects.create(
+        cc = DocumentParagraph.objects.create(
             priority=num[1],
-            contract_section=ContractSection.objects.get(priority=num[0], contract_type=koupe),
+            document_section=DocumentSection.objects.get(priority=num[0], contract_type=koupe),
             contract_type=koupe,
+            document_type="contract",
             text=text,
+            created_by=user,
+        )
+    p_cores_default = {
+        "3": "Záruční doba je obvykle 24 měsíců od předání.",
+        "4": "Pokud není přílohou této nabídky zaměření, jsou množstevní a cenové údaje pouze orientační a mohou se změnit po provedení zaměření."}
+    p_cores_dilo = {
+        "2": "Zahájení montáže je možné zpravidla 15 až 20 týdnů od uzavření smlouvy a zaplacení zálohové faktury."
+    }
+    p_cores_koupe = {
+        "2": "Dodání předmětu nabídky je možné zpravidla 15 až 20 týdnů od uzavření smlouvy a zaplacení zálohové faktury."
+    }
+
+    for num, text in p_cores_default.items():
+        cc = DocumentParagraph.objects.create(
+            priority=num,
+            document_type="proposal",
+            text=text,
+            created_by=user,
         )
 
-    # # default attachments now working
+    for num, text in p_cores_dilo.items():
+        cc = DocumentParagraph.objects.create(
+            priority=num,
+            document_type="proposal",
+            text=text,
+            contract_type=dilo,
+            created_by=user,
+        )
+
+    for num, text in p_cores_koupe.items():
+        cc = DocumentParagraph.objects.create(
+            priority=num,
+            document_type="proposal",
+            text=text,
+            contract_type=koupe,
+            created_by=user,
+        )
+
+    # # default attachments not working
     # with open('default_attachment.txt', 'w') as file:
     #     file.write(
     #         'Tato příloha je vzor přílohy, která je přiřazena automaticky při vzniku dokumentu, což mohou být např. '

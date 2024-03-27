@@ -8,4 +8,4 @@ class ContractForm(BetterModelForm):
 
     class Meta:
         model = Contract
-        fields = ("signed_at", "contract_number")
+        fields = ("signed_at", "document_number")

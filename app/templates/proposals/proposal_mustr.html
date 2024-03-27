@@ -2,9 +2,9 @@
 
 {% block content %}
     {% if proposal.contract_type.type == "DILO" %}
-        <h1>Nabídka č. {{ proposal.proposal_number }} na uzavření smlouvy o dílo</h1>
+        <h1>Nabídka č. {{ proposal.document_number }} na uzavření smlouvy o dílo</h1>
     {% elif proposal.contract_type.type == "KOUPE" %}
-        <h1>Nabídka č. {{ proposal.proposal_number }} na uzavření kupní smlouvy </h1>
+        <h1>Nabídka č. {{ proposal.document_number }} na uzavření kupní smlouvy </h1>
     {% endif %}
 
     {% include "document_components/subjects.html" %}
@@ -46,22 +46,17 @@
     {% include "document_components/payments.html" %}
     {% if attachments %}
         <h2>Přílohy nabídky</h2>
-       {% include "document_components/attachments.html" %}
+        {% include "document_components/attachments.html" %}
         <br>
     {% endif %}
 
     <h2>Informace před uzavřením smlouvy</h2>
     <ol>
         <li>Tato nabídka je platná do {{ proposal_validity|date }}.</li>
-        <li>{% if proposal.contract_type.type == "DILO" %}
-            Zahájení montáže je možné zpravidla 15 až 20 týdnů od uzavření smlouvy a zaplacení zálohové faktury.
-        {% elif proposal.contract_type.type == "KOUPE" %}
-            Dodání předmětu nabídky je možné zpravidla 15 až 20 týdnů od uzavření smlouvy a zaplacení zálohové faktury.
-        {% endif %}</li>
-        <li>Záruční doba je obvykle 24 měsíců od předání.</li>
-        <li>Pokud není přílohou této nabídky zaměření, jsou množstevní a cenové údaje pouze orientační a mohou se změnit
-            po provedení zaměření.
-        </li>
+        {% for paragraph in paragraphs %}
+            <li>{{ paragraph.text }}</li>
+        {% endfor %}
+        
     </ol>
     <br>
 

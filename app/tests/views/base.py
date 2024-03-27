@@ -39,7 +39,7 @@ class BaseViewsTest(LiveServerTestCase):
         self.webdriver.find_element(by="id", value="id_note").send_keys("jen test")
 
     def fill_proposal_form_work(self):
-        self.webdriver.find_element(by="id", value="id_proposal_number").send_keys(faker.numerify(text="D%%%"))
+        self.webdriver.find_element(by="id", value="id_document_number").send_keys(faker.numerify(text="D%%%"))
         self.webdriver.find_element(by="id", value="id_subject").send_keys("DVERE")
         self.webdriver.find_element(by="id", value="id_contract_type").send_keys("Smlouva o dílo")
         self.webdriver.find_element(by="id", value="id_fulfillment_at").send_keys(faker.date())
@@ -47,7 +47,7 @@ class BaseViewsTest(LiveServerTestCase):
         self.webdriver.find_element(by="id", value="id_file").send_keys(os.path.abspath("/Users/petr/github/kontraktor/NAB_TIC.pdf"))
 
     def fill_proposal_form_buy(self):
-        self.webdriver.find_element(by="id", value="id_proposal_number").send_keys(faker.numerify(text="K%%%"))
+        self.webdriver.find_element(by="id", value="id_document_number").send_keys(faker.numerify(text="K%%%"))
         self.webdriver.find_element(by="id", value="id_subject").send_keys("DVERE")
         self.webdriver.find_element(by="id", value="id_contract_type").send_keys("Kupní smlouva")
         self.webdriver.find_element(by="id", value="id_fulfillment_at").send_keys(faker.date())

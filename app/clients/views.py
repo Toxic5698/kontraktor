@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.apps import apps
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponse
@@ -20,7 +21,7 @@ from clients.forms import ClientForm
 from clients.models import Client, Signature
 from clients.services import create_demo_client
 from clients.tables import ClientTable
-from contracts.models import ContractSection
+# from contracts.models import ContractSection
 from emailing.services import send_email_service
 from operators.models import Operator
 
@@ -73,17 +74,14 @@ class DocumentsToSignView(View):
 
         # proposals
         proposals = client.proposals.all()
-        all_proposal_attachments = attachments_serializer(
-            client.attachments.filter_proposals()) + attachments_serializer(
-            client.default_attachments.filter_proposals())
         for proposal in proposals:
             document = {
                 "id": proposal.id,
                 "type": "proposal",
                 "title": proposal.get_name(),
                 "price": proposal.price_brutto,
-                "attachments": all_proposal_attachments,
-                "attachments_count": len(all_proposal_attachments),
+                "attachments": proposal.attachments.all(),
+                "attachments_count": proposal.attachments.all().count(),
                 "signed": True if proposal.signed_at else False,
                 "last_update": proposal.edited_at.strftime('%d. %m. %Y'),
                 "items_count": proposal.items.all().count(),
@@ -94,17 +92,17 @@ class DocumentsToSignView(View):
 
         # contracts
         contracts = client.contracts.all()
-        all_contract_attachments = attachments_serializer(
-            client.attachments.filter_contracts()) + attachments_serializer(
-            client.default_attachments.filter_contracts())
+        # all_contract_attachments = attachments_serializer(
+        #     client.attachments.filter_contracts()) + attachments_serializer(
+        #     client.default_attachments.filter_contracts())
         for contract in contracts:
             document = {
                 "id": contract.id,
                 "type": "contract",
-                "title": f"Smlouva č. {contract.contract_number}",
+                "title": f"Smlouva č. {contract.document_number}",
                 "price": contract.proposal.price_brutto,
-                "attachments": all_contract_attachments,
-                "attachments_count": len(all_contract_attachments),
+                "attachments": contract.attachments.all(),
+                "attachments_count": contract.attachments.all().count(),
                 "signed": True if contract.signed_at else False,
                 "last_update": contract.edited_at.strftime('%d. %m. %Y'),
                 "items_count": contract.proposal.items.all().count(),
@@ -115,16 +113,16 @@ class DocumentsToSignView(View):
 
         # protocols
         protocols = client.protocols.all()
-        all_protocol_attachments = attachments_serializer(
-            client.attachments.filter_protocols()) + attachments_serializer(
-            client.default_attachments.filter_protocols())
+        # all_protocol_attachments = attachments_serializer(
+        #     client.attachments.filter_protocols()) + attachments_serializer(
+        #     client.default_attachments.filter_protocols())
         for protocol in protocols:
             document = {
                 "id": protocol.id,
                 "type": "protocol",
-                "title": f"Předávací protokol ke smlouvě č. {protocol.contract.contract_number}",
-                "attachments": all_protocol_attachments,
-                "attachments_count": len(all_protocol_attachments),
+                "title": f"Předávací protokol ke smlouvě č. {protocol.contract.document_number}",
+                "attachments": protocol.attachments.all(),
+                "attachments_count": protocol.attachments.all().count(),
                 "signed": True if protocol.signed_at else False,
                 "last_update": protocol.created_at.strftime('%d. %m. %Y'),
             }
@@ -177,5 +175,11 @@ def get_document_model(doc_type):
 class CreateDemoClient(View):
 
     def get(self, request, *args, **kwargs):
-        sign_code = create_demo_client()
-        return redirect("document-to-sign", sign_code)
+        host = request.META["HTTP_HOST"]
+        if "localhost" in host or "demo" in host or "devel" in host:
+            sign_code = create_demo_client()
+            return redirect("document-to-sign", sign_code)
+
+        else:
+            messages.warning(request, "Automatické vytváření klientů není v této instanci možné.")
+            return redirect("welcome-page")

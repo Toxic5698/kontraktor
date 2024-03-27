@@ -6,6 +6,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.views.generic import View, DeleteView
 
+from base.methods import get_data_in_dict
 from clients.models import Client
 from emailing.models import Mail
 from emailing.services import send_email_service
@@ -61,8 +62,7 @@ class MailCreateView(LoginRequiredMixin, View):
         return TemplateResponse(template="emailing/mail_create.html", context=context, request=request)
 
     def post(self, request, mail_id, *args, **kwargs):
-        data = request.POST.dict()
-        data.pop("csrfmiddlewaretoken")
+        data = get_data_in_dict(request)
         mail = Mail.objects.get(id=mail_id)
         if "add-document" in request.path:
             mail.documents = ",".join(data.keys())

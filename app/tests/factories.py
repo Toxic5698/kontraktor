@@ -4,6 +4,7 @@ from factory import SubFactory, LazyAttribute, django
 
 from faker import Faker
 
+from base.models import *
 from clients.models import *
 from proposals.models import *
 from operators.models import Operator
@@ -61,6 +62,7 @@ class ClientFactory(django.DjangoModelFactory):
     address = LazyAttribute(lambda _: faker.address())
     email = LazyAttribute(lambda _: faker.email())
     phone_number = LazyAttribute(lambda _: faker.phone_number())
+    # operator = Operator.objects.get()
 
 
 class ProposalFactory(django.DjangoModelFactory):
@@ -68,9 +70,9 @@ class ProposalFactory(django.DjangoModelFactory):
         model = Proposal
 
     client = factory.SubFactory(ClientFactory)
-    proposal_number = LazyAttribute(lambda _: faker.bothify(text="??####"))
+    document_number = LazyAttribute(lambda _: faker.bothify(text="??####"))
     contract_type = factory.Iterator(ContractType.objects.all())
-    subject = factory.Iterator(ContractSubject.objects.all())
+    contract_subject = factory.Iterator(ContractSubject.objects.all())
     price_netto = LazyAttribute(lambda _: faker.random_digit_not_null())
     fulfillment_at = LazyAttribute(lambda _: faker.date())
     fulfillment_place = LazyAttribute(lambda _: faker.city())

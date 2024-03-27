@@ -10,14 +10,16 @@ from django_weasyprint import WeasyTemplateResponseMixin
 from django_weasyprint.views import WeasyTemplateResponse
 
 from attachments.serializers import attachments_serializer
-from contracts.models import ContractSection
+from documents.models import DocumentSection
+# from contracts.models import ContractSection
 from operators.models import Operator
 
 
 class DocumentView(DetailView):
 
     def get_queryset(self):
-        model = get_document_model(self.kwargs["type"])
+        document_type = self.kwargs['type']
+        model = apps.get_model(model_name=document_type, app_label=document_type + "s")
         queryset = model.objects.filter(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
         return queryset
 
@@ -26,45 +28,37 @@ class DocumentView(DetailView):
         return [template, ]
 
     def get_context_data(self, **kwargs):
+        document = self.get_queryset().get()
+
         context = {
             "operator": Operator.objects.get(),
         }
-        if self.kwargs["type"] == "contract":
-            contract = self.get_queryset().get()
-            context["contract"] = contract
-            context["proposal"] = contract.proposal
-            context["attachments"] = attachments_serializer(
-                contract.client.attachments.filter_contracts()) + attachments_serializer(
-                contract.client.default_attachments.filter_contracts())
-            cores = contract.contract_cores.filter(Q(subject__isnull=True) | Q(subject=contract.proposal.subject))
+        if document.client.signatures.exists() and document.signed_at:
+            context["signature"] = document.client.signatures.all().last()  # TODO: spárovat podpis k dokumentu
+        paragraphs = document.paragraphs.all().order_by("priority")
+        context["paragraphs"] = paragraphs
+        attachments = attachments_serializer(document.attachments.all()) + attachments_serializer(
+            document.default_attachments.all())
+        if len(attachments) > 0:
+            context["attachments"] = attachments
 
+        if self.kwargs["type"] == "contract":
+            context["contract"] = document
+            context["proposal"] = document.proposal
             sections = {}
-            for section in ContractSection.objects.filter(contract_cores__in=cores).distinct().order_by('priority'):
-                sections[section.name] = cores.filter(contract_section=section).values_list("text", flat=True)
+            for section in DocumentSection.objects.filter(document_paragraphs__in=paragraphs).distinct().order_by(
+                    'priority'):
+                sections[section.name] = paragraphs.filter(document_section=section).values_list("text", flat=True)
             context["sections"] = sections
 
-            if contract.client.signatures.exists() and contract.signed_at:
-                context["signature"] = contract.client.signatures.filter(contract=contract).last()
-
         if self.kwargs["type"] == "proposal":
-            proposal = self.get_queryset().get()
-            context["proposal"] = proposal
-            context["proposal_validity"] = proposal.edited_at + timedelta(days=14)
-            context["production_data"] = proposal.items.filter(production_data__isnull=False)
-            context["attachments"] = attachments_serializer(
-                proposal.client.attachments.filter_proposals()) + attachments_serializer(
-                proposal.client.default_attachments.filter_contracts())
+            context["proposal"] = document
+            context["proposal_validity"] = document.edited_at + timedelta(days=Operator.objects.get().proposal_validity)
+            context["production_data"] = document.items.filter(production_data__isnull=False)
 
         if self.kwargs["type"] == "protocol":
-            protocol = self.get_queryset().get()
-            context["protocol"] = protocol
-            context["proposal"] = protocol.contract.proposal
-            context["attachments"] = attachments_serializer(
-                protocol.client.attachments.filter_protocols()) + attachments_serializer(
-                protocol.client.default_attachments.filter_protocols())
-
-            if protocol.client.signatures.exists() and protocol.signed_at:
-                context["signature"] = protocol.client.signatures.filter(protocol=protocol).last()
+            context["protocol"] = document
+            context["proposal"] = document.contract.proposal
 
         return context
 
@@ -89,4 +83,3 @@ class PrintView(WeasyTemplateResponseMixin, DocumentView):
 
 class DownloadView(WeasyTemplateResponseMixin, DocumentView):
     pdf_filename = f'Dokument ze SAMOSETu {timezone.now().strftime("%d.%m.%Y")}.pdf'
-

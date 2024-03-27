@@ -63,6 +63,7 @@ INSTALLED_APPS = [
 
     "authentication",
     "attachments",
+    "base",
     "clients",
     "contracts",
     "emailing",

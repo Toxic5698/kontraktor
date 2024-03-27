@@ -36,7 +36,7 @@ class ReportsView(LoginRequiredMixin, View):
             "total_completed_contracts": Proposal.objects.filter(contract__signed_at__isnull=False, contract__protocols__signed_at__isnull=False).aggregate(
                 total_closed_contracts=Sum("price_netto"))["total_closed_contracts"],
             "average_protocols_on_contract": get_average_protocols_on_contract(),
-            "average_closing_time": get_average_closing_time().days,
+            "average_closing_time": get_average_closing_time(),
             "average_proposals_per_day": get_average_proposals_per_day(working_days),
             "top_users_proposals": User.objects.annotate(total_proposals=Count("proposal_created_by")).values('username', 'total_proposals'),
             "top_users_closed_contracts": User.objects.filter(contract_created_by__in=cs).annotate(num_contracts=Count('contract_created_by')).values('username', 'num_contracts'),
@@ -65,10 +65,14 @@ def get_average_closing_time():
         )
     )
     avg_days = proposals.aggregate(avg_days=Avg('days_until_signed'))['avg_days']
-    return avg_days
+    if avg_days:
+        return avg_days.days
+    return 0
 
 
 def get_average_protocols_on_contract():
     contracts = Contract.objects.filter(signed_at__isnull=False).annotate(num_protocols=Count('protocols'))
     avg_protocols = contracts.aggregate(avg_num=Avg('num_protocols'))['avg_num']
-    return avg_protocols
+    if avg_protocols:
+        return avg_protocols
+    return 0
