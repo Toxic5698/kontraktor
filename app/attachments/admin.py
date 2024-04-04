@@ -12,7 +12,7 @@ class AttachmentAdmin(admin.ModelAdmin):
 
 class DefaultAttachmentAdmin(admin.ModelAdmin):
     model = DefaultAttachment
-    fields = ("file_name", "file", "tag", "contract_subject", "contract_type")
+    fields = ("file_name", "file", "tag", "contract_subject", "contract_type", "document_type")
     list_display = ["file_name", "file", "tag"]
 
 

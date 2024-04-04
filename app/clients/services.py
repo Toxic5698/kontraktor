@@ -37,7 +37,9 @@ def create_demo_client():
         proposal=proposal,
         document_number=proposal.document_number + "C",
         client=proposal.client,
-        created_by=user
+        created_by=user,
+        contract_type=proposal.contract_type,
+        contract_subject=proposal.contract_subject,
     )
 
     # create protocols

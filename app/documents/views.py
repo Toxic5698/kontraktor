@@ -10,6 +10,7 @@ from django_weasyprint import WeasyTemplateResponseMixin
 from django_weasyprint.views import WeasyTemplateResponse
 
 from attachments.serializers import attachments_serializer
+from base.methods import get_model
 from documents.models import DocumentSection
 # from contracts.models import ContractSection
 from operators.models import Operator
@@ -19,7 +20,7 @@ class DocumentView(DetailView):
 
     def get_queryset(self):
         document_type = self.kwargs['type']
-        model = apps.get_model(model_name=document_type, app_label=document_type + "s")
+        model = get_model(model_name=document_type)
         queryset = model.objects.filter(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
         return queryset
 
@@ -37,8 +38,7 @@ class DocumentView(DetailView):
             context["signature"] = document.client.signatures.all().last()  # TODO: spárovat podpis k dokumentu
         paragraphs = document.paragraphs.all().order_by("priority")
         context["paragraphs"] = paragraphs
-        attachments = attachments_serializer(document.attachments.all()) + attachments_serializer(
-            document.default_attachments.all())
+        attachments = document.get_document_attachments()
         if len(attachments) > 0:
             context["attachments"] = attachments
 

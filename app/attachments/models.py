@@ -42,8 +42,14 @@ class Attachment(BaseAttachment):
 
     def is_intern(self):
         if self.proposals.all().exists() or self.contracts.all().exists() or self.protocols.all().exists():
-            return True
-        return False
+            return False
+        return True
+
+    def change_to_intern(self, data):
+        if data == "intern" and not self.is_intern():
+            self.proposals.clear()
+            self.contracts.clear()
+            self.protocols.clear()
 
 
 class DefaultAttachment(BaseAttachment, ContractTypeAndSubjectMixin):

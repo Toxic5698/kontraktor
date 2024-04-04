@@ -29,6 +29,8 @@ class ContractCreateView(LoginRequiredMixin, View):
             document_number=proposal.document_number,
             client=proposal.client,
             created_by=request.user,
+            contract_type=proposal.contract_type,
+            contract_subject=proposal.contract_subject,
         )
         return redirect("edit-contract", contract.id)
 

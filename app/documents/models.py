@@ -69,13 +69,13 @@ class Document(UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixin):
                 document_type=document_type,
                 default=True)
             self.paragraphs.set(paragraphs)
-        default_attachments = DefaultAttachment.objects.filter(
-            Q(Q(contract_subject__isnull=True) | Q(contract_subject=self.contract_subject),
-              Q(contract_type__isnull=True) | Q(contract_type=self.contract_type)),
-            document_type=document_type)
-        if default_attachments.exists():
-            for attachment in default_attachments:
-                self.default_attachments.add(attachment)
+        if self.default_attachments.count() == 0:
+            default_attachments = DefaultAttachment.objects.filter(
+                Q(Q(contract_subject__isnull=True) | Q(contract_subject=self.contract_subject),
+                  Q(contract_type__isnull=True) | Q(contract_type=self.contract_type)),
+                document_type=document_type)
+            if default_attachments.exists():
+                self.default_attachments.set(default_attachments)
 
     def get_name(self):
         model_dict = {"Proposal": "Nabídka", "Contract": "Smlouva", "Protocol": "Předávací protokol"}
@@ -83,3 +83,17 @@ class Document(UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixin):
         if model == "protocol":
             return f"{model} č {self.priority} ke smlouvě č. {self.contract.document_number}"
         return f"{model} č. {self.document_number}"
+
+    def get_class_id(self):
+        return f"{self.__class__.__name__}.{self.id}"
+
+    def get_document_type(self):
+        return f"{self.__class__.__name__.lower()}"
+
+    def get_document_attachments(self):
+        attachments = []
+        for attachment in self.attachments.all():
+            attachments.append(attachment)
+        for default_attachment in self.default_attachments.all():
+            attachments.append(default_attachment)
+        return attachments

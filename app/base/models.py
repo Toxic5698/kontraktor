@@ -45,9 +45,9 @@ class ContractSubject(Model):
 
 class ContractTypeAndSubjectMixin(Model):
     contract_type = ForeignKey(ContractType, related_name="%(class)ss", on_delete=SET_NULL, verbose_name="Typ smlouvy",
-                               null=True)
+                               null=True, blank=True)
     contract_subject = ForeignKey(ContractSubject, related_name="%(class)ss", on_delete=SET_NULL,
-                                  verbose_name="Předmět smlouvy", null=True)
+                                  verbose_name="Předmět smlouvy", null=True, blank=True)
 
     class Meta:
         abstract = True

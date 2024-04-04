@@ -10,7 +10,7 @@ from proposals.models import Proposal, Item
 
 
 class Contract(Document):
-    proposal = OneToOneField(Proposal, verbose_name="Nabídka", on_delete=CASCADE, null=True, related_name="sister")
+    proposal = OneToOneField(Proposal, verbose_name="Nabídka", on_delete=CASCADE, null=True)
 
     class Meta:
         verbose_name = "Contract"
