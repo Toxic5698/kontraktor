@@ -12,12 +12,11 @@ from base.methods import get_data_in_dict
 from base.models import ContractType, ContractSubject
 from clients.forms import ClientForm
 from clients.models import Client
-from operators.models import Operator
 from proposals.enums import UnitOptions
+from proposals.filters import ProposalFilter
 from proposals.forms import ProposalUploadForm, ProposalEditForm
 from proposals.models import Proposal, UploadedProposal, Item, check_payments, DefaultItem
 from proposals.peli_parser import parse_items
-from proposals.filters import ProposalFilter
 from proposals.tables import ProposalTable
 
 
@@ -80,7 +79,7 @@ class ProposalEditView(LoginRequiredMixin, View):
 
             if Proposal.objects.filter(document_number=data["document_number"]).count() > 0:
                 messages.warning(request, f"Nabídka s číslem {data['document_number']} již existuje!")
-                return redirect(request.META['HTTP_REFERER'], status=302)
+                return redirect(request.META["HTTP_REFERER"], status=302)
             proposal = Proposal.objects.create(
                 client=client,
                 document_number=data["document_number"],
@@ -90,8 +89,9 @@ class ProposalEditView(LoginRequiredMixin, View):
                 fulfillment_place=data["fulfillment_place"],
                 created_by=request.user,
             )
-            default_items = DefaultItem.objects.filter(contract_subject=proposal.contract_subject,
-                                                       contract_type=proposal.contract_type)
+            default_items = DefaultItem.objects.filter(
+                contract_subject=proposal.contract_subject, contract_type=proposal.contract_type
+            )
             if default_items.exists():
                 for item in default_items:
                     Item.objects.create(
@@ -116,12 +116,12 @@ class ProposalEditView(LoginRequiredMixin, View):
             else:
                 messages.warning(request, parse_result)
 
-        return redirect('edit-proposal', proposal.id)
+        return redirect("edit-proposal", proposal.id)
 
 
 class ProposalDeleteView(LoginRequiredMixin, DeleteView):
     model = Proposal
-    template_name = 'proposals/confirm_delete_proposal.html'
+    template_name = "proposals/confirm_delete_proposal.html"
     success_url = reverse_lazy("proposals")
 
 
@@ -141,10 +141,7 @@ class ProposalItemsView(LoginRequiredMixin, View):
         if "create" in request.POST:
             data.pop("create")
             proposal = Proposal.objects.get(pk=pk)
-            Item.objects.create(
-                proposal=proposal,
-                **data
-            )
+            Item.objects.create(proposal=proposal, **data)
         else:
             item = Item.objects.get(pk=pk)
             proposal = item.proposal
@@ -154,7 +151,7 @@ class ProposalItemsView(LoginRequiredMixin, View):
                 data.pop("save")
                 item.save(**data)
 
-        return redirect('edit-items', proposal.id)
+        return redirect("edit-items", proposal.id)
 
 
 class PaymentsEditView(LoginRequiredMixin, View):
@@ -169,4 +166,4 @@ class PaymentsEditView(LoginRequiredMixin, View):
                 messages.warning(request, "U plateb musí být nastavena splatnost.")
         if not check_payments(proposal):
             messages.warning(request, "Souhrn částí plateb se nerovná celku.")
-        return redirect(request.META.get('HTTP_REFERER'))
+        return redirect(request.META.get("HTTP_REFERER"))

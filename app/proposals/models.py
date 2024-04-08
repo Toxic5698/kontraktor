@@ -1,9 +1,18 @@
-from django.contrib.auth.models import User
-from django.db.models import Model, ForeignKey, CharField, \
-    IntegerField, DateField, FileField, DecimalField, CASCADE, BooleanField, Sum, TextField
+from django.db.models import (
+    Model,
+    ForeignKey,
+    CharField,
+    IntegerField,
+    DateField,
+    FileField,
+    DecimalField,
+    CASCADE,
+    BooleanField,
+    Sum,
+    TextField,
+)
 
 from base.models import DateBaseModel, UserBaseModel, ContractTypeAndSubjectMixin
-from clients.models import Client
 from decimal import Decimal
 
 from documents.models import Document
@@ -42,15 +51,16 @@ def uploaded_proposal_directory_path(instance, file):
 
 class UploadedProposal(DateBaseModel, UserBaseModel):
     priority = CharField(max_length=3, null=True, blank=True, verbose_name="pořadí")
-    file = FileField(upload_to=uploaded_proposal_directory_path, null=True, blank=True,
-                     verbose_name="Podkladová nabídka")
+    file = FileField(
+        upload_to=uploaded_proposal_directory_path, null=True, blank=True, verbose_name="Podkladová nabídka"
+    )
     file_name = CharField(max_length=200, null=True, blank=True, verbose_name="název souboru")
     proposal = ForeignKey(Proposal, on_delete=CASCADE, blank=True, verbose_name="nabídka", related_name="uploaded")
 
     class Meta:
         verbose_name = "UploadedProposal"
         verbose_name_plural = "UploadedProposals"
-        ordering = ['created_at']
+        ordering = ["created_at"]
 
     def __str__(self):
         return self.file_name
@@ -59,12 +69,15 @@ class UploadedProposal(DateBaseModel, UserBaseModel):
 class AbstractItem(UserBaseModel, DateBaseModel):
     title = CharField(max_length=200, blank=True, null=True, verbose_name="název")
     description = CharField(max_length=1000, blank=True, null=True, verbose_name="popis")
-    production_price = DecimalField(decimal_places=2, max_digits=10, verbose_name="nákladová cena za jednotku",
-                                    null=True, blank=True)
-    price_per_unit = DecimalField(decimal_places=2, max_digits=10, verbose_name="cena ze jednotku", null=True,
-                                  blank=True)
-    unit = CharField(max_length=5, verbose_name="jednotka", null=True, blank=True,
-                     choices=UnitOptions.choices, default="ks")
+    production_price = DecimalField(
+        decimal_places=2, max_digits=10, verbose_name="nákladová cena za jednotku", null=True, blank=True
+    )
+    price_per_unit = DecimalField(
+        decimal_places=2, max_digits=10, verbose_name="cena ze jednotku", null=True, blank=True
+    )
+    unit = CharField(
+        max_length=5, verbose_name="jednotka", null=True, blank=True, choices=UnitOptions.choices, default="ks"
+    )
 
     class Meta:
         abstract = True
@@ -82,13 +95,16 @@ class Item(AbstractItem):
     production_data = TextField(blank=True, null=True, verbose_name="výrobní data")
     from_upload = BooleanField(default=False, verbose_name="nahraná položka")
 
-    proposal = ForeignKey(Proposal, on_delete=CASCADE, blank=True, null=True, verbose_name="nabídka",
-                          related_name="items")
+    proposal = ForeignKey(
+        Proposal, on_delete=CASCADE, blank=True, null=True, verbose_name="nabídka", related_name="items"
+    )
 
     class Meta:
         verbose_name = "Item"
         verbose_name_plural = "Items"
-        ordering = ['priority', ]
+        ordering = [
+            "priority",
+        ]
 
     def __str__(self):
         return f"{self.priority} - {self.title}"
@@ -114,8 +130,7 @@ class Item(AbstractItem):
         if self.production_price and self.price_per_unit:
             self.revenue = self.get_revenue()
         if self.price_per_unit and self.quantity:
-            self.total_price = (int(self.price_per_unit) * int(self.quantity)) * (
-                    (100 - int(self.sale_discount)) / 100)
+            self.total_price = (int(self.price_per_unit) * int(self.quantity)) * ((100 - int(self.sale_discount)) / 100)
         else:
             self.total_price = self.price_per_unit
         super(Item, self).save()
@@ -123,12 +138,12 @@ class Item(AbstractItem):
 
     def get_priority(self):
         if self.proposal.items.all():
-            last = self.proposal.items.all().order_by('priority').last().priority
+            last = self.proposal.items.all().order_by("priority").last().priority
             return last + 1
         return 1
 
     def price_format(self, data=None):
-        if data is None or isinstance(data, (Decimal, )):
+        if data is None or isinstance(data, (Decimal,)):
             return data
         if data == "":
             data = 0
@@ -150,8 +165,7 @@ class Item(AbstractItem):
         price_per_unit = int(self.price_per_unit)
         quantity = int(self.quantity)
         discount = int(self.sale_discount)
-        revenue = ((price_per_unit * quantity) * ((100 - discount) / 100)) - (
-                production_price * quantity)
+        revenue = ((price_per_unit * quantity) * ((100 - discount) / 100)) - (production_price * quantity)
         return Decimal(revenue)
 
 
@@ -176,7 +190,9 @@ class Payment(Model):
     class Meta:
         verbose_name = "Payment"
         verbose_name_plural = "Payments"
-        ordering = ["due", ]
+        ordering = [
+            "due",
+        ]
 
     def __str__(self):
         return f"{self.get_due_display()} - {self.amount}"
@@ -194,16 +210,9 @@ class Payment(Model):
 
 def check_payments(proposal):
     if not proposal.payments.all():
-        Payment.objects.create(
-            proposal=proposal,
-            amount=proposal.price_brutto,
-            part=100,
-            due="10"
-        )
-        Payment.objects.create(
-            proposal=proposal, part=0, amount=Decimal(0))
-        Payment.objects.create(
-            proposal=proposal, part=0, amount=Decimal(0))
+        Payment.objects.create(proposal=proposal, amount=proposal.price_brutto, part=100, due="10")
+        Payment.objects.create(proposal=proposal, part=0, amount=Decimal(0))
+        Payment.objects.create(proposal=proposal, part=0, amount=Decimal(0))
     else:
         if proposal.payments.all().aggregate(Sum("part"))["part__sum"] != 100:
             return False

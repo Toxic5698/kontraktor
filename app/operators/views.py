@@ -17,15 +17,11 @@ class WelcomePageView(View):
         operator = Operator.objects.filter()
         if not operator.exists():
             operator = initial_creation()
-            messages.info(request,
-                          f"Proběhlo prvotní nastavení, zkontrolujte údaje v adminu.")
+            messages.info(request, f"Proběhlo prvotní nastavení, zkontrolujte údaje v adminu.")
         elif operator.count() > 1:
-            messages.warning(request,
-                             f"Je nastaveno více operátorů, zkontrolujte operátora v adminu!")
+            messages.warning(request, f"Je nastaveno více operátorů, zkontrolujte operátora v adminu!")
             return redirect("admin/login")
-        context = {
-            "operator": operator.get()
-        }
+        context = {"operator": operator.get()}
         return TemplateResponse(template="operators/welcome_page.html", request=request, context=context)
 
     def post(self, request, *args, **kwargs):
@@ -35,29 +31,20 @@ class WelcomePageView(View):
             if client.count() == 1:
                 return redirect("document-to-sign", data)
             else:
-                messages.warning(
-                    request, f'Kód není správný, překontrolujte jej nebo kontaktujte svého prodejce.'
-                )
+                messages.warning(request, f"Kód není správný, překontrolujte jej nebo kontaktujte svého prodejce.")
         elif "@" in data:
             client = Client.objects.filter(email=data)
             if client.count() == 1:
                 client = client.get()
                 messages.warning(
-                    request, f'Odesílám e-mail s kódem na zadanou adresu, zkontrolujte svou e-mailovou schránku.'
+                    request, f"Odesílám e-mail s kódem na zadanou adresu, zkontrolujte svou e-mailovou schránku."
                 )
-                link = "http://" + request.META['HTTP_HOST'] + "/clients/" + str(client.sign_code)
-                send_email_service(
-                    client=client,
-                    link=link
-                )
+                link = "http://" + request.META["HTTP_HOST"] + "/clients/" + str(client.sign_code)
+                send_email_service(client=client, link=link)
             else:
-                messages.warning(
-                    request, f'Klient s tímto e-mailem nenalezen.'
-                )
+                messages.warning(request, f"Klient s tímto e-mailem nenalezen.")
         else:
-            messages.warning(
-                request, f'Zadána nesprávná hodnota.'
-            )
+            messages.warning(request, f"Zadána nesprávná hodnota.")
         return redirect("welcome-page")
 
     def check_uuid(self, data):

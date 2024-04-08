@@ -16,7 +16,8 @@ def parse_items(file, proposal):
         uploaded_proposal_text += text
 
     first_split = uploaded_proposal_text.split(
-        "-------------------------------------------------------------------------------------------")
+        "-------------------------------------------------------------------------------------------"
+    )
     header = first_split.pop(0)
     footer = first_split.pop(-1)
 
@@ -37,7 +38,18 @@ def parse_items(file, proposal):
         matches = re.findall(pattern, part)
 
         if matches:
-            priority, description, quantity, price_without_sale, price_with_sale, production_date, title, sale, number, production_data = matches[0]
+            (
+                priority,
+                description,
+                quantity,
+                price_without_sale,
+                price_with_sale,
+                production_date,
+                title,
+                sale,
+                number,
+                production_data,
+            ) = matches[0]
             item, created = Item.objects.update_or_create(
                 priority=int(priority),
                 proposal=proposal,
@@ -50,8 +62,8 @@ def parse_items(file, proposal):
                     "quantity": int(quantity.split(".")[0]),
                     "from_upload": True,
                     "production_data": production_data,
-                    "production_date": datetime.strptime(production_date.split("/")[2], '%d.%m.%Y').date()
-                }
+                    "production_date": datetime.strptime(production_date.split("/")[2], "%d.%m.%Y").date(),
+                },
             )
 
         else:

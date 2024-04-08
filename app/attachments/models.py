@@ -1,9 +1,8 @@
-from django.contrib.auth.models import User
-from django.db.models import Model, CharField, FileField, ForeignKey, SET_NULL, ManyToManyField
+from django.db.models import CharField, FileField, ForeignKey, SET_NULL, ManyToManyField
 
+from attachments.managers import AttachmentManager
 from base.models import UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixin
 from clients.models import Client
-from attachments.managers import AttachmentManager
 from documents.enums import DocumentTypeOptions
 
 
@@ -24,8 +23,9 @@ class BaseAttachment(UserBaseModel, DateBaseModel):
 
 
 class Attachment(BaseAttachment):
-    client = ForeignKey(Client, blank=True, null=True, on_delete=SET_NULL, related_name="attachments",
-                        verbose_name="Klient")
+    client = ForeignKey(
+        Client, blank=True, null=True, on_delete=SET_NULL, related_name="attachments", verbose_name="Klient"
+    )
     file = FileField(upload_to=attachment_directory_path, blank=True, null=True, verbose_name="Soubor")
 
     objects = AttachmentManager()
@@ -55,8 +55,14 @@ class Attachment(BaseAttachment):
 class DefaultAttachment(BaseAttachment, ContractTypeAndSubjectMixin):
     client = ManyToManyField(Client, related_name="default_attachments", blank=True, verbose_name="Klient")
     file = FileField(upload_to=default_attachment_directory_path, blank=True, null=True, verbose_name="Soubor")
-    document_type = CharField(max_length=255, blank=False, null=False, verbose_name="Typ dokumentu",
-                              choices=DocumentTypeOptions.choices, default="contract")
+    document_type = CharField(
+        max_length=255,
+        blank=False,
+        null=False,
+        verbose_name="Typ dokumentu",
+        choices=DocumentTypeOptions.choices,
+        default="contract",
+    )
 
     objects = AttachmentManager()
 

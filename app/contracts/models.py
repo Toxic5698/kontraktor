@@ -1,11 +1,7 @@
-from django.contrib.auth.models import User
-from django.db.models import Model, ForeignKey, CharField, TextField, SET_NULL, \
-    CASCADE, OneToOneField, IntegerField
+from django.db.models import ForeignKey, CharField, TextField, SET_NULL, CASCADE, OneToOneField, IntegerField
 
-from attachments.models import Attachment
 from base.models import UserBaseModel, DateBaseModel
-from clients.models import Client, Signature
-from documents.models import Document, DocumentParagraph
+from documents.models import Document
 from proposals.models import Proposal, Item
 
 

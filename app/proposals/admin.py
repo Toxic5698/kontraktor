@@ -16,7 +16,10 @@ class UploadedProposalInline(admin.TabularInline):
 
 class ProposalAdmin(admin.ModelAdmin):
     model = Proposal
-    fields = ("document_number", "price_netto", )
+    fields = (
+        "document_number",
+        "price_netto",
+    )
     inlines = [UploadedProposalInline, ItemInline]
 
 

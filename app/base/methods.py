@@ -5,7 +5,7 @@ from clients.models import Client
 
 def get_data_in_dict(request):
     data = request.POST.dict()
-    data.pop('csrfmiddlewaretoken')
+    data.pop("csrfmiddlewaretoken")
     return data
 
 

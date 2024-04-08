@@ -1,4 +1,3 @@
-from django.apps.registry import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -9,30 +8,25 @@ from django.views.generic import View, DeleteView
 from attachments.models import Attachment
 from base.methods import get_data_in_dict, get_model, get_documents_for_client
 from clients.models import Client
-from contracts.models import Protocol, Contract
-from proposals.models import Proposal
 
 
 class AttachmentManageView(LoginRequiredMixin, View):
 
     def get(self, request, pk, *args, **kwargs):
         client = Client.objects.prefetch_related("protocols").get(pk=pk)
-        context = {"client": client,
-                   "protocols": client.protocols.all(),
-                   }
+        context = {
+            "client": client,
+            "protocols": client.protocols.all(),
+        }
         return TemplateResponse(request=request, template="attachments/manage_attachments.html", context=context)
 
     def post(self, request, pk, *args, **kwargs):
         client = Client.objects.get(pk=pk)
         if len(request.FILES) > 0:
-            files = request.FILES.getlist('file')
+            files = request.FILES.getlist("file")
             for file in files:
-                Attachment.objects.create(
-                    client=client,
-                    file=file,
-                    file_name=file.name
-                )
-        return redirect('manage-attachments', client.id)
+                Attachment.objects.create(client=client, file=file, file_name=file.name)
+        return redirect("manage-attachments", client.id)
 
 
 class AttachmentDeleteView(LoginRequiredMixin, DeleteView):
@@ -47,8 +41,10 @@ class UploadedAttachmentView(LoginRequiredMixin, View):
 
     def get(self, request, pk, *args, **kwargs):
         client, documents = get_documents_for_client(client_id=pk)
-        context = {"client": client,
-                   "documents": documents, }
+        context = {
+            "client": client,
+            "documents": documents,
+        }
         return TemplateResponse(request=request, template="attachments/uploaded_attachments.html", context=context)
 
     def post(self, request, pk, *args, **kwargs):
@@ -78,8 +74,9 @@ class DefaultAttachmentView(LoginRequiredMixin, View):
         for document in documents:
             for attachment in document.default_attachments.all():
                 default_attachments.append(attachment)
-        context = {"client": client,
-                   "documents": documents,
-                   "default_attachments": default_attachments,
-                   }
+        context = {
+            "client": client,
+            "documents": documents,
+            "default_attachments": default_attachments,
+        }
         return TemplateResponse(request=request, template="attachments/default_attachments.html", context=context)

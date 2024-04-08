@@ -2,31 +2,29 @@ from datetime import timedelta
 
 from django.apps import apps
 from django.conf import settings
-from django.db.models import Q
 from django.utils import timezone
 from django.views.generic import DetailView
-
 from django_weasyprint import WeasyTemplateResponseMixin
 from django_weasyprint.views import WeasyTemplateResponse
 
-from attachments.serializers import attachments_serializer
 from base.methods import get_model
 from documents.models import DocumentSection
-# from contracts.models import ContractSection
 from operators.models import Operator
 
 
 class DocumentView(DetailView):
 
     def get_queryset(self):
-        document_type = self.kwargs['type']
+        document_type = self.kwargs["type"]
         model = get_model(model_name=document_type)
-        queryset = model.objects.filter(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
+        queryset = model.objects.filter(pk=self.kwargs["pk"], client__sign_code=self.kwargs["sign_code"])
         return queryset
 
     def get_template_names(self):
         template = f"{self.kwargs['type'] + 's'}/{self.kwargs['type']}_mustr.html"
-        return [template, ]
+        return [
+            template,
+        ]
 
     def get_context_data(self, **kwargs):
         document = self.get_queryset().get()
@@ -46,8 +44,9 @@ class DocumentView(DetailView):
             context["contract"] = document
             context["proposal"] = document.proposal
             sections = {}
-            for section in DocumentSection.objects.filter(document_paragraphs__in=paragraphs).distinct().order_by(
-                    'priority'):
+            for section in (
+                DocumentSection.objects.filter(document_paragraphs__in=paragraphs).distinct().order_by("priority")
+            ):
                 sections[section.name] = paragraphs.filter(document_section=section).values_list("text", flat=True)
             context["sections"] = sections
 

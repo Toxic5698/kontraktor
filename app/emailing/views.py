@@ -18,7 +18,7 @@ class ClientMailManageView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         context = {
             "client": Client.objects.get(pk=pk),
-            "mails": Mail.objects.filter(client_id=pk).order_by("-created_at")
+            "mails": Mail.objects.filter(client_id=pk).order_by("-created_at"),
         }
         return TemplateResponse(template="emailing/client_mail_list.html", context=context, request=request)
 
@@ -29,10 +29,8 @@ class MailCreateView(LoginRequiredMixin, View):
         if client_id:
             client = Client.objects.prefetch_related("proposals", "contracts", "protocols").get(pk=client_id)
             mail = Mail.objects.create(
-                client=client,
-                subject="Nové dokumenty ve službě SAMOSET",
-                receiver=client.email,
-                created_by=request.user)
+                client=client, subject="Nové dokumenty ve službě SAMOSET", receiver=client.email, created_by=request.user
+            )
             return redirect("edit-mail", mail.id)
 
         mail = Mail.objects.get(pk=mail_id)
@@ -84,18 +82,15 @@ class MailPreviewView(LoginRequiredMixin, View):
         if mail.documents:
             for doc in list(mail.documents.split(",")):
                 if "n" in doc:
-                    chosen_documents += [doc.get_name() for doc in
-                                         mail.client.proposals.filter(id=int(doc.strip("n")))]
+                    chosen_documents += [doc.get_name() for doc in mail.client.proposals.filter(id=int(doc.strip("n")))]
                 if "c" in doc:
-                    chosen_documents += [doc.get_name() for doc in
-                                         mail.client.contracts.filter(id=int(doc.strip("c")))]
+                    chosen_documents += [doc.get_name() for doc in mail.client.contracts.filter(id=int(doc.strip("c")))]
                 if "p" in doc:
-                    chosen_documents += [doc.get_name() for
-                                         doc in mail.client.protocols.filter(id=int(doc.strip("p")))]
+                    chosen_documents += [doc.get_name() for doc in mail.client.protocols.filter(id=int(doc.strip("p")))]
         context = {
             "mail": mail,
             "chosen_documents": chosen_documents,
-            "link": "http://" + request.META['HTTP_HOST'] + "/clients/" + str(mail.client.sign_code),
+            "link": "http://" + request.META["HTTP_HOST"] + "/clients/" + str(mail.client.sign_code),
             "operator": Operator.objects.get(),
         }
         if "send-mail" in request.path:
@@ -105,8 +100,9 @@ class MailPreviewView(LoginRequiredMixin, View):
             else:
                 messages.warning(request, f"E-mail pro {mail.receiver} se nepodařilo odeslat.")
             return redirect("client-mail-list", mail.client.id)
-        return TemplateResponse(template="emailing/message_templates/new_document.html",
-                                context=context, request=request)
+        return TemplateResponse(
+            template="emailing/message_templates/new_document.html", context=context, request=request
+        )
 
 
 class MailDeleteView(LoginRequiredMixin, DeleteView):

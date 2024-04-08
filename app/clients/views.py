@@ -67,7 +67,7 @@ class SigningDocument(View):
 
     def get(self, request, *args, **kwargs):
         model = get_model(self.kwargs["type"])
-        document = model.objects.get(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
+        document = model.objects.get(pk=self.kwargs["pk"], client__sign_code=self.kwargs["sign_code"])
         if document.signed_at:
             return redirect("document-to-sign", document.client.sign_code)
         context = {"document": document}
@@ -75,7 +75,7 @@ class SigningDocument(View):
 
     def post(self, request, *args, **kwargs):
         model = get_model(self.kwargs["type"])
-        document = model.objects.get(pk=self.kwargs['pk'], client__sign_code=self.kwargs['sign_code'])
+        document = model.objects.get(pk=self.kwargs["pk"], client__sign_code=self.kwargs["sign_code"])
         file = request.FILES.get("file")
         ip, is_routable = get_client_ip(request)
         Signature.objects.create(
@@ -88,7 +88,7 @@ class SigningDocument(View):
         document.signed_at = timezone.now()
         document.save()
 
-        link = "http://" + request.META['HTTP_HOST'] + "/clients/" + str(document.client.sign_code)
+        link = "http://" + request.META["HTTP_HOST"] + "/clients/" + str(document.client.sign_code)
         send_email_service(document=document, link=link)
 
         return HttpResponse("OK", status=200)

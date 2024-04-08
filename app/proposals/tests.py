@@ -2,7 +2,7 @@ import unittest
 from decimal import Decimal
 
 from tests.factories import ProposalFactory
-from .models import Proposal, Payment, check_payments
+from .models import Proposal, check_payments
 
 
 class CheckPaymentsTests(unittest.TestCase):

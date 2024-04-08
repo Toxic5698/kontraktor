@@ -16,12 +16,9 @@ class Operator(Model):
     # pdf_style_file_name
     # pdf_font
 
-
     class Meta:
         verbose_name = "Operator"
         verbose_name_plural = "Operators"
 
     def __str__(self):
         return self.name
-
-

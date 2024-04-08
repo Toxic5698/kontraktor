@@ -1,13 +1,11 @@
 import factory
-from django.contrib.auth.models import AnonymousUser
-from factory import SubFactory, LazyAttribute, django
-
+from factory import LazyAttribute, django
 from faker import Faker
 
 from base.models import *
-from clients.models import *
-from proposals.models import *
 from operators.models import Operator
+from proposals.models import *
+from clients.models import Client
 
 faker = Faker(["cs_CZ"])
 
@@ -20,6 +18,7 @@ class UserFactory(django.DjangoModelFactory):
     password = LazyAttribute(lambda _: faker.password())
     is_staff = True
     is_superuser = True
+
 
 class OperatorFactory(django.DjangoModelFactory):
     class Meta:

@@ -20,7 +20,7 @@ def send_email_service(context=None, document=None, link=None, client=None):
             client=document.client,
             subject=f"Podepsaný dokument ze služby SAMOSET",
             receiver=document.client.email,
-            )
+        )
         context = {
             "operator": Operator.objects.get(),
             "document_name": document.get_name(),
@@ -42,12 +42,13 @@ def send_email_service(context=None, document=None, link=None, client=None):
         message = render_to_string(template_name="emailing/message_templates/resend.html", context=context)
 
     try:
-        send_mail(from_email=settings.EMAIL_HOST_USER,
-                  recipient_list=mail.receiver.split(","),
-                  subject=mail.subject,
-                  message=strip_tags(message),
-                  html_message=message
-                  )
+        send_mail(
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=mail.receiver.split(","),
+            subject=mail.subject,
+            message=strip_tags(message),
+            html_message=message,
+        )
     except:
         sentry_sdk.capture_message(f"E-mail sending was unsuccessfully {mail}")
         mail.status = "nepodařilo se odeslat"

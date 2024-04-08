@@ -48,16 +48,11 @@ def create_demo_client():
         contract=contract,
         client=proposal.client,
         note=f"{timezone.now().strftime('%d. %m. %Y %H:%M')} - předáno vše bez výhrad, zákazník spokojen a pochválil práci",
-        created_by=user
+        created_by=user,
     )
     for item in proposal.items.all():
         ProtocolItem.objects.create(
-            protocol=protocol,
-            item=item,
-            description="",
-            note="bez vad",
-            status="yes",
-            created_by=user
+            protocol=protocol, item=item, description="", note="bez vad", status="yes", created_by=user
         )
 
     return proposal.client.sign_code

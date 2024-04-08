@@ -5,20 +5,20 @@ from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import UpdateView, DeleteView
+from django.views.generic import DeleteView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from attachments.forms import AttachmentUploadForm
 from base.methods import get_data_in_dict
 from clients.models import Client
-from operators.models import Operator
-from proposals.forms import ProposalEditForm
-from proposals.models import Proposal, Item
+from contracts.filters import ContractFilter
 from contracts.forms import ContractForm
 from contracts.models import Contract, Protocol, ProtocolItem
 from contracts.tables import ContractTable
-from contracts.filters import ContractFilter
+from operators.models import Operator
+from proposals.forms import ProposalEditForm
+from proposals.models import Proposal, Item
 
 
 class ContractCreateView(LoginRequiredMixin, View):
@@ -47,7 +47,7 @@ class ContractUpdateView(LoginRequiredMixin, View):
             "proposal": proposal,
             "contract_form": contract_form,
             "proposal_form": proposal_form,
-            "operator": Operator.objects.get()
+            "operator": Operator.objects.get(),
         }
         return TemplateResponse(request=request, template="contracts/edit_contract.html", context=context)
 
@@ -161,14 +161,13 @@ class ProtocolCreateView(LoginRequiredMixin, View):
 
     def post(self, request, pk, *args, **kwargs):
         data = get_data_in_dict(request)
-        protocol_note = data.pop('protocol_note')
-        contract_id = data.pop('contract_id')
+        protocol_note = data.pop("protocol_note")
+        contract_id = data.pop("contract_id")
         protocol = Protocol.objects.create(
             contract_id=contract_id,
             client=Client.objects.get(pk=pk),
             created_by=request.user,
-            note=f"{timezone.now().strftime('%d. %m. %Y %H:%M')} - {protocol_note}"
-
+            note=f"{timezone.now().strftime('%d. %m. %Y %H:%M')} - {protocol_note}",
         )
 
         reference_date = timezone.now().date()
@@ -191,10 +190,11 @@ class ProtocolCreateView(LoginRequiredMixin, View):
                 created_at=reference_date,
                 status=value[1],
                 note=notes.get(key),
-                description=descs.get(key)
+                description=descs.get(key),
             )
         messages.success(request, "Protokol uložen.")
         return redirect("manage-attachments", protocol.contract.client.id)
+
 
 class ProtocolEditView(LoginRequiredMixin, View):
 
@@ -205,7 +205,7 @@ class ProtocolEditView(LoginRequiredMixin, View):
         for item in items:
             item["title"] = item.pop("item__title")
         context = {
-            "protocol" : protocol,
+            "protocol": protocol,
             "items": items,
             "client": protocol.contract.client,
             "form": form,
@@ -215,8 +215,8 @@ class ProtocolEditView(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
         protocol = Protocol.objects.get(pk=pk)
         data = get_data_in_dict(request)
-        protocol_note = data.pop('protocol_note')
-        contract_id = data.pop('contract_id')
+        protocol_note = data.pop("protocol_note")
+        contract_id = data.pop("contract_id")
         protocol.note = f"{timezone.now().strftime('%d. %m. %Y %H:%M')} - {protocol_note}"
         protocol.save()
 
@@ -236,13 +236,12 @@ class ProtocolEditView(LoginRequiredMixin, View):
             protocol_item.status = value
             protocol_item.note = notes.get(pk)
             protocol_item.description = descs.get(pk)
-            protocol_item.edited_by=request.user
-            protocol_item.edited_at=timezone.now().date()
+            protocol_item.edited_by = request.user
+            protocol_item.edited_at = timezone.now().date()
             protocol_item.save()
 
         messages.success(request, "Protokol uložen.")
         return redirect("manage-attachments", protocol.contract.client.id)
-
 
 
 class ProtocolItemListView(View):
