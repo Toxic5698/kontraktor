@@ -23,8 +23,11 @@ class MultipleFileField(forms.FileField):
 
 class AttachmentUploadForm(forms.ModelForm):
     file = MultipleFileField(required=True, label="Vyberte soubor")
-    tag = forms.FileField(required=False, label="Označení souboru",
-                          widget=forms.TextInput(attrs={"placeholder": "např. Zaměření ze dne..."}))
+    tag = forms.FileField(
+        required=False,
+        label="Označení souboru",
+        widget=forms.TextInput(attrs={"placeholder": "např. Zaměření ze dne..."}),
+    )
 
     class Meta:
         model = Attachment

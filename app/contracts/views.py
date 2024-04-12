@@ -5,20 +5,20 @@ from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import UpdateView, DeleteView
+from django.views.generic import DeleteView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from attachments.forms import AttachmentUploadForm
 from base.methods import get_data_in_dict
 from clients.models import Client
+from contracts.filters import ContractFilter
+from contracts.forms import ContractForm
+from contracts.models import Contract, Protocol, ProtocolItem
+from contracts.tables import ContractTable
 from operators.models import Operator
 from proposals.forms import ProposalEditForm
 from proposals.models import Proposal, Item
-from contracts.forms import ContractForm
-from contracts.models import Contract, ContractCore, Protocol, ProtocolItem
-from contracts.tables import ContractTable
-from contracts.filters import ContractFilter
 
 
 class ContractCreateView(LoginRequiredMixin, View):
@@ -26,9 +26,11 @@ class ContractCreateView(LoginRequiredMixin, View):
         proposal = Proposal.objects.get(id=proposal_id)
         contract = Contract.objects.create(
             proposal=proposal,
-            contract_number=proposal.proposal_number,
+            document_number=proposal.document_number,
             client=proposal.client,
             created_by=request.user,
+            contract_type=proposal.contract_type,
+            contract_subject=proposal.contract_subject,
         )
         return redirect("edit-contract", contract.id)
 
@@ -45,7 +47,7 @@ class ContractUpdateView(LoginRequiredMixin, View):
             "proposal": proposal,
             "contract_form": contract_form,
             "proposal_form": proposal_form,
-            "operator": Operator.objects.get()
+            "operator": Operator.objects.get(),
         }
         return TemplateResponse(request=request, template="contracts/edit_contract.html", context=context)
 
@@ -83,65 +85,65 @@ class ContractsTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     ordering = "-id"
 
 
-class ContractCoresEditView(LoginRequiredMixin, View):
-
-    def get(self, request, pk, *args, **kwargs):
-        contract = Contract.objects.get(id=pk)
-        context = {
-            "contract": contract,
-            "cores": contract.contract_cores.all().order_by("contract_section__priority", "priority"),
-            "sections": contract.proposal.contract_type.contract_sections.all(),
-        }
-        return TemplateResponse(template="contracts/edit_cores.html", request=request, context=context)
-
-    def post(self, request, pk, *args, **kwargs):
-        data = request.POST.dict()
-        data.pop("csrfmiddlewaretoken")
-        contract = Contract.objects.get(id=pk)
-        if "save_changes" in data.keys():
-            data.pop("save_changes")
-            for id, text in data.items():
-                if id.isnumeric():
-                    old_core = ContractCore.objects.get(id=id)
-                    if old_core.editable and old_core.text != text.strip("\r\n "):
-                        # same in database
-                        match = ContractCore.objects.filter(text=text.strip("\r\n "))  # redis?
-                        if match.count() == 1:
-                            contract.contract_cores.add(match.get())
-                            contract.contract_cores.remove(old_core)
-                        elif match.count() > 1:
-                            messages.warning(request, "Nalezeno více shodných ustanovení, kontaktujte správce systému.")
-                        else:
-                            # make new core
-                            new_core = ContractCore.objects.create(
-                                text=text.strip("\r\n "),
-                                contract_section=old_core.contract_section,
-                                priority=old_core.priority,
-                                essential=old_core.essential,
-                                editable=old_core.editable,
-                                parent_id=old_core.id,
-                                default=False,
-                            )
-                            if old_core.contract_type.all().exists():
-                                new_core.contract_type.add(old_core.contract_type.all())  # how to add in create method?
-                            contract.contract_cores.add(new_core)
-                            contract.contract_cores.remove(old_core)
-        elif "save_new" in data.keys():
-            data.pop("save_new")
-            new_core = ContractCore.objects.create(
-                text=data.get("text").strip("\r\n "),
-                contract_section_id=data.get("section"),
-                priority=int(data.get("priority")),
-                essential=False,
-                editable=True,
-                default=False,
-            )
-            contract.contract_cores.add(new_core)
-        elif "remove_core" in data.keys():
-            core = ContractCore.objects.get(id=data.get("remove_core"))
-            contract.contract_cores.remove(core)
-
-        return redirect('edit-cores', contract.id)
+# class ContractCoresEditView(LoginRequiredMixin, View):
+#
+#     def get(self, request, pk, *args, **kwargs):
+#         contract = Contract.objects.get(id=pk)
+#         context = {
+#             "contract": contract,
+#             "cores": contract.contract_cores.all().order_by("contract_section__priority", "priority"),
+#             "sections": contract.proposal.contract_type.contract_sections.all(),
+#         }
+#         return TemplateResponse(template="contracts/edit_cores.html", request=request, context=context)
+#
+#     def post(self, request, pk, *args, **kwargs):
+#         data = request.POST.dict()
+#         data.pop("csrfmiddlewaretoken")
+#         contract = Contract.objects.get(id=pk)
+#         if "save_changes" in data.keys():
+#             data.pop("save_changes")
+#             for id, text in data.items():
+#                 if id.isnumeric():
+#                     old_core = ContractCore.objects.get(id=id)
+#                     if old_core.editable and old_core.text != text.strip("\r\n "):
+#                         # same in database
+#                         match = ContractCore.objects.filter(text=text.strip("\r\n "))  # redis?
+#                         if match.count() == 1:
+#                             contract.contract_cores.add(match.get())
+#                             contract.contract_cores.remove(old_core)
+#                         elif match.count() > 1:
+#                             messages.warning(request, "Nalezeno více shodných ustanovení, kontaktujte správce systému.")
+#                         else:
+#                             # make new core
+#                             new_core = ContractCore.objects.create(
+#                                 text=text.strip("\r\n "),
+#                                 contract_section=old_core.contract_section,
+#                                 priority=old_core.priority,
+#                                 essential=old_core.essential,
+#                                 editable=old_core.editable,
+#                                 parent_id=old_core.id,
+#                                 default=False,
+#                             )
+#                             if old_core.contract_type.all().exists():
+#                                 new_core.contract_type.add(old_core.contract_type.all())  # how to add in create method?
+#                             contract.contract_cores.add(new_core)
+#                             contract.contract_cores.remove(old_core)
+#         elif "save_new" in data.keys():
+#             data.pop("save_new")
+#             new_core = ContractCore.objects.create(
+#                 text=data.get("text").strip("\r\n "),
+#                 contract_section_id=data.get("section"),
+#                 priority=int(data.get("priority")),
+#                 essential=False,
+#                 editable=True,
+#                 default=False,
+#             )
+#             contract.contract_cores.add(new_core)
+#         elif "remove_core" in data.keys():
+#             core = ContractCore.objects.get(id=data.get("remove_core"))
+#             contract.contract_cores.remove(core)
+#
+#         return redirect('edit-cores', contract.id)
 
 
 class ProtocolCreateView(LoginRequiredMixin, View):
@@ -159,14 +161,13 @@ class ProtocolCreateView(LoginRequiredMixin, View):
 
     def post(self, request, pk, *args, **kwargs):
         data = get_data_in_dict(request)
-        protocol_note = data.pop('protocol_note')
-        contract_id = data.pop('contract_id')
+        protocol_note = data.pop("protocol_note")
+        contract_id = data.pop("contract_id")
         protocol = Protocol.objects.create(
             contract_id=contract_id,
             client=Client.objects.get(pk=pk),
             created_by=request.user,
-            note=f"{timezone.now().strftime('%d. %m. %Y %H:%M')} - {protocol_note}"
-
+            note=f"{timezone.now().strftime('%d. %m. %Y %H:%M')} - {protocol_note}",
         )
 
         reference_date = timezone.now().date()
@@ -189,10 +190,11 @@ class ProtocolCreateView(LoginRequiredMixin, View):
                 created_at=reference_date,
                 status=value[1],
                 note=notes.get(key),
-                description=descs.get(key)
+                description=descs.get(key),
             )
         messages.success(request, "Protokol uložen.")
         return redirect("manage-attachments", protocol.contract.client.id)
+
 
 class ProtocolEditView(LoginRequiredMixin, View):
 
@@ -203,7 +205,7 @@ class ProtocolEditView(LoginRequiredMixin, View):
         for item in items:
             item["title"] = item.pop("item__title")
         context = {
-            "protocol" : protocol,
+            "protocol": protocol,
             "items": items,
             "client": protocol.contract.client,
             "form": form,
@@ -213,8 +215,8 @@ class ProtocolEditView(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
         protocol = Protocol.objects.get(pk=pk)
         data = get_data_in_dict(request)
-        protocol_note = data.pop('protocol_note')
-        contract_id = data.pop('contract_id')
+        protocol_note = data.pop("protocol_note")
+        contract_id = data.pop("contract_id")
         protocol.note = f"{timezone.now().strftime('%d. %m. %Y %H:%M')} - {protocol_note}"
         protocol.save()
 
@@ -234,13 +236,12 @@ class ProtocolEditView(LoginRequiredMixin, View):
             protocol_item.status = value
             protocol_item.note = notes.get(pk)
             protocol_item.description = descs.get(pk)
-            protocol_item.edited_by=request.user
-            protocol_item.edited_at=timezone.now().date()
+            protocol_item.edited_by = request.user
+            protocol_item.edited_at = timezone.now().date()
             protocol_item.save()
 
         messages.success(request, "Protokol uložen.")
         return redirect("manage-attachments", protocol.contract.client.id)
-
 
 
 class ProtocolItemListView(View):

@@ -28,6 +28,7 @@
     {% endif %}
     <div class="d-flex row">
         <div class="col-md-6">
+        <p>Klient: {{ proposal.client }}</p>
             <form action="" method="POST" enctype="multipart/form-data" class="ms-2" id="proposal-form">
                 {% csrf_token %}
                 <h4 class="mt-2">Údaje k doplnění do nabídky</h4>
@@ -52,14 +53,12 @@
                         </div>
                         {{ client_form.address|as_crispy_field }}
                         {{ client_form.note|as_crispy_field }}
-                    {% else %}
-                        {{ edit_form.client|as_crispy_field }}
                     {% endif %}
                 </div>
                 <div class="row">
                     <div class="col-4">
-                        {{ edit_form.proposal_number|as_crispy_field }}
-                        {{ edit_form.subject|as_crispy_field }}
+                        {{ edit_form.document_number|as_crispy_field }}
+                        {{ edit_form.contract_subject|as_crispy_field }}
                         {{ edit_form.contract_type|as_crispy_field }}
                     </div>
                     <div class="col-8">

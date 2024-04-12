@@ -1,10 +1,9 @@
 import time
-from unittest import TestCase
 
-from selenium.common import ElementNotInteractableException, NoSuchElementException
-from selenium.webdriver.common.by import By
+from selenium.common import NoSuchElementException
 
 from tests.views.base import BaseViewsTest
+
 
 class OnDevServerTest(BaseViewsTest):
 
@@ -58,15 +57,15 @@ class TestProposalViews(BaseViewsTest):
 
 def get_to_page(summoner, page):
     # get to start page
-    summoner.get_login_required_page(url=f'/{page}')
+    summoner.get_login_required_page(url=f"/{page}")
     summoner.assertNotIn("login", summoner.webdriver.current_url, f"{page} page is not loaded")
     summoner.assertIn(page, summoner.webdriver.current_url, f"{page} page is not loaded")
+
 
 def create_client_and_proposal(summoner):
     # get to form
     summoner.webdriver.find_element(by="id", value="create-client-and-proposal").click()
     summoner.assertIn("/proposals/create", summoner.webdriver.current_url, "Proposal form is not successfully loaded")
-
 
     # fill & submit form
     summoner.fill_client_form()
@@ -79,6 +78,7 @@ def create_client_and_proposal(summoner):
 
     # evaluate result of proposal form
     summoner.assertIn("/proposals/edit/", summoner.webdriver.current_url, "Proposal form is not successfully submitted")
+
 
 def create_item(summoner):
     # get page
@@ -100,6 +100,7 @@ def create_item(summoner):
     # back to proposal
     summoner.webdriver.find_element(by="id", value="back_to_proposal_button").click()
 
+
 def edit_item(summoner):
     # get page
     summoner.webdriver.find_element(by="id", value="edit_items_from_page").click()
@@ -113,6 +114,7 @@ def edit_item(summoner):
 
     # back to proposal
     summoner.webdriver.find_element(by="id", value="back_to_proposal_button").click()
+
 
 def delete_item(summoner):
     # get page
@@ -133,6 +135,7 @@ def delete_item(summoner):
     # back to proposal
     summoner.webdriver.find_element(by="id", value="back_to_proposal_button").click()
 
+
 def edit_payment_due_success(summoner):
     element = summoner.webdriver.find_element(by="id", value="payment_due_1")
     old_data = element.get_attribute("value")
@@ -149,6 +152,7 @@ def edit_payment_due_not_success(summoner):
     alert = summoner.webdriver.find_element(by="class name", value="toast-body").text
     summoner.assertIn(alert, "U plateb musí být nastavena splatnost.", f"Payment due alert didn't appear")
 
+
 def edit_payment_part_success(summoner):
     element = summoner.webdriver.find_element(by="id", value="payment_part_1")
     old_data = element.get_attribute("value")
@@ -159,6 +163,7 @@ def edit_payment_part_success(summoner):
     new_data = summoner.webdriver.find_element(by="id", value="payment_part_1").get_attribute("value")
     summoner.assertNotEquals(old_data, new_data, f"Payment part didn't change {old_data} x {new_data}")
 
+
 def edit_payment_part_not_success(summoner):
     element = summoner.webdriver.find_element(by="id", value="payment_part_1")
     element.clear()
@@ -167,6 +172,7 @@ def edit_payment_part_not_success(summoner):
     summoner.webdriver.find_element(by="id", value="save_payments").click()
     alert = summoner.webdriver.find_element(by="class name", value="toast-body").text
     summoner.assertIn(alert, "Souhrn částí plateb se nerovná celku.", f"Payment part alert didn't appear")
+
 
 def edit_payment_part_and_due(summoner):
     part_1 = summoner.webdriver.find_element(by="id", value="payment_part_1")
@@ -179,9 +185,11 @@ def edit_payment_part_and_due(summoner):
     new_data = summoner.webdriver.find_element(by="id", value="payment_part_1").get_attribute("value")
     summoner.assertNotEquals(old_data, new_data, f"Payment part didn't change {old_data} x {new_data}")
 
+
 # def show_proposal(summoner):
 #     summoner.webdriver.find_element(by="id", value="show-proposal-button").click()
 #     time.sleep(5)
+
 
 def create_or_edit_contract_from_proposal_page(summoner):
     try:
@@ -193,9 +201,12 @@ def create_or_edit_contract_from_proposal_page(summoner):
     summoner.webdriver.back()
     summoner.webdriver.refresh()
 
+
 def upload_attachment(summoner):
     summoner.webdriver.find_element(by="id", value="manage-attachments-button").click()
-    summoner.assertIn("/attachments/manage", summoner.webdriver.current_url, "Attachments page is not successfully loaded")
+    summoner.assertIn(
+        "/attachments/manage", summoner.webdriver.current_url, "Attachments page is not successfully loaded"
+    )
 
     count_before = len(summoner.webdriver.find_elements(by="css selector", value="tr"))
 
@@ -207,15 +218,16 @@ def upload_attachment(summoner):
     count_after = len(summoner.webdriver.find_elements(by="css selector", value="tr"))
     summoner.assertNotEquals(count_before, count_after, "Attachments have same count of tr elements")
 
+
 def create_protocol(summoner):
     summoner.webdriver.find_element(by="id", value="manage-attachments-button").click()
-    summoner.assertIn("/attachments/manage", summoner.webdriver.current_url,
-                      "Attachments page is not successfully loaded")
+    summoner.assertIn(
+        "/attachments/manage", summoner.webdriver.current_url, "Attachments page is not successfully loaded"
+    )
 
     count_before = len(summoner.webdriver.find_elements(by="css selector", value="tr"))
 
     summoner.webdriver.find_element(by="id", value="create-protocol-button").click()
-    summoner.assertIn("/contracts/create-protocol", summoner.webdriver.current_url,
-                      "Protocol page is not successfully loaded")
-
-
+    summoner.assertIn(
+        "/contracts/create-protocol", summoner.webdriver.current_url, "Protocol page is not successfully loaded"
+    )

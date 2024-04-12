@@ -11,9 +11,7 @@ class Login(LoginView):
     redirect_authenticated_user = reverse_lazy("clients")
 
     def get_context_data(self, **kwargs):
-        context = {
-            "operator": Operator.objects.get()
-        }
+        context = {"operator": Operator.objects.get()}
         return context
 
 

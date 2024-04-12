@@ -2,11 +2,11 @@
 
 {% block content %}
     {% if proposal.contract_type.type == "DILO" %}
-        <h1>Smlouva o dílo č. {{ contract.contract_number }}</h1>
+        <h1>Smlouva o dílo č. {{ contract.document_number }}</h1>
         <p class="text-center">uzavřená podle ustanovení § 2586 a násl. zákona č. 89/2012 Sb., občanského zákoníku,
             v platném znění, mezi</p>
     {% elif proposal.contract_type.type == "KOUPE" %}
-        <h1>Kupní smlouva č. {{ contract.contract_number }}</h1>
+        <h1>Kupní smlouva č. {{ contract.document_number }}</h1>
         <p class="text-center">uzavřená podle ustanovení § 2079 a násl. zákona č. 89/2012 Sb., občanského zákoníku,
             v platném znění, mezi</p>
     {% endif %}

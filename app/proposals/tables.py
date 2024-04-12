@@ -6,17 +6,26 @@ from proposals.models import Proposal, Item
 
 
 class ProposalTable(Table):
-    delete = LinkColumn('delete-proposal', text="Smazat", args=[A("pk")], verbose_name="Smazat", orderable=False)
-    proposal_number = Column(linkify=("edit-proposal", [A("pk")]))
+    delete = LinkColumn("delete-proposal", text="Smazat", args=[A("pk")], verbose_name="Smazat", orderable=False)
+    document_number = Column(linkify=("edit-proposal", [A("pk")]))
     items_quantity = Column(verbose_name="Počet položek", empty_values=(), orderable=False)
     edited = Column(verbose_name="Vytvořená/Upravená", empty_values=(), orderable=False)
-    client__attachments__filter_proposals__count = Column(verbose_name="Počet nahraných příloh", orderable=False)
+    # client__attachments__filter_proposals__count = Column(verbose_name="Počet nahraných příloh", orderable=False)
 
     class Meta:
         model = Proposal
-        template_name = 'django_tables2/bootstrap4.html'
-        fields = ("proposal_number", "client", "items_quantity", "price_netto", "fulfillment_place", "fulfillment_at",
-                  "client__attachments__filter_proposals__count", "edited", "signed_at",)
+        template_name = "django_tables2/bootstrap4.html"
+        fields = (
+            "document_number",
+            # "client",
+            "items_quantity",
+            "price_netto",
+            "fulfillment_place",
+            "fulfillment_at",
+            # "client__attachments__filter_proposals__count",
+            "edited",
+            "signed_at",
+        )
         attrs = {"class": "table table-hover table-striped"}
 
     def render_items_quantity(self, record, value):
@@ -27,9 +36,9 @@ class ProposalTable(Table):
 
 
 class ItemTable(Table):
-    delete = LinkColumn('delete-item', text="Smazat", args=[A("pk")], verbose_name="Smazat", orderable=False)
+    delete = LinkColumn("delete-item", text="Smazat", args=[A("pk")], verbose_name="Smazat", orderable=False)
 
     class Meta:
         model = Item
-        template_name = 'django_tables2/bootstrap4.html'
+        template_name = "django_tables2/bootstrap4.html"
         fields = ("priority", "title")

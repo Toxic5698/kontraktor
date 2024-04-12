@@ -5,5 +5,4 @@ urlpatterns = [
     path("print/<str:sign_code>/<str:type>/<int:pk>", PrintView.as_view(), name="print-document"),
     path("download/<str:sign_code>/<str:type>/<int:pk>", DownloadView.as_view(), name="download-document"),
     path("document/<str:sign_code>/<str:type>/<int:pk>", DocumentView.as_view(), name="document"),
-
 ]

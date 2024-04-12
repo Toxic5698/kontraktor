@@ -77,12 +77,14 @@
             </div>
         </div>
     {% endfor %}
+<div class="container-fluid">
     {% block content %}
     {% endblock %}
+</div>
 </main>
 <footer class="footer border-top mt-auto mb-0 bg-dark">
     <p class="text-center text-muted">&copy
-        <script>document.write(new Date().getFullYear());</script>
+        <script>document.write(new Date().getFullYear().toString());</script>
         <a class="text-muted" href="https://www.samoset.cz">SAMOSET</a>
     </p>
 </footer>
@@ -104,7 +106,7 @@
 </script>
 <script>
     function runButtonLoader(event) {
-        var button = event.target;
+        const button = event.target;
         button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Načítání...';
         button.disabled = true;
     }

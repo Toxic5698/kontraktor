@@ -1,4 +1,4 @@
-from django.db.models import Model, CharField
+from django.db.models import Model, CharField, IntegerField
 
 
 class Operator(Model):
@@ -10,6 +10,11 @@ class Operator(Model):
     web = CharField(max_length=100, verbose_name="Link operátora", null=True, blank=True)
     email = CharField(max_length=100, verbose_name="Email", null=True, blank=True)
     phone_number = CharField(max_length=100, verbose_name="Telefon", null=True, blank=True)
+    proposal_validity = IntegerField(default=14)
+    # logo_file_name
+    # signature_file_name
+    # pdf_style_file_name
+    # pdf_font
 
     class Meta:
         verbose_name = "Operator"
@@ -17,5 +22,3 @@ class Operator(Model):
 
     def __str__(self):
         return self.name
-
-

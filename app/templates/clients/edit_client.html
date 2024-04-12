@@ -91,7 +91,7 @@
                     <tbody>
                     {% for proposal in client.proposals.all %}
                         <tr>
-                            <td><a href="{% url "edit-proposal" proposal.id %}">{{ proposal.proposal_number }}</a>
+                            <td><a href="{% url "edit-proposal" proposal.id %}">{{ proposal.document_number }}</a>
                             </td>
                             <td>{{ proposal.created_at }}</td>
                             <td>{{ proposal.uploaded.last.file_name }}</td>
@@ -116,10 +116,10 @@
                         {% for contract in client.contracts.all %}
                             <tr>
                                 <td>
-                                    <a href="{% url "edit-contract" contract.id %}">{{ contract.contract_number }}</a>
+                                    <a href="{% url "edit-contract" contract.id %}">{{ contract.document_number }}</a>
                                 </td>
                                 <td>{{ contract.created_at }}</td>
-                                <td>{{ contract.proposal.proposal_number }}</td>
+                                <td>{{ contract.proposal.document_number }}</td>
                                 <td>{{ contract.proposal.price_netto }}</td>
                                 <td>{% if contract.signed_at %}potvrzena {{ contract.signed_at }}{% else %}
                                     -{% endif %}</td>

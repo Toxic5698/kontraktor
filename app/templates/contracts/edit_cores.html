@@ -1,6 +1,6 @@
 {% extends "main.html" %}
 {% block content %}
-    <h4>Změna ustanovení pro smlouvu č. {{ contract.contract_number }} s klientem {{ contract.client.name }}</h4>
+    <h4>Změna ustanovení pro smlouvu č. {{ contract.document_number }} s klientem {{ contract.client.name }}</h4>
     <form action="" method="POST">
         {% csrf_token %}
         <a class="btn btn-warning" href="{% url "edit-contract" contract.id %}">Zpět</a>

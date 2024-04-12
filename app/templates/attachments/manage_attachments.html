@@ -3,7 +3,8 @@
     {% load crispy_forms_tags %}
 
     <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="{% url "edit-client" client.id %}" class="btn btn-outline-warning mx-2" id="client-button">Klient</a>
+        <li><a href="{% url "edit-client" client.id %}" class="btn btn-outline-warning mx-2"
+               id="client-button">Klient</a>
         </li>
         <li>
             <button class="btn btn-outline-info mx-2 button open-button" data-bs-toggle="modal"
@@ -27,7 +28,7 @@
                         {% csrf_token %}
                         <label for="id_file" class="m-2">Vyberte soubory</label>
                         <input type="file" name="file" class="form-control m-2" multiple id="id_file" required>
-{#                        <input type="text" name="tag" placeholder="např. Zaměření ze dne..." class="textinput textInput form-control" id="id_tag">#}
+                        {#                        <input type="text" name="tag" placeholder="např. Zaměření ze dne..." class="textinput textInput form-control" id="id_tag">#}
                         <button class="btn btn-success m-2" type="submit" id="submit-upload-button">Nahrát</button>
                     </form>
                 </div>
@@ -45,108 +46,72 @@
         <tbody>
         {% for protocol in protocols %}
             <tr>
-                <td><a href="{% url "print-document" client.sign_code "protocol" protocol.id %}" onclick="runButtonLoader(event)">Předávací protokol ze
+                <td><a href="{% url "print-document" client.sign_code "protocol" protocol.id %}"
+                       onclick="runButtonLoader(event)">Předávací protokol ze
                     dne {{ protocol.created_at }}</a></td>
                 <td><a href="{% url "edit-contract" protocol.contract.id %}">{{ protocol.contract }}</a></td>
                 <td>{% if protocol.signed_at %}potvrzen dne {{ protocol.signed_at }}{% else %}
                     <a class="btn btn-secondary m-1" href="{% url "edit-protocol" protocol.id %}">Upravit</a>
                     <a class="btn btn-success m-1"
                        href="{% url "signing-document" client.sign_code protocol.id "protocol" %}">Podepsat klientem</a>
-                    <a class="btn btn-danger m-1" href="{% url "delete-protocol" protocol.id %}">Odebrat</a></td>{% endif %}
+                    <a class="btn btn-danger m-1" href="{% url "delete-protocol" protocol.id %}">Odebrat</a>
+                    </td>{% endif %}
             </tr>
         {% endfor %}
         </tbody>
     </table>
     <br>
-
-
     <h4 class="m-2">Nahrané přílohy ke klientovi {{ client.name }}</h4>
-    <table class="table table-striped m-2" id="uploaded-attachments-table">
-        <thead>
-        <th scope="col">Název souboru</th>
-        <th scope="col">Označení přílohy a nakládání s přílohou</th>
-        <th scope="col">Odebrat</th>
-        </thead>
-        <tbody>
-        {% for attachment in client.attachments.all %}
-            <tr>
-                <td><a href="{{ attachment.file.url }}">{{ attachment.file_name }}</a></td>
-                <td>
-                    <form method="post" name="add_attachment_to" action="{{ attachment.id }}">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="např. Zaměření ze dne ..."
-                                   value="{{ attachment.tag }}" id="attachment_tag" name="attachment_tag">
-                            <select class="form-select" id="add_attachment_to" name="add_attachment_to">
-                                <option value="intern" {% if attachment.purpose == "intern" or "" %}selected{% endif %}>
-                                    Příloha je pouze interní.
-                                </option>
-                                <option value="proposal" {% if attachment.purpose == "proposal" %}selected{% endif %}>
-                                    Příloha je pouze přílohou nabídky.
-                                </option>
-                                <option value="contract" {% if attachment.purpose == "contract" %}selected{% endif %}>
-                                    Příloha je pouze přílohou smlouvy.
-                                </option>
-                                <option value="both" {% if attachment.purpose == "both" %}selected{% endif %}>
-                                    Příloha je přílohou nabídky i smlouvy.
-                                </option>
-                                <option value="protocol" {% if attachment.purpose == "protocol" %}selected{% endif %}>
-                                    Příloha je přílohou předávacího protokolu.
-                                </option>
-                            </select>
-                            <button class="btn btn-success" type="submit">Uložit</button>
-                        </div>
-                    </form>
-                </td>
-                <td><a class="btn btn-danger" href="{% url "delete-attachment" attachment.id %}">Odebrat</a></td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <br>
+    <div hx-get="{% url 'get-uploaded' client.id %}"
+         hx-trigger="load delay:1ms, change delay:50ms"
+         id="uploaded-attachments-list"></div>
+
 
     <h4 class="m-2">Automaticky přidané přílohy ke klientovi {{ client.name }}</h4>
-    <table class="table table-striped m-2" id="uploaded-attachments-table">
-        <thead>
-        <th scope="col">Název souboru</th>
-        <th scope="col">Označení přílohy a nakládání s přílohou</th>
-{#        <th scope="col">Odebrat</th>#}
-        </thead>
-        <tbody>
-        {% for attachment in client.default_attachments.all %}
-            <tr>
-                <td><a href="{{ attachment.file.url }}">{{ attachment.file_name }}</a></td>
-                <td>
-                    <form method="post" name="add_attachment_to" action="{{ attachment.id }}">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="např. Zaměření ze dne ..."
-                                   value="{{ attachment.tag }}" id="attachment_tag" name="attachment_tag">
-                            <select class="form-select" id="add_attachment_to" name="add_attachment_to">
-                                <option value="intern" {% if attachment.purpose == "intern" or "" %}selected{% endif %}>
-                                    Příloha je pouze interní.
-                                </option>
-                                <option value="proposal" {% if attachment.purpose == "proposal" %}selected{% endif %}>
-                                    Příloha je pouze přílohou nabídky.
-                                </option>
-                                <option value="contract" {% if attachment.purpose == "contract" %}selected{% endif %}>
-                                    Příloha je pouze přílohou smlouvy.
-                                </option>
-                                <option value="both" {% if attachment.purpose == "both" %}selected{% endif %}>
-                                    Příloha je přílohou nabídky i smlouvy.
-                                </option>
-                                <option value="protocol" {% if attachment.purpose == "protocol" %}selected{% endif %}>
-                                    Příloha je přílohou předávacího protokolu.
-                                </option>
-                            </select>
-{#                            <button class="btn btn-success" type="submit">Uložit</button>#}
-                        </div>
-                    </form>
-                </td>
-{#                <td><a class="btn btn-danger" href="{% url "delete-attachment" attachment.id %}">Odebrat</a></td>#}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div hx-get="{% url 'get-default' client.id %}"
+         hx-trigger="load delay:1ms, change delay:50ms"
+         id="default-attachments-list"></div>
+{#    <table class="table table-striped m-2" id="uploaded-attachments-table">#}
+{#        <thead>#}
+{#        <th scope="col">Název souboru</th>#}
+{#        <th scope="col">Označení přílohy a nakládání s přílohou</th>#}
+        {#        <th scope="col">Odebrat</th>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#        {% for attachment in client.default_attachments.all %}#}
+{#            <tr>#}
+{#                <td><a href="{{ attachment.file.url }}">{{ attachment.file_name }}</a></td>#}
+{#                <td>#}
+{#                    <form method="post" name="add_attachment_to" action="{{ attachment.id }}">#}
+{#                        {% csrf_token %}#}
+{#                        <div class="input-group">#}
+{#                            <input type="text" class="form-control" placeholder="např. Zaměření ze dne ..."#}
+{#                                   value="{{ attachment.tag }}" id="attachment_tag" name="attachment_tag">#}
+{#                            <select class="form-select" id="add_attachment_to" name="add_attachment_to">#}
+{#                                <option value="intern" {% if attachment.purpose == "intern" or "" %}selected{% endif %}>#}
+{#                                    Příloha je pouze interní.#}
+{#                                </option>#}
+{#                                <option value="proposal" {% if attachment.purpose == "proposal" %}selected{% endif %}>#}
+{#                                    Příloha je pouze přílohou nabídky.#}
+{#                                </option>#}
+{#                                <option value="contract" {% if attachment.purpose == "contract" %}selected{% endif %}>#}
+{#                                    Příloha je pouze přílohou smlouvy.#}
+{#                                </option>#}
+{#                                <option value="both" {% if attachment.purpose == "both" %}selected{% endif %}>#}
+{#                                    Příloha je přílohou nabídky i smlouvy.#}
+{#                                </option>#}
+{#                                <option value="protocol" {% if attachment.purpose == "protocol" %}selected{% endif %}>#}
+{#                                    Příloha je přílohou předávacího protokolu.#}
+{#                                </option>#}
+{#                            </select>#}
+                            {#                            <button class="btn btn-success" type="submit">Uložit</button>#}
+{#                        </div>#}
+{#                    </form>#}
+{#                </td>#}
+                {#                <td><a class="btn btn-danger" href="{% url "delete-attachment" attachment.id %}">Odebrat</a></td>#}
+{#            </tr>#}
+{#        {% endfor %}#}
+{#        </tbody>#}
+{#    </table>#}
 
 {% endblock %}
