@@ -5,8 +5,8 @@ from django.template.response import TemplateResponse
 from django.urls import reverse_lazy
 from django.views.generic import View, DeleteView
 
-from attachments.models import Attachment
-from base.methods import get_data_in_dict, get_model, get_documents_for_client
+from attachments.models import Attachment, DefaultAttachment
+from base.methods import get_data_in_dict, get_model, get_documents_for_client, get_document_through_class_id
 from clients.models import Client
 
 
@@ -50,20 +50,18 @@ class UploadedAttachmentView(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
         attachment = Attachment.objects.get(pk=pk)
         data = get_data_in_dict(request)
-        if attachment.is_intern() and data.get("intern"):
-            data.pop("intern")
         if data.get("attachment_tag"):
             attachment.tag = data["attachment_tag"]
-        elif data.get("intern") or len(data) == 0:
+            attachment.save()
+        if not attachment.is_intern() and data.get("intern"):
             attachment.change_to_intern("intern")
         elif "add" in data.values():
+            attachment.change_to_intern("intern")
+            if data.get("intern"):
+                data.pop("intern")
             for document in data.keys():
-                model_name, doc_id = document.split(".")
-                model = get_model(model_name=model_name)
-                model.objects.get(id=doc_id).attachments.add(attachment)
-
-        attachment.save()
-        return HttpResponse(f"Attachment attribute saved.")
+                get_document_through_class_id(document).attachments.add(attachment)
+        return HttpResponse(f"<p id='attr-saved'>Attachment attribute saved.</p>")
 
 
 class DefaultAttachmentView(LoginRequiredMixin, View):
@@ -80,3 +78,10 @@ class DefaultAttachmentView(LoginRequiredMixin, View):
             "default_attachments": default_attachments,
         }
         return TemplateResponse(request=request, template="attachments/default_attachments.html", context=context)
+
+    def post(self, request, pk, client, *args, **kwargs):
+        attachment = DefaultAttachment.objects.get(pk=pk)
+        client, documents = get_documents_for_client(client_id=client)
+        for document in documents:
+            document.default_attachments.remove(attachment)
+        return HttpResponse(f"<p id='attr-saved'>Default attachment removed.</p>")

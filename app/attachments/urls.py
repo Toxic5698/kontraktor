@@ -7,4 +7,5 @@ urlpatterns = [
     path("add-attachment-attribute/<int:pk>", UploadedAttachmentView.as_view(), name="add-attachment-attribute"),
     path("get-uploaded/<int:pk>", UploadedAttachmentView.as_view(), name="get-uploaded"),
     path("get-default/<int:pk>", DefaultAttachmentView.as_view(), name="get-default"),
+    path("remove-default-attachment/<int:pk>/<str:client>", DefaultAttachmentView.as_view(), name="remove-default-attachment"),
 ]

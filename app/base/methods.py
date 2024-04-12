@@ -31,3 +31,9 @@ def get_documents_for_client(client_id=None, sign_code=None):
     for protocol in client.protocols.all():
         documents.append(protocol)
     return client, documents
+
+
+def get_document_through_class_id(document):
+    model_name, doc_id = document.split(".")
+    model = get_model(model_name=model_name)
+    return model.objects.get(id=doc_id)
