@@ -14,4 +14,4 @@ WORKDIR /app
 COPY app .
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN python app/manage.py test tests -v 2
+RUN python manage.py test tests -v 2
