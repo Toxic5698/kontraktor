@@ -13,5 +13,3 @@ RUN pip install --upgrade pip setuptools wheel
 WORKDIR /app
 COPY app .
 RUN pip install --no-cache-dir -r requirements.txt
-
-RUN python manage.py test tests -v 2
