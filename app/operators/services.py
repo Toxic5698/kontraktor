@@ -21,6 +21,7 @@ def initial_creation():
     user = User.objects.create(
         username="Aneta Demová",
         email="demo@samoset.cz",
+        password="kontraktor3567"
     )
     # contract type
     dilo = ContractType.objects.create(type="DILO", name="Smlouva o dílo", vat=15)
