@@ -18,7 +18,7 @@ django-storages==1.14.2
 email-validator==2.1.0.post1
 factory-boy==3.3.0
 Faker==21.0.0
-gunicorn==21.2.0
+gunicorn==22.0.0
 ipython==8.18.1
 workalendar==17.0.0
 pendulum==3.0.0
