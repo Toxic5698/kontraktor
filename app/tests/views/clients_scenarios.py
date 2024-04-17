@@ -3,16 +3,20 @@ import time
 from tests.views.base import BaseViewsTest
 from tests.factories import ClientFactory
 
+
 class WelcomePageTest(BaseViewsTest):
 
     def test_welcome_page_local(self):
         self.webdriver.get(self.live_server_url)
-        self.assertIn("Spravujte své dokumenty jednoduše!", self.webdriver.find_element(by="id", value="welcome-header").text)
+        self.assertIn(
+            "Spravujte své dokumenty jednoduše!", self.webdriver.find_element(by="id", value="welcome-header").text
+        )
 
     def test_welcome_page_devel(self):
         self.webdriver.get("http://demo.samoset.cz")
-        self.assertIn("Spravujte své dokumenty jednoduše!", self.webdriver.find_element(by="id", value="welcome-header").text)
-
+        self.assertIn(
+            "Spravujte své dokumenty jednoduše!", self.webdriver.find_element(by="id", value="welcome-header").text
+        )
 
 
 class ClientViewsTest(BaseViewsTest):

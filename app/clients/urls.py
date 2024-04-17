@@ -9,5 +9,4 @@ urlpatterns = [
     path("signing/<str:sign_code>/<int:pk>/<str:type>", SigningDocument.as_view(), name="signing-document"),
     path("create-demo", CreateDemoClient.as_view(), name="create-demo-client"),
     path("<str:sign_code>", DocumentsToSignView.as_view(), name="document-to-sign"),
-
 ]

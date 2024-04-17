@@ -1,7 +1,8 @@
-from attachments.models import DefaultAttachment
-from contracts.models import ContractSection, ContractCore
+from django.contrib.auth.models import User
+
+from base.models import ContractType, ContractSubject
+from documents.models import DocumentSection, DocumentParagraph
 from operators.models import Operator
-from proposals.models import ContractType, ContractSubject
 
 
 def initial_creation():
@@ -16,24 +17,27 @@ def initial_creation():
         email="admin@samoset.cz",
         phone_number="45245235",
     )
+
+    user = User.objects.create(
+        username="Aneta Demová",
+        email="demo@samoset.cz",
+        password="kontraktor3567"
+    )
     # contract type
-    dilo = ContractType.objects.create(
-        type="DILO",
-        name="Smlouva o dílo",
-        vat=15
-    )
-    koupe = ContractType.objects.create(
-        type="KOUPE",
-        name="Kupní smlouva",
-        vat=21
-    )
+    dilo = ContractType.objects.create(type="DILO", name="Smlouva o dílo", vat=15)
+    koupe = ContractType.objects.create(type="KOUPE", name="Kupní smlouva", vat=21)
     # contract subject
-    subjects = {"DVERE": "pouze dveře", "PODLAHA": "pouze podlaha", "DVERE_PODLAHA": "dveře i podlaha",
-                "ZBOZI": "zboží", "STAVBA": "stavební práce"}
+    subjects = {
+        "DVERE": "pouze dveře",
+        "PODLAHA": "pouze podlaha",
+        "DVERE_PODLAHA": "dveře i podlaha",
+        "ZBOZI": "zboží",
+        "STAVBA": "stavební práce",
+    }
     for code, name in subjects.items():
         ContractSubject.objects.create(code=code, name=name)
 
-    # contact sections dílo
+    # contract sections dílo
     sections = {
         "I": "Základní ustanovení",
         "II": "Záruka za jakost a vady díla",
@@ -42,13 +46,9 @@ def initial_creation():
         "V": "Závěrečná jednání",
     }
     for num, text in enumerate(sections.values(), 1):
-        ContractSection.objects.create(
-            priority=num,
-            name=text,
-            contract_type=dilo
-        )
+        DocumentSection.objects.create(priority=num, name=text, contract_type=dilo)
 
-    # contract cores dílo
+    # contract paragraphs dílo
     cores = {
         "11": "Zhotovitel se touto smlouvou zavazuje provést na svůj náklad a nebezpečí pro objednatele dílo spočívající v dodávce a montáži předmětu smlouvy v místě plnění a nejpozději v den termínu plnění. Objednatel se touto smlouvou zavazuje poskytnout zhotoviteli potřebnou součinnost a provedené dílo převzít a zaplatit jeho cenu.",
         "12": "Cena díla je smluvní a objednatel se ji zavazuje uhradit dle sjednaných platebních podmínek.",
@@ -59,18 +59,15 @@ def initial_creation():
         "17": "Objednatel je povinen připravit místo k provedení díla podle dodacích a montážních podmínek. Při zahájení montáže bude proveden zápis do předávacího protokolu o stavu staveniště a jeho připravenosti.",
         "18": "Dílo je provedeno, je-li dokončeno a předáno. Dokončením díla se rozumí, že je předvedena jeho způsobilost sloužit svému účelu. Objednatel převezme dokončené dílo s výhradami nebo bez výhrad. O převzetí bude vyhotoven písemný zápis.",
         "19": "Provádí-li se dílo postupně a lze-li jednotlivé části (stupně) odlišit, může být předáno a převzato i po částech. Převzetím díla nabývá objednatel vlastnické právo k věci a přechází na něho nebezpečí škody na věci. V případě, že objednatel neposkytne potřebnou součinnost a věci určené k provedení díla budou uloženy na místě jejich montáže, přechází nebezpečí škody na nich na objednatele dnem jejich uložení na místě montáže, o čemž zhotovitel vyhotoví dodací list a ten bude podepsán objednatelem i zhotovitelem.",
-
         "21": "Zhotovitel dává objednateli záruku za jakost díla v délce 24 měsíců. Záruční doba začíná běžet předáním díla objednateli.",
         "22": "Práva objednatele ze záruky se řídí reklamačním řádem zhotovitele a příslušnými ustanoveními občanského zákoníku.",
         "23": "Má-li dílo při předání vadu, zakládá to povinnost zhotovitele z vadného plnění.",
         "24": "Objednatel umožní zhotoviteli přístup na místo montáže (provedení díla) k odstranění vad a nedodělků i poté, co dílo převzal. V případě, že objednatel tuto součinnost neposkytne ani po druhém návrhu termínu, má se za to, že objednatel s vadami souhlasí a zaniká tak odpovědnost zhotovitele za jejich odstranění.",
         "25": "Objednatel bere na vědomí, že u dýhovaných dveří a zárubní SAPELI se jedná o přírodní materiál s různorodostí v celé škále. Vystouplé struktury a barevné rozdíly nemohou být považovány za vadu, neboť vznikají přírodní rozdílností dřeva a jeho charakteristickými vlastnostmi. Z toho důvodu reklamace na barevnost těchto výrobků budou považovány za neoprávněné.",
-
         "31": "V případě prodlení s provedením díla ve sjednaném termínu, uhradí zhotovitel objednateli smluvní pokutu ve výši 0,05 % z ceny díla bez DPH za každý den prodlení.",
         "32": "V případě prodlení se zaplacením ceny díla včetně zálohy na tuto cenu, zaplatí objednatel zhotoviteli smluvní pokutu ve výši 0,1 % z dlužné částky za každý den prodlení.",
         "33": "V případě, že objednatel neposkytne potřebnou součinnost spočívající ve stavební připravenosti pro montáž dveří a zárubní a nezajistí odpovídající prostor pro uložení věcí určených k montáži na místě provádění díla, zaplatí zhotoviteli náklady vynaložené na uskladnění věcí ve výši 10,- Kč za den a 1 ks až do doby, kdy objednatel nedostatky bránící provedení montáže odstraní a zhotovitel bude moci plnit řádně svoje závazky.",
         "34": "V případě, že objednatel odstoupí od této smlouvy v době kratší než 8 týdnů před termínem montáže, je povinen zaplatit zhotoviteli náhradu vynaložených nákladů na provedení díla ve výši 70 % z ceny díla bez DPH.",
-
         # # podlaha začátek
         # "41": "V případě podlahového topení nesmí teplota na povrchu podlahy přesáhnout 27 °C na nášlapné vrstvě. Spuštění podlahového topení po nivelaci by se mělo provádět pozvolna.",
         # "42": "Po instalaci podlah by se měla teplota v místnosti pohybovat v běžných hodnotách teplot od 16 - 25°C po celou dobu životnosti podlahy.",
@@ -96,7 +93,6 @@ def initial_creation():
         #     # montáž
         # "d51": "Dveře a zárubně je možné montovat výhradně do suchých prostor s relativní vlhkostí 40 – 50 %, s podmínkou dostatečně proschlého zdiva a omítky (při vyšší vlhkosti montážní pěna tuto vlhkost přijme a následně dojde k prohnutí zárubně). Minimální teplota pro montáž je stanovena +10°C. Montáž zárubní a osazení dveří by měla být úplně poslední operací stavby po začištění a podlahách.",
         # #
-
         # reklamační řád
         "41": "Objednatel je povinen reklamaci uplatnit bez zbytečného odkladu poté, co zjistí, že je dílo nebo jeho část vadné. Zhotovitel neodpovídá za zvětšení rozsahu poškození, pokud objednatel dílo užívá, ačkoliv o vadě ví. Uplatní-li objednatel vůči zhotoviteli vadu oprávněně, neběží lhůta pro uplatnění reklamace po dobu (záruční lhůta), po kterou je dílo nebo jeho část v opravě a objednatel je nemůže užívat.",
         "42": "Zhotovitel je povinen vydat objednateli písemné potvrzení, ve kterém uvede datum a místo uplatnění reklamace, charakteristiku vytýkané vady, objednatelem požadovaný způsob vyřízení reklamace a způsob jakým bude objednatel informován o jejím vyřízení.",
@@ -107,7 +103,6 @@ def initial_creation():
         "47": "Za vadu rovněž nelze považovat: a) rozdílnou barevnost rámečků a barevnost povrchu na zárubních a dveřích; b) rozdílnou barevnost a kresbu dýhy jednotlivých dveří, zárubní, jejich prvků, když v obou případech se jedná o vlastnosti charakteristické pro přírodní materiál; c) délkové napojení dýhy na obložce; d) rozdílnou barevnost u použitých přírodních nebo umělých materiálů v případě, že je nutná jejich kombinace z technologických důvodů v rámci jednoho výrobku nebo více výrobků tvořících komplet; e) dodání dílo nebo jeho provedení dodané na základě objednatelem potvrzené chybné závazné nabídky nebo objednatelem potvrzené chyby v kupní smlouvě.",
         "48": "Ve sporných případech vad díla způsobených relativní vlhkostí vzduchu (vysokou i nízkou) se za rozhodné považuje měření vlhkosti poškozené věci kalibrovaným vlhkoměrem. V případě, že vlhkost konstrukce dveří nebo zárubní se pohybuje mimo rozmezí 6-10 %, má se za to, že dílo nebo jeho část bylo vystaveno nevhodným vlhkostním podmínkám a může docházet k deformacím, za které zhotovitel nenese odpovědnost.",
         "49": "V případě, že dojde mezi zhotovitelem a objednatelem ke vzniku sporu, který se nepodaří vyřešit výše uvedeným způsobem, může objednatel podat návrh na mimosoudní řešení takového sporu určenému subjektu mimosoudního řešení spotřebitelských sporů, kterým je Česká obchodní inspekce, Ústřední inspektorát - oddělení ADR, Štěpánská 15, 120 00 Praha 2, e-mail: adr@coi.cz, web: adr.coi.cz.",
-
         "51": "Smluvní strany se zavazují, že v případě, kdy dojde k podstatnému snížení možnosti plnění této smlouvy jednou ze stran, se smluvní strany dohodnou na novém znění této smlouvy, které bude odpovídat aktuálním možnostem plnění předmětu této smlouvy smluvními stranami. V případě, že nebude možné se dohodnout na změně této smlouvy, je smluvní strana postižená změnou okolností dle výše uvedeného oprávněna od této smlouvy odstoupit, aniž by měla druhá smluvní strana nárok na náhradní plnění nebo náhradu škody.",
         "52": "Tato smlouva nabude účinnosti dnem podpisu smluvními stranami za podmínky. Smluvní strany se dohodly, že podpis smlouvy lze uskutečnit i elektronicky.",
         "53": "Právní vztahy, které nejsou v této smlouvě výslovně upraveny, se řídí příslušnými ustanoveními občanského zákoníku.",
@@ -115,11 +110,13 @@ def initial_creation():
     }
 
     for num, text in cores.items():
-        cc = ContractCore.objects.create(
+        cc = DocumentParagraph.objects.create(
             priority=num[1],
-            contract_section=ContractSection.objects.get(priority=num[0], contract_type=dilo),
+            document_section=DocumentSection.objects.get(priority=num[0], contract_type=dilo),
             text=text,
-            contract_type=dilo
+            contract_type=dilo,
+            document_type="contract",
+            created_by=user,
         )
 
     # contact sections koupě
@@ -131,10 +128,11 @@ def initial_creation():
         "V": "Závěrečná jednání",
     }
     for num, text in enumerate(sections.values(), 1):
-        ContractSection.objects.create(
+        DocumentSection.objects.create(
             priority=num,
             name=text,
-            contract_type=koupe
+            contract_type=koupe,
+            created_by=user,
         )
 
     # contract cores koupě
@@ -145,17 +143,14 @@ def initial_creation():
         "14": "Vlastnické právo přechází na kupujícího převzetím předmětu koupě. Nebezpečí škody na předmětu koupě přechází na kupujícího jeho převzetím. Stejný následek má, nepřevezme-li kupující předmět koupě, ač mu s ním prodávající umožnil nakládat. Předá-li prodávající předmět koupě dopravci pro přepravu ke kupujícímu v místě plnění, přechází nebezpečí škody na předmětu koupě na kupujícího předáním předmětu koupě dopravci.",
         "15": "Škoda na předmětu koupě, vzniklá po přechodu nebezpečí škody na kupujícího, nemá vliv na povinnosti kupujícího zaplatit kupní cenu, ledaže prodávající škodu způsobil porušením svých povinností.",
         "16": "V případě, že kupující uhradí prodávajícímu kupní cenu v plné výši jednorázově při podpisu této kupní smlouvy, poskytne mu prodávající slevu z kupní ceny ve výši 2 % z kupní ceny bez DPH.",
-
         "21": "Prodávající se zavazuje, že předmět koupě bude způsobilý pro obvyklý účel po dobu 24 měsíců. Záruční doba běží od odevzdání předmětu koupě kupujícímu.",
         "22": "Kupující bere na vědomí, že u předmětu koupě vyrobeného z přírodních materiálů (zejména u dýhovaných dveří a zárubní SAPELI) se jedná o přírodní materiál s různorodostí v celé škále. Vystouplé struktury a barevné rozdíly nemohou být považovány za vadu, neboť vznikají přírodní rozdílností dřeva a jeho charakteristickými vlastnostmi. Z toho důvodu reklamace na barevnost těchto výrobků budou považovány za neoprávněné.  Prodávající výslovně upozorňuje, že u sukatých dýh jsou všechny vady dřeva, které se projevují nerovností povrchu nebo vypadnutím dřevní hmoty, vyspraveny tmelem tak, aby nebyla zásadně porušena celistvost povrchu. Barva tmele se volí dle převládající barvy suku nebo dýhy.",
         "23": "V ostatním se podmínky uplatnění práva z vad předmětu koupě použije reklamační řád prodávajícího a občanský zákoník.",
-
         "31": "Kupující potvrdí převzetí předmětu koupě na dodacím listu vystaveném prodávajícím. V případě, že kupující bude v prodlení s převzetím předmětu koupě, uchová prodávající předmět koupě pro kupujícího způsobem přiměřeným okolnostem a je oprávněn předmět koupě zadržet, dokud mu kupující neuhradí účelně vynaložené náklady spojené s uchováním předmětu koupě, a to ve výši 10,- Kč za 1 den a kus předmětu koupě (dveře, zárubeň, balení podlah) a za dobu ode dne následujícího po dni, v němž měl kupující předmět koupě převzít, do dne, kdy předmět koupě od prodávajícího skutečně převezme.",
         "32": "V případě, že se kupující dostane do prodlení se zaplacením kupní ceny, může prodávající požadovat zaplacení smluvní pokuty ve výši 0,1 % z dlužné částky za každý den prodlení.",
         "33": "V případě, že se prodávající dostane do prodlení se předáním předmětu koupě, může kupující požadovat zaplacení smluvní pokuty ve výši 0,05 % z kupní ceny za každý den prodlení.",
         "34": "V případě, že prodávající od této kupní smlouvy odstoupí z důvodu neposkytnutí součinnosti ze strany kupujícího ani po písemné výzvě, je kupující povinen zaplatit prodávajícímu smluvní pokutu ve výši 70 % z kupní ceny předmětu koupě.",
         "35": "Smluvní strany nemají právo na náhradu škody vzniklé z porušení povinnosti, ke kterému se smluvní pokuta vztahuje.",
-
         # reklamační řád
         "41": "Kupující je povinen reklamaci uplatnit bez zbytečného odkladu poté, co zjistí, že předmět koupě nebo jeho část je vadný. Prodávající neodpovídá za zvětšení rozsahu poškození, pokud kupující předmět koupě užívá, ačkoliv o vadě ví. Uplatní-li kupující vůči prodávajícímu vadu oprávněně, neběží lhůta pro uplatnění reklamace po dobu (záruční lhůta), po kterou je předmět koupě nebo jeho část v opravě a kupující jej nemůže užívat.",
         "42": "Prodávající je povinen vydat kupujícímu písemné potvrzení, ve kterém uvede datum a místo uplatnění reklamace, charakteristiku vytýkané vady, kupujícím požadovaný způsob vyřízení reklamace a způsob jakým bude kupující informován o jejím vyřízení.",
@@ -166,21 +161,58 @@ def initial_creation():
         "47": "Za vadu rovněž nelze považovat: a) rozdílnou barevnost rámečků a barevnost povrchu na zárubních a dveřích; b) rozdílnou barevnost a kresbu dýhy jednotlivých dveří, zárubní, jejich prvků, když v obou případech se jedná o vlastnosti charakteristické pro přírodní materiál; c) délkové napojení dýhy na obložce; d) rozdílnou barevnost u použitých přírodních nebo umělých materiálů v případě, že je nutná jejich kombinace z technologických důvodů v rámci jednoho výrobku nebo více výrobků tvořících komplet; e) dodání předmět koupě nebo jeho provedení dodané na základě kupujícím potvrzené chybné závazné nabídky nebo kupujícím potvrzené chyby v kupní smlouvě.",
         "48": "Ve sporných případech vad předmětu koupě způsobených relativní vlhkostí vzduchu (vysokou i nízkou) se za rozhodné považuje měření vlhkosti poškozené věci kalibrovaným vlhkoměrem. V případě, že vlhkost konstrukce dveří nebo zárubní se pohybuje mimo rozmezí 6-10 %, má se za to, že předmět koupě nebo jeho část bylo vystaveno nevhodným vlhkostním podmínkám a může docházet k deformacím, za které prodávající nenese odpovědnost.",
         "49": "V případě, že dojde mezi prodávajícím a kupujícím ke vzniku sporu, který se nepodaří vyřešit výše uvedeným způsobem, může kupující podat návrh na mimosoudní řešení takového sporu určenému subjektu mimosoudního řešení spotřebitelských sporů, kterým je Česká obchodní inspekce, Ústřední inspektorát - oddělení ADR, Štěpánská 15, 120 00 Praha 2, e-mail: adr@coi.cz, web: adr.coi.cz.",
-
         "51": "Smluvní strany se zavazují, že v případě, kdy dojde k podstatnému snížení možnosti plnění této smlouvy jednou ze stran, se smluvní strany dohodnou na novém znění této smlouvy, které bude odpovídat aktuálním možnostem plnění předmětu této smlouvy smluvními stranami. V případě, že nebude možné se dohodnout na změně této smlouvy, je smluvní strana postižená změnou okolností dle výše uvedeného oprávněna od této smlouvy odstoupit, aniž by měla druhá smluvní strana nárok na náhradní plnění nebo náhradu škody.",
         "52": "Tato smlouva nabude účinnosti dnem podpisu smluvními stranami za podmínky. Smluvní strany se dohodly, že podpis smlouvy lze uskutečnit i elektronicky.",
         "53": "Právní vztahy, které nejsou v této smlouvě výslovně upraveny, se řídí příslušnými ustanoveními občanského zákoníku.",
-        "54": "Smluvní strany prohlašují, že tato smlouva byla sepsána podle jejich pravé, svobodné a vážné vůle, a že souhlasí s jejím obsahem a zněním."
+        "54": "Smluvní strany prohlašují, že tato smlouva byla sepsána podle jejich pravé, svobodné a vážné vůle, a že souhlasí s jejím obsahem a zněním.",
     }
     for num, text in cores.items():
-        cc = ContractCore.objects.create(
+        cc = DocumentParagraph.objects.create(
             priority=num[1],
-            contract_section=ContractSection.objects.get(priority=num[0], contract_type=koupe),
+            document_section=DocumentSection.objects.get(priority=num[0], contract_type=koupe),
             contract_type=koupe,
+            document_type="contract",
             text=text,
+            created_by=user,
+        )
+    p_cores_default = {
+        "3": "Záruční doba je obvykle 24 měsíců od předání.",
+        "4": "Pokud není přílohou této nabídky zaměření, jsou množstevní a cenové údaje pouze orientační a mohou se změnit po provedení zaměření.",
+    }
+    p_cores_dilo = {
+        "2": "Zahájení montáže je možné zpravidla 15 až 20 týdnů od uzavření smlouvy a zaplacení zálohové faktury."
+    }
+    p_cores_koupe = {
+        "2": "Dodání předmětu nabídky je možné zpravidla 15 až 20 týdnů od uzavření smlouvy a zaplacení zálohové faktury."
+    }
+
+    for num, text in p_cores_default.items():
+        cc = DocumentParagraph.objects.create(
+            priority=num,
+            document_type="proposal",
+            text=text,
+            created_by=user,
         )
 
-    # # default attachments now working
+    for num, text in p_cores_dilo.items():
+        cc = DocumentParagraph.objects.create(
+            priority=num,
+            document_type="proposal",
+            text=text,
+            contract_type=dilo,
+            created_by=user,
+        )
+
+    for num, text in p_cores_koupe.items():
+        cc = DocumentParagraph.objects.create(
+            priority=num,
+            document_type="proposal",
+            text=text,
+            contract_type=koupe,
+            created_by=user,
+        )
+
+    # # default attachments not working
     # with open('default_attachment.txt', 'w') as file:
     #     file.write(
     #         'Tato příloha je vzor přílohy, která je přiřazena automaticky při vzniku dokumentu, což mohou být např. '

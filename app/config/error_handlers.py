@@ -16,6 +16,6 @@ class CustomExceptionMiddleware:
                 context["message"] = "Tady jsme to nedomysleli..."
             if response.status_code == 404:
                 context["message"] = "Hledali, hledali, ale nenašli..."
-            return render(request, 'error.html', context=context)
+            return render(request, "error.html", context=context)
 
         return response

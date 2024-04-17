@@ -35,7 +35,7 @@
     <select name="pk" class="form-control" hx-get="/contracts/get-items/" hx-target="#itemList" hx-trigger="click" id="select-contract">
 {#        <option value="">Vyberte smlouvu...</option>#}
         {% for contract in contracts %}
-            <option value="{{ contract.proposal.id }}">č. {{ contract.contract_number }} klient: {{ contract.client }}</option>
+            <option value="{{ contract.proposal.id }}">č. {{ contract.document_number }} klient: {{ contract.client }}</option>
         {% endfor %}
     </select>
     </label>

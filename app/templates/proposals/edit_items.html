@@ -2,7 +2,7 @@
 {% block content %}
     <a class="btn btn-warning m-2" href="{% url "edit-proposal" proposal.id %}" id="back_to_proposal_button">Zpět na
         nabídku</a>
-    <h4 class="m-2">Položky u nabídky č. {{ proposal.proposal_number }} pro klienta {{ proposal.client.name }}</h4>
+    <h4 class="m-2">Položky u nabídky č. {{ proposal.document_number }} pro klienta {{ proposal.client.name }}</h4>
 
     <div class="table-responsive">
         <table class="table table-striped m-2">

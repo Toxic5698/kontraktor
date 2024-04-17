@@ -1,9 +1,9 @@
-from django.contrib.auth.models import User
-from django.db.models import Model, CharField, FileField, DateTimeField, ForeignKey, SET_NULL, CASCADE, ManyToManyField
+from django.db.models import CharField, FileField, ForeignKey, SET_NULL, ManyToManyField
 
-from clients.models import Client
 from attachments.managers import AttachmentManager
-from proposals.models import ContractSubject, ContractType
+from base.models import UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixin
+from clients.models import Client
+from documents.enums import DocumentTypeOptions
 
 
 def attachment_directory_path(instance, file):
@@ -14,30 +14,19 @@ def default_attachment_directory_path(instance, file):
     return f"default_attachments/{file}"
 
 
-class BaseAttachment(Model):
-    PURPOSES = [
-        ("intern", "intern"),
-        ("proposal", "proposal"),
-        ("contract", "contract"),
-        ("both", "both"),
-        ("protocol", "protocol"),
-    ]
+class BaseAttachment(UserBaseModel, DateBaseModel):
     tag = CharField(max_length=255, blank=True, verbose_name="Označení souboru")
     file_name = CharField(max_length=255, blank=True, null=True, verbose_name="Název souboru")
-    purpose = CharField(max_length=10, null=True, blank=True, choices=PURPOSES, default="intern",
-                        verbose_name="Účel přílohy")
 
     class Meta:
         abstract = True
 
 
 class Attachment(BaseAttachment):
-    added_at = DateTimeField(auto_now_add=True, verbose_name="přidána dne")
-    added_by = ForeignKey(User, related_name="attachments", on_delete=SET_NULL, blank=True, null=True,
-                          verbose_name="přidána uživatelem")
-    client = ForeignKey(Client, blank=True, null=True, on_delete=SET_NULL, related_name="attachments",
-                        verbose_name="klient")
-    file = FileField(upload_to=attachment_directory_path, blank=True, null=True, verbose_name="soubor")
+    client = ForeignKey(
+        Client, blank=True, null=True, on_delete=SET_NULL, related_name="attachments", verbose_name="Klient"
+    )
+    file = FileField(upload_to=attachment_directory_path, blank=True, null=True, verbose_name="Soubor")
 
     objects = AttachmentManager()
 
@@ -51,12 +40,29 @@ class Attachment(BaseAttachment):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
+    def is_intern(self):
+        if self.proposals.all().exists() or self.contracts.all().exists() or self.protocols.all().exists():
+            return False
+        return True
 
-class DefaultAttachment(BaseAttachment):
-    subject = ManyToManyField(ContractSubject, related_name="default_attachment", verbose_name="předmět smlouvy")
-    contract_type = ManyToManyField(ContractType, related_name="default_attachment", verbose_name="typ smlouvy")
-    client = ManyToManyField(Client, related_name="default_attachments", blank=True, verbose_name="klient")
-    file = FileField(upload_to=default_attachment_directory_path, blank=True, null=True, verbose_name="soubor")
+    def change_to_intern(self, data):
+        if data == "intern" and not self.is_intern():
+            self.proposals.clear()
+            self.contracts.clear()
+            self.protocols.clear()
+
+
+class DefaultAttachment(BaseAttachment, ContractTypeAndSubjectMixin):
+    client = ManyToManyField(Client, related_name="default_attachments", blank=True, verbose_name="Klient")
+    file = FileField(upload_to=default_attachment_directory_path, blank=True, null=True, verbose_name="Soubor")
+    document_type = CharField(
+        max_length=255,
+        blank=False,
+        null=False,
+        verbose_name="Typ dokumentu",
+        choices=DocumentTypeOptions.choices,
+        default="contract",
+    )
 
     objects = AttachmentManager()
 
@@ -65,4 +71,4 @@ class DefaultAttachment(BaseAttachment):
         verbose_name_plural = "Default Attachments"
 
     def __str__(self):
-        return f"{self.file_name} - {self.subject} - {self.contract_type}"
+        return f"{self.file_name} - {self.contract_subject} - {self.contract_type}"

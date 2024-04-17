@@ -8,16 +8,15 @@ from django.views.generic import DeleteView
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from attachments.models import DefaultAttachment
+from base.methods import get_data_in_dict
+from base.models import ContractType, ContractSubject
 from clients.forms import ClientForm
 from clients.models import Client
-from operators.models import Operator
 from proposals.enums import UnitOptions
-from proposals.forms import ProposalUploadForm, ProposalEditForm
-from proposals.models import Proposal, UploadedProposal, Item, check_payments, ContractSubject, DefaultItem, \
-    ContractType
-from proposals.peli_parser import parse_items
 from proposals.filters import ProposalFilter
+from proposals.forms import ProposalUploadForm, ProposalEditForm
+from proposals.models import Proposal, UploadedProposal, Item, check_payments, DefaultItem
+from proposals.peli_parser import parse_items
 from proposals.tables import ProposalTable
 
 
@@ -60,12 +59,15 @@ class ProposalEditView(LoginRequiredMixin, View):
                 form.save()
                 proposal.edited_by = request.user
                 proposal.save()
+            else:
+                messages.warning(request, f"Neplatná data ve formuláři: {form.errors}.")
         else:
             data = request.POST.dict()
             if "client" in data.keys():
                 client = Client.objects.get(pk=data["client"])
             else:
                 client = Client.objects.create(
+                    # operator=Operator.objects.get(),
                     name=data["name"],
                     email=data["email"],
                     id_number=data["id_number"],
@@ -75,19 +77,21 @@ class ProposalEditView(LoginRequiredMixin, View):
                     consumer=True if data["consumer"] == "on" else False,
                 )
 
-            if Proposal.objects.filter(proposal_number=data["proposal_number"]).count() > 0:
-                messages.warning(request, f"Nabídka s číslem {data['proposal_number']} již existuje!")
-                return redirect(request.META['HTTP_REFERER'], status=302)
+            if Proposal.objects.filter(document_number=data["document_number"]).count() > 0:
+                messages.warning(request, f"Nabídka s číslem {data['document_number']} již existuje!")
+                return redirect(request.META["HTTP_REFERER"], status=302)
             proposal = Proposal.objects.create(
                 client=client,
-                proposal_number=data["proposal_number"],
-                subject=ContractSubject.objects.get(id=data["subject"]),
+                document_number=data["document_number"],
+                contract_subject=ContractSubject.objects.get(id=data["contract_subject"]),
                 contract_type=ContractType.objects.get(id=data["contract_type"]),
                 fulfillment_at=data["fulfillment_at"],
                 fulfillment_place=data["fulfillment_place"],
                 created_by=request.user,
             )
-            default_items = DefaultItem.objects.filter(subject=proposal.subject, contract_type=proposal.contract_type)
+            default_items = DefaultItem.objects.filter(
+                contract_subject=proposal.contract_subject, contract_type=proposal.contract_type
+            )
             if default_items.exists():
                 for item in default_items:
                     Item.objects.create(
@@ -99,10 +103,6 @@ class ProposalEditView(LoginRequiredMixin, View):
                         price_per_unit=item.price_per_unit,
                         unit=item.unit,
                     )
-            default_attachments = DefaultAttachment.objects.filter(subject=proposal.subject, contract_type=proposal.contract_type)
-            if default_attachments.exists():
-                for attachment in default_attachments:
-                    client.default_attachments.add(attachment)
 
         if len(request.FILES) > 0 and "proposal" in locals():
             file = request.FILES["file"]
@@ -116,12 +116,12 @@ class ProposalEditView(LoginRequiredMixin, View):
             else:
                 messages.warning(request, parse_result)
 
-        return redirect('edit-proposal', proposal.id)
+        return redirect("edit-proposal", proposal.id)
 
 
 class ProposalDeleteView(LoginRequiredMixin, DeleteView):
     model = Proposal
-    template_name = 'proposals/confirm_delete_proposal.html'
+    template_name = "proposals/confirm_delete_proposal.html"
     success_url = reverse_lazy("proposals")
 
 
@@ -136,16 +136,12 @@ class ProposalItemsView(LoginRequiredMixin, View):
         return TemplateResponse(template="proposals/edit_items.html", context=context, request=request)
 
     def post(self, request, pk, *args, **kwargs):
-        data = request.POST.dict()
-        data.pop("csrfmiddlewaretoken")
+        data = get_data_in_dict(request)
 
         if "create" in request.POST:
             data.pop("create")
             proposal = Proposal.objects.get(pk=pk)
-            Item.objects.create(
-                proposal=proposal,
-                **data
-            )
+            Item.objects.create(proposal=proposal, **data)
         else:
             item = Item.objects.get(pk=pk)
             proposal = item.proposal
@@ -155,7 +151,7 @@ class ProposalItemsView(LoginRequiredMixin, View):
                 data.pop("save")
                 item.save(**data)
 
-        return redirect('edit-items', proposal.id)
+        return redirect("edit-items", proposal.id)
 
 
 class PaymentsEditView(LoginRequiredMixin, View):
@@ -170,4 +166,4 @@ class PaymentsEditView(LoginRequiredMixin, View):
                 messages.warning(request, "U plateb musí být nastavena splatnost.")
         if not check_payments(proposal):
             messages.warning(request, "Souhrn částí plateb se nerovná celku.")
-        return redirect(request.META.get('HTTP_REFERER'))
+        return redirect(request.META.get("HTTP_REFERER"))
