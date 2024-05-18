@@ -1,6 +1,7 @@
 from django.apps.registry import apps
 
 from clients.models import Client
+from base.diff import diff_match_patch
 
 
 def get_data_in_dict(request):
@@ -37,3 +38,14 @@ def get_document_through_class_id(document):
     model_name, doc_id = document.split(".")
     model = get_model(model_name=model_name)
     return model.objects.get(id=doc_id)
+
+
+def compare_text(old_text, new_text):
+    dmp = diff_match_patch()
+
+    diff = dmp.diff_main(old_text, new_text)
+    dmp.diff_cleanupSemantic(diff)
+
+    diff_text = dmp.diff_prettyHtml(diff)
+
+    return diff_text

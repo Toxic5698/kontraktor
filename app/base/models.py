@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
 from django.db.models import Model, DateTimeField, ForeignKey, SET_NULL, TextField, CharField, IntegerField
 from django.utils import timezone
+from model_utils.models import SoftDeletableModel
+from charidfield import CharIDField
+from ulid import ULID
 
 
 class UserBaseModel(Model):
@@ -15,9 +18,10 @@ class UserBaseModel(Model):
         abstract = True
 
 
-class DateBaseModel(Model):
-    created_at = DateTimeField(auto_now_add=True, blank=False, null=False, verbose_name="Vytvořeno dne")
-    edited_at = DateTimeField(blank=True, null=True, verbose_name="Upraveno dne")
+class BaseModel(SoftDeletableModel):
+    id = CharIDField(default=ULID, max_length=26, primary_key=True, editable=False, verbose_name="Id")
+    created_at = DateTimeField(auto_now_add=True, blank=False, null=False, verbose_name="Vytvořeno dne", editable=False)
+    edited_at = DateTimeField(blank=True, null=True, verbose_name="Upraveno dne", editable=False)
     note = TextField(blank=True, null=True, verbose_name="Poznámka")
 
     class Meta:

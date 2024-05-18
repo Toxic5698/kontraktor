@@ -53,10 +53,7 @@
     <h2>Informace před uzavřením smlouvy</h2>
     <ol>
         <li>Tato nabídka je platná do {{ proposal_validity|date }}.</li>
-        {% for paragraph in paragraphs %}
-            <li>{{ paragraph.text }}</li>
-        {% endfor %}
-        
+        {% include "document_components/sections_and_paragraphs.html" %}
     </ol>
     <br>
 

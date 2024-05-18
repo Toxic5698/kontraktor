@@ -1,7 +1,7 @@
 from django.db.models import CharField, FileField, ForeignKey, SET_NULL, ManyToManyField
 
 from attachments.managers import AttachmentManager
-from base.models import UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixin
+from base.models import UserBaseModel, BaseModel, ContractTypeAndSubjectMixin
 from clients.models import Client
 from documents.enums import DocumentTypeOptions
 
@@ -14,7 +14,7 @@ def default_attachment_directory_path(instance, file):
     return f"default_attachments/{file}"
 
 
-class BaseAttachment(UserBaseModel, DateBaseModel):
+class BaseAttachment(UserBaseModel, BaseModel):
     tag = CharField(max_length=255, blank=True, verbose_name="Označení souboru")
     file_name = CharField(max_length=255, blank=True, null=True, verbose_name="Název souboru")
 

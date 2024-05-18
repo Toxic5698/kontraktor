@@ -1,0 +1,32 @@
+<form id="change-paragraph" class="position-fixed"
+      hx-post="{% url 'save-paragraph-text' paragraph.id %}"
+>
+    {% csrf_token %}
+    <div class="form-group">
+        <h3>Změna ustanovení {% if paragraph.document_section %}{{ paragraph.document_section.priority }}
+            .{% endif %}{{ paragraph.priority }}.
+            {% if paragraph.default %}
+                <span class="badge text-bg-info">původní</span>
+            {% endif %}
+            {% if paragraph.essential %}
+                <span class="badge text-bg-warning">nepominutelné</span>
+            {% endif %}
+        </h3>
+        <label>Dokument:
+            <input name="document" value="{{ document.get_class_id }}" class="form-control-sm">
+        </label>
+        <br>
+
+        <h5>Text s vyznačenými změnami</h5>
+        <p id="text-with-changes"></p>
+
+        <h5>Nový text</h5>
+        <textarea name="new-text" id="new-text" class="form-control" rows="10"
+                  hx-post="{% url 'get-text-with-changes' paragraph.id %}"
+                  hx-trigger="load, keyup changed delay:1s"
+                  hx-target="#text-with-changes"
+        >{{ paragraph.text }}</textarea>
+        <br>
+        <button type="submit" class="btn btn-success" id="save-changes">Uložit</button>
+    </div>
+</form>

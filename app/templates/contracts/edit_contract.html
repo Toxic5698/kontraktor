@@ -5,8 +5,8 @@
     <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
         <li><a href="{% url "edit-client" proposal.client.id %}" class="btn btn-outline-warning mx-2">Klient</a>
         </li>
-{#        <li><a href="{% url "edit-cores" contract.id %}" class="btn btn-outline-secondary mx-2">Změnit ustanovení#}
-{#            smlouvy</a>#}
+        <li><a href="{% url "document-paragraphs" contract.get_class_id %}" class="btn btn-outline-secondary mx-2">Změnit ustanovení
+            smlouvy</a>
         </li>
         <li><a href="{% url "print-document" contract.client.sign_code 'contract' contract.id %}"
                class="btn btn-outline-info mx-2" onclick="runButtonLoader(event)">Náhled smlouvy</a></li>

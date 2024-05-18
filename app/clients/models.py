@@ -13,11 +13,11 @@ from django.db.models import (
     ImageField,
 )
 
-from base.models import DateBaseModel, UserBaseModel
+from base.models import BaseModel, UserBaseModel
 from operators.models import Operator
 
 
-class Client(UserBaseModel, DateBaseModel):
+class Client(UserBaseModel, BaseModel):
     # operator = ForeignKey(Operator, on_delete=CASCADE, related_name="clients", verbose_name="Operátor")
     name = CharField(max_length=255, blank=True, null=True, verbose_name="Jméno")
     id_number = CharField(max_length=12, blank=True, null=True, verbose_name="Datum narození nebo IČ")
@@ -39,11 +39,11 @@ def signature_directory_path(instance, file):
     return f"{instance.client.sign_code}/signatures/{file}"
 
 
-class Signature(DateBaseModel):
+class Signature(BaseModel):
     client = ForeignKey(Client, on_delete=CASCADE, related_name="signatures", verbose_name="Klient")
     file = ImageField(upload_to=signature_directory_path, blank=True, null=True, verbose_name="Obrázek podpisu")
     content_type = ForeignKey(ContentType, on_delete=CASCADE)
-    object_id = PositiveIntegerField(null=True, blank=True)
+    object_id = CharField(null=True, blank=True)
     document_object = GenericForeignKey("content_type", "object_id")
     ip = CharField(null=True, blank=True, max_length=300, verbose_name="IP adresa clienta")
 

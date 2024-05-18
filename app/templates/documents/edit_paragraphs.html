@@ -1,0 +1,33 @@
+{% extends "main.html" %}
+{% block content %}
+    <style>
+        #preview {
+            animation: fadeInAnimation ease 3s;
+        {#animation-iteration-count: 1;#} animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeInAnimation {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+    <h2>Změna ustanovení dokumentu {{ document.get_name }}</h2>
+    <p><i class="bi bi-info-circle-fill"></i> Upravit lze pouze ustanovení, u kterých je na konci zobrazen symbol 
+    <i class="bi bi-exposure text-success"></i></p>
+    
+    <div class="row">
+
+        <div class="col-6" id="preview"
+             hx-get="{% url 'edit-view' document.get_document_type document.id %}"
+             hx-trigger="load, change from:#change-paragraph-form delay:500ms"
+             hx-target="#preview"
+             hx-swap="innerHTML"
+        ></div>
+        <div class="col-6" id="change-paragraph-form"></div>
+    </div>
+{% endblock %}

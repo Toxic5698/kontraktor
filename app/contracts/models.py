@@ -1,6 +1,6 @@
 from django.db.models import ForeignKey, CharField, TextField, SET_NULL, CASCADE, OneToOneField, IntegerField
 
-from base.models import UserBaseModel, DateBaseModel
+from base.models import UserBaseModel, BaseModel
 from documents.models import Document
 from proposals.models import Proposal, Item
 
@@ -33,7 +33,7 @@ class Protocol(Document):
         super().save(*args, **kwargs)
 
 
-class ProtocolItem(UserBaseModel, DateBaseModel):
+class ProtocolItem(UserBaseModel, BaseModel):
     STATUS = [
         ("yes", "Předáno"),
         ("with_note", "Předáno s výhradou"),

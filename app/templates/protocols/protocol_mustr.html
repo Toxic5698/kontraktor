@@ -5,6 +5,12 @@
     <h2 class="text-center">ze dne {{ protocol.created_at }}</h2>
     {% include "document_components/subjects.html" %}
     <br>
+    <h2>Informace k předání</h2>
+    <ol>
+        <li>Tento protokol je platný i bez podpisu klienta.</li>
+        {% include "document_components/sections_and_paragraphs.html" %}
+    </ol>
+    <br>
     {% if protocol.note %}
         <h2> Poznámky k předávacímu protokolu</h2>
         <p>{{ protocol.note }}</p>

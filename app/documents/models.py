@@ -13,12 +13,13 @@ from django.db.models import (
 )
 
 from attachments.models import Attachment, DefaultAttachment
-from base.models import UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixin
+from base.models import UserBaseModel, BaseModel, ContractTypeAndSubjectMixin
 from clients.models import Signature, Client
 from documents.enums import DocumentTypeOptions
+from documents.managers import DocumentParagraphManager
 
 
-class DocumentSection(UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixin):
+class DocumentSection(UserBaseModel, BaseModel, ContractTypeAndSubjectMixin):
     priority = IntegerField(verbose_name="Číslo oddílu")
     name = CharField(max_length=200, null=False, blank=True, verbose_name="Název oddílu")
 
@@ -30,7 +31,7 @@ class DocumentSection(UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixin)
         return f"{self.name} - {self.contract_type}"
 
 
-class DocumentParagraph(UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixin):
+class DocumentParagraph(UserBaseModel, BaseModel, ContractTypeAndSubjectMixin):
     document_type = CharField(
         max_length=255,
         blank=False,
@@ -47,7 +48,9 @@ class DocumentParagraph(UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixi
     essential = BooleanField(default=False, verbose_name="Nepominutelné")
     editable = BooleanField(default=True, verbose_name="Upravitelné")
     default = BooleanField(default=True, verbose_name="Původní")
-    parent_id = IntegerField(blank=True, null=True, verbose_name="ID původního ustanovení")
+    parent_id = CharField(blank=True, null=True, verbose_name="ID původního ustanovení")
+
+    objects = DocumentParagraphManager()
 
     class Meta:
         verbose_name = "Document Paragraph"
@@ -61,7 +64,7 @@ class DocumentParagraph(UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixi
         return f"{self.document_type}.{self.priority} - {self.default}"
 
 
-class Document(UserBaseModel, DateBaseModel, ContractTypeAndSubjectMixin):
+class Document(UserBaseModel, BaseModel, ContractTypeAndSubjectMixin):
     client = ForeignKey(Client, related_name="%(class)ss", on_delete=CASCADE, verbose_name="klient", null=False)
     document_number = CharField(max_length=20, unique=True, blank=True, null=True, verbose_name="Číslo dokumentu")
     signed_at = DateField(blank=True, null=True, verbose_name="Potvrzen dne")

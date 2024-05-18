@@ -38,16 +38,7 @@
     {% endif %}
 
     <h3>Smluvní strany se dále dohodly:</h3>
-        <ol id="sections">
-            {% for section, pars in sections.items %}
-                <li id="section">{{ section }}</li>
-                    <ol id="pars">
-                        {% for par in pars %}
-                            <li>{{ par }}</li>
-                        {% endfor %}
-                    </ol>
-            {% endfor %}
-        </ol>
+    {% include "document_components/sections_and_paragraphs.html" %}
 
     <br>
     {% include "document_components/signs.html" %}

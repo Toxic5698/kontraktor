@@ -43,7 +43,7 @@ def initial_creation():
         "II": "Záruka za jakost a vady díla",
         "III": "Sankce",
         "IV": "Reklamační řád",
-        "V": "Závěrečná jednání",
+        "V": "Závěrečná ustanovení",
     }
     for num, text in enumerate(sections.values(), 1):
         DocumentSection.objects.create(priority=num, name=text, contract_type=dilo)
@@ -125,7 +125,7 @@ def initial_creation():
         "II": "Záruka za jakost",
         "III": "Sankce",
         "IV": "Reklamační řád",
-        "V": "Závěrečná jednání",
+        "V": "Závěrečná ustanovení",
     }
     for num, text in enumerate(sections.values(), 1):
         DocumentSection.objects.create(

@@ -12,7 +12,7 @@ from django.db.models import (
     TextField,
 )
 
-from base.models import DateBaseModel, UserBaseModel, ContractTypeAndSubjectMixin
+from base.models import BaseModel, UserBaseModel, ContractTypeAndSubjectMixin
 from decimal import Decimal
 
 from documents.models import Document
@@ -49,7 +49,7 @@ def uploaded_proposal_directory_path(instance, file):
     return f"{instance.proposal.client.sign_code}/uploaded/{file}"
 
 
-class UploadedProposal(DateBaseModel, UserBaseModel):
+class UploadedProposal(BaseModel, UserBaseModel):
     priority = CharField(max_length=3, null=True, blank=True, verbose_name="pořadí")
     file = FileField(
         upload_to=uploaded_proposal_directory_path, null=True, blank=True, verbose_name="Podkladová nabídka"
@@ -66,7 +66,7 @@ class UploadedProposal(DateBaseModel, UserBaseModel):
         return self.file_name
 
 
-class AbstractItem(UserBaseModel, DateBaseModel):
+class AbstractItem(UserBaseModel, BaseModel):
     title = CharField(max_length=200, blank=True, null=True, verbose_name="název")
     description = CharField(max_length=1000, blank=True, null=True, verbose_name="popis")
     production_price = DecimalField(
