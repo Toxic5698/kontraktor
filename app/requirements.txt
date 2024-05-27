@@ -14,6 +14,7 @@ botocore==1.34.1
 django-environ==0.11.2
 django-htmx==1.17.3
 django-ipware==6.0.3
+django-charid-field==0.4
 django-storages==1.14.2
 django-model-utils==4.5.0
 email-validator==2.1.1
