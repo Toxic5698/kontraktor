@@ -26,6 +26,7 @@ workalendar==17.0.0
 pendulum==3.0.0
 psycopg2==2.9.9
 pypdfium2==4.25.0
+python-ulid==2.4.0
 sentry-sdk==1.39.1
 
 # dev
